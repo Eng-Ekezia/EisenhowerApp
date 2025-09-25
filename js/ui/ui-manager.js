@@ -26,6 +26,9 @@ function createTaskElement(task, eventHandlers) {
     const deleteBtn = taskEl.querySelector('.task__delete');
     const dueDateDiv = taskEl.querySelector('.task__due-date');
     const dateInput = taskEl.querySelector('.task__date-input');
+    const subtaskList = taskEl.querySelector('.subtask-list');
+    const addSubtaskForm = taskEl.querySelector('.add-subtask-form');
+    const addSubtaskInput = taskEl.querySelector('.add-subtask-input');
 
     taskDiv.setAttribute('draggable', 'true');
     taskDiv.setAttribute('data-task-id', task.id);
@@ -85,6 +88,40 @@ function createTaskElement(task, eventHandlers) {
         if (e.key === 'Enter') {
             e.preventDefault();
             textSpan.blur();
+        }
+    });
+
+    if (task.subtasks && task.subtasks.length > 0) {
+        task.subtasks.forEach(subtask => {
+            const subtaskItem = document.createElement('div');
+            subtaskItem.className = 'subtask-item';
+            if (subtask.completed) {
+                subtaskItem.classList.add('completed');
+            }
+            
+            const subtaskCheckbox = document.createElement('input');
+            subtaskCheckbox.type = 'checkbox';
+            subtaskCheckbox.checked = subtask.completed;
+            subtaskCheckbox.addEventListener('change', () => {
+                eventHandlers.onUpdateSubtask(task.id, subtask.id, { completed: subtaskCheckbox.checked });
+            });
+
+            const subtaskText = document.createElement('span');
+            subtaskText.className = 'subtask-text';
+            subtaskText.textContent = subtask.text;
+
+            subtaskList.appendChild(subtaskItem);
+            subtaskItem.appendChild(subtaskCheckbox);
+            subtaskItem.appendChild(subtaskText);
+        });
+    }
+
+    addSubtaskForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newSubtaskText = addSubtaskInput.value.trim();
+        if (newSubtaskText) {
+            eventHandlers.onAddSubtask(task.id, newSubtaskText);
+            addSubtaskInput.value = '';
         }
     });
 
