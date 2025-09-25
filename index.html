@@ -6,7 +6,7 @@
     <title>Matriz de Eisenhower - Gestão de Tarefas</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilos existentes da funcionalidade de data */
+        /* Estilos existentes */
         .task { position: relative; padding-top: 16px; }
         .task__delete { position: absolute; top: -8px; right: -8px; background: var(--color-surface); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border); cursor: pointer; padding: 0; transition: transform 0.2s, box-shadow 0.2s; }
         .task__delete:hover { transform: scale(1.1); box-shadow: var(--shadow-md); }
@@ -23,12 +23,17 @@
         /* NOVOS ESTILOS PARA SUBTAREFAS */
         .subtask-section { margin-top: 12px; border-top: 1px solid var(--color-border); padding-top: 8px; }
         .subtask-list { display: flex; flex-direction: column; gap: 4px; max-height: 150px; overflow-y: auto; padding-right: 5px; }
-        .subtask-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 4px; border-radius: 4px; }
+        .subtask-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 4px; border-radius: 4px; position: relative; }
         .subtask-item:hover { background-color: var(--color-secondary); }
+        .subtask-item .subtask-text { flex-grow: 1; }
         .subtask-item.completed .subtask-text { text-decoration: line-through; color: var(--color-text-secondary); }
         .add-subtask-form { display: flex; margin-top: 8px; gap: 4px; }
         .add-subtask-input { flex-grow: 1; border: 1px solid var(--color-border); font-size: 12px; padding: 4px 8px; border-radius: 4px; background-color: var(--color-surface); }
         .add-subtask-btn { background: var(--color-primary); color: var(--color-btn-primary-text); border: none; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
+        .subtask-delete-btn { background: none; border: none; cursor: pointer; padding: 0; margin-left: auto; display: none; line-height: 1; }
+        .subtask-item:hover .subtask-delete-btn { display: inline-block; }
+        .subtask-delete-btn svg { width: 16px; height: 16px; color: var(--color-text-secondary); }
+        .subtask-delete-btn:hover svg { color: var(--color-error); }
     </style>
 </head>
 <body>
@@ -36,16 +41,11 @@
         <div class="container">
             <h1 class="header__title">Matriz de Eisenhower</h1>
             <div class="header__actions">
-                <button class="btn btn--sm btn--secondary" id="help-btn">
-                    <span>?</span>
-                </button>
-                <button class="btn btn--sm btn--secondary" id="stats-btn">
-                    <span>📊</span>
-                </button>
+                <button class="btn btn--sm btn--secondary" id="help-btn"><span>?</span></button>
+                <button class="btn btn--sm btn--secondary" id="stats-btn"><span>📊</span></button>
             </div>
         </div>
     </header>
-
     <main class="main">
         <div class="container">
             <div class="matrix" id="matrix">
@@ -96,47 +96,8 @@
             </div>
         </div>
     </main>
-
-    <div class="modal hidden" id="help-modal">
-        <div class="modal__overlay"></div>
-        <div class="modal__content">
-            <div class="modal__header">
-                <h3>Como usar a Matriz de Eisenhower</h3>
-                <button class="modal__close" id="close-help">&times;</button>
-            </div>
-            <div class="modal__body">
-                <div class="help-section">
-                    <h4 style="color: #22c55e;">🟢 Fazer Primeiro (Urgente e Importante)</h4>
-                    <p>Tarefas críticas que exigem ação imediata. Ex: prazos críticos, emergências.</p>
-                </div>
-                <div class="help-section">
-                    <h4 style="color: #3b82f6;">🔵 Agendar (Importante mas não Urgente)</h4>
-                    <p>Tarefas importantes para crescimento. Ex: planejamento, desenvolvimento pessoal.</p>
-                </div>
-                <div class="help-section">
-                    <h4 style="color: #f59e0b;">🟡 Delegar (Urgente mas não Importante)</h4>
-                    <p>Tarefas urgentes que podem ser feitas por outros. Ex: interrupções, reuniões rotineiras.</p>
-                </div>
-                <div class="help-section">
-                    <h4 style="color: #ef4444;">🔴 Eliminar (Nem Urgente nem Importante)</h4>
-                    <p>Atividades que consomem tempo sem agregar valor. Ex: redes sociais, distrações.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal hidden" id="stats-modal">
-        <div class="modal__overlay"></div>
-        <div class="modal__content">
-            <div class="modal__header">
-                <h3>Estatísticas das Tarefas</h3>
-                <button class="modal__close" id="close-stats">&times;</button>
-            </div>
-            <div class="modal__body" id="stats-content">
-            </div>
-        </div>
-    </div>
-
+    <div class="modal hidden" id="help-modal"><div class="modal__overlay"></div><div class="modal__content"><div class="modal__header"><h3>Como usar a Matriz de Eisenhower</h3><button class="modal__close" id="close-help">&times;</button></div><div class="modal__body"><div class="help-section"><h4 style="color: #22c55e;">🟢 Fazer Primeiro (Urgente e Importante)</h4><p>Tarefas críticas que exigem ação imediata. Ex: prazos críticos, emergências.</p></div><div class="help-section"><h4 style="color: #3b82f6;">🔵 Agendar (Importante mas não Urgente)</h4><p>Tarefas importantes para crescimento. Ex: planejamento, desenvolvimento pessoal.</p></div><div class="help-section"><h4 style="color: #f59e0b;">🟡 Delegar (Urgente mas não Importante)</h4><p>Tarefas urgentes que podem ser feitas por outros. Ex: interrupções, reuniões rotineiras.</p></div><div class="help-section"><h4 style="color: #ef4444;">🔴 Eliminar (Nem Urgente nem Importante)</h4><p>Atividades que consomem tempo sem agregar valor. Ex: redes sociais, distrações.</p></div></div></div></div>
+    <div class="modal hidden" id="stats-modal"><div class="modal__overlay"></div><div class="modal__content"><div class="modal__header"><h3>Estatísticas das Tarefas</h3><button class="modal__close" id="close-stats">&times;</button></div><div class="modal__body" id="stats-content"></div></div></div>
     <template id="task-template">
         <div class="task" draggable="true">
              <button class="task__delete" title="Excluir tarefa">
@@ -147,8 +108,7 @@
                 <span class="task__text" contenteditable="true"></span>
             </div>
             <div class="task__details">
-                <div class="task__due-date" title="Clique para alterar a data">
-                </div>
+                <div class="task__due-date" title="Clique para alterar a data"></div>
                 <input type="date" class="task__date-input hidden" title="Pressione Enter ou clique fora para salvar">
             </div>
             <div class="subtask-section">
@@ -160,7 +120,6 @@
             </div>
         </div>
     </template>
-
     <template id="task-input-template">
         <div class="task-input">
             <input type="text" class="task-input__field" placeholder="Digite sua tarefa..." maxlength="200">
@@ -174,7 +133,6 @@
             </div>
         </div>
     </template>
-
     <script src="js/app.js" type="module"></script>
 </body>
 </html>

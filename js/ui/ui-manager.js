@@ -110,9 +110,18 @@ function createTaskElement(task, eventHandlers) {
             subtaskText.className = 'subtask-text';
             subtaskText.textContent = subtask.text;
 
-            subtaskList.appendChild(subtaskItem);
+            const subtaskDeleteBtn = document.createElement('button');
+            subtaskDeleteBtn.className = 'subtask-delete-btn';
+            subtaskDeleteBtn.title = 'Excluir subtarefa';
+            subtaskDeleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>`;
+            subtaskDeleteBtn.addEventListener('click', () => {
+                eventHandlers.onDeleteSubtask(task.id, subtask.id);
+            });
+
             subtaskItem.appendChild(subtaskCheckbox);
             subtaskItem.appendChild(subtaskText);
+            subtaskItem.appendChild(subtaskDeleteBtn);
+            subtaskList.appendChild(subtaskItem);
         });
     }
 
@@ -121,7 +130,6 @@ function createTaskElement(task, eventHandlers) {
         const newSubtaskText = addSubtaskInput.value.trim();
         if (newSubtaskText) {
             eventHandlers.onAddSubtask(task.id, newSubtaskText);
-            addSubtaskInput.value = '';
         }
     });
 

@@ -43,7 +43,7 @@ function getSampleTasks() {
             completed: false,
             createdAt: new Date().toISOString(),
             dueDate: tomorrowISO,
-            subtasks: [] // NOVA PROPRIEDADE
+            subtasks: []
         },
         {
             id: generateId(),
@@ -52,8 +52,7 @@ function getSampleTasks() {
             completed: false,
             createdAt: new Date().toISOString(),
             dueDate: null,
-            // Exemplo de subtarefas
-            subtasks: [ // NOVA PROPRIEDADE
+            subtasks: [
                 { id: generateId(), text: "Pesquisar destinos", completed: true },
                 { id: generateId(), text: "Verificar preços de passagens", completed: false },
                 { id: generateId(), text: "Reservar hotel", completed: false }
@@ -66,7 +65,7 @@ function getSampleTasks() {
             completed: false,
             createdAt: new Date().toISOString(),
             dueDate: null,
-            subtasks: [] // NOVA PROPRIEDADE
+            subtasks: []
         }
     ];
 }
@@ -86,7 +85,7 @@ export const taskService = {
             completed: false,
             createdAt: new Date().toISOString(),
             dueDate: dueDate || null,
-            subtasks: [] // NOVA PROPRIEDADE
+            subtasks: []
         };
         const updatedTasks = [...tasks, newTask];
         saveTasks(updatedTasks);
@@ -107,36 +106,19 @@ export const taskService = {
         return updatedTasks;
     },
 
-    // --- NOVAS FUNÇÕES PARA SUBTAREFAS ---
-
-    /**
-     * Adiciona uma subtarefa a uma tarefa principal.
-     */
     addSubtask: (tasks, taskId, subtaskText) => {
         if (!subtaskText || !subtaskText.trim()) return tasks;
-
-        const newSubtask = {
-            id: generateId(),
-            text: subtaskText.trim(),
-            completed: false
-        };
-
+        const newSubtask = { id: generateId(), text: subtaskText.trim(), completed: false };
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
-                // Adiciona a nova subtarefa ao array existente
-                const updatedSubtasks = [...task.subtasks, newSubtask];
-                return { ...task, subtasks: updatedSubtasks };
+                return { ...task, subtasks: [...task.subtasks, newSubtask] };
             }
             return task;
         });
-
         saveTasks(updatedTasks);
         return updatedTasks;
     },
 
-    /**
-     * Atualiza uma subtarefa existente (texto ou status de conclusão).
-     */
     updateSubtask: (tasks, taskId, subtaskId, updates) => {
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
@@ -147,23 +129,17 @@ export const taskService = {
             }
             return task;
         });
-
         saveTasks(updatedTasks);
         return updatedTasks;
     },
 
-    /**
-     * Deleta uma subtarefa.
-     */
     deleteSubtask: (tasks, taskId, subtaskId) => {
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
-                const updatedSubtasks = task.subtasks.filter(subtask => subtask.id !== subtaskId);
-                return { ...task, subtasks: updatedSubtasks };
+                return { ...task, subtasks: task.subtasks.filter(sub => sub.id !== subtaskId) };
             }
             return task;
         });
-
         saveTasks(updatedTasks);
         return updatedTasks;
     }

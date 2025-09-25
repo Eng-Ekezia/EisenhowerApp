@@ -22,15 +22,11 @@ const eventHandlers = {
         }
     },
     
-    /** ATUALIZAÇÃO 1: onUpdate agora chama render() */
     onUpdate: (taskId, updates) => {
         tasks = taskService.updateTask(tasks, taskId, updates);
-        // Esta chamada garante que a UI seja redesenhada após qualquer atualização,
-        // como a mudança de uma data de vencimento.
         render();
     },
     
-    /** ATUALIZAÇÃO 2: onSaveNewTask agora aceita dueDate */
     onSaveNewTask: (quadrant, text, dueDate) => {
         tasks = taskService.addTask(tasks, quadrant, text, dueDate);
         render();
@@ -42,7 +38,6 @@ const eventHandlers = {
 
     onDrop: (newQuadrantId) => {
         if (draggedTaskId) {
-            // Verifica se a tarefa foi solta em um quadrante diferente para evitar renderização desnecessária
             const task = tasks.find(t => t.id === draggedTaskId);
             if (task && task.quadrant !== newQuadrantId) {
                 tasks = taskService.updateTask(tasks, draggedTaskId, { quadrant: newQuadrantId });
@@ -50,6 +45,21 @@ const eventHandlers = {
             }
         }
         draggedTaskId = null;
+    },
+
+    onAddSubtask: (taskId, subtaskText) => {
+        tasks = taskService.addSubtask(tasks, taskId, subtaskText);
+        render();
+    },
+
+    onUpdateSubtask: (taskId, subtaskId, updates) => {
+        tasks = taskService.updateSubtask(tasks, taskId, subtaskId, updates);
+        render();
+    },
+    
+    onDeleteSubtask: (taskId, subtaskId) => {
+        tasks = taskService.deleteSubtask(tasks, taskId, subtaskId);
+        render();
     }
 };
 

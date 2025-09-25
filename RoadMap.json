@@ -1,0 +1,115 @@
+{
+  "projectName": "Plano de Evolução da Matriz de Eisenhower",
+  "version": "1.1",
+  "lastUpdated": "2025-09-25T12:23:00Z",
+  "projectGoals": [
+    "Aumentar a manutenibilidade e escalabilidade do código-fonte.",
+    "Melhorar a produtividade do usuário através de novas funcionalidades.",
+    "Estabelecer uma arquitetura de software robusta para futuras expansões."
+  ],
+  "developmentStatus": {
+    "workingMode": "Desenvolvimento iterativo e incremental, dividido em Fases e Epics. Cada passo de implementação é seguido pela entrega do código completo, versionamento com commits atômicos no Git e validação pelo usuário antes de prosseguir.",
+    "summaryAndChallenges": "A Fase 1 de refatoração foi concluída com sucesso, estabelecendo uma base de código modular. A principal dificuldade foi a complexidade da migração, que resultou em quebras temporárias (Drag-and-Drop, erros de renderização) e exigiu passos de correção. O processo iterativo de feedback do usuário se mostrou crucial para ajustar o layout e a UX em tempo real."
+  },
+  "phases": [
+    {
+      "phaseId": 1,
+      "phaseName": "Fundação Modular (Refatoração Estrutural)",
+      "objective": "Migrar da arquitetura monolítica para uma base de código modular, desacoplada e de fácil manutenção.",
+      "status": "Concluído",
+      "epics": [
+        {
+          "epicName": "Configuração do Ambiente e Estrutura",
+          "status": "Concluído",
+          "tasks": [
+            { "task": "Criar a estrutura de diretórios: `js/`, `js/services/`, `js/ui/`.", "status": "Concluído" },
+            { "task": "Atualizar o `index.html` para carregar o script principal com `type='module'`.", "status": "Concluído" }
+          ]
+        },
+        {
+          "epicName": "Isolamento do Gerenciamento de Estado (Model)",
+          "status": "Concluído",
+          "tasks": [
+            { "task": "Criar o arquivo `js/services/task-service.js`.", "status": "Concluído" },
+            { "task": "Mover toda a lógica de `localStorage` para o `task-service`.", "status": "Concluído" },
+            { "task": "Implementar e exportar funções de manipulação de dados.", "status": "Concluído" }
+          ]
+        },
+        {
+          "epicName": "Abstração da Camada de Visualização (View)",
+          "status": "Concluído",
+          "tasks": [
+            { "task": "Criar o arquivo `js/ui/ui-manager.js`.", "status": "Concluído" },
+            { "task": "Implementar a função `renderTasks` para redesenhar a interface.", "status": "Concluído" },
+            { "task": "Mover a lógica de criação de elementos (`createTaskElement`) para o `ui-manager`.", "status": "Concluído" },
+            { "task": "Implementar um sistema de callbacks (`eventHandlers`) para comunicação.", "status": "Concluído" }
+          ]
+        },
+        {
+          "epicName": "Orquestração da Aplicação (Controller)",
+          "status": "Concluído",
+          "tasks": [
+            { "task": "Refatorar `app.js` como o ponto central que conecta Model e View.", "status": "Concluído" },
+            { "task": "Implementar os `eventHandlers` e a função `init()`.", "status": "Concluído" },
+            { "task": "Reativar a funcionalidade de Drag-and-Drop na nova arquitetura.", "status": "Concluído" }
+          ]
+        }
+      ]
+    },
+    {
+      "phaseId": 2,
+      "phaseName": "Expansão da Produtividade (Novas Funcionalidades)",
+      "objective": "Implementar funcionalidades de alto impacto que melhorem a experiência do usuário.",
+      "status": "Em Andamento",
+      "prerequisites": ["Conclusão bem-sucedida da Fase 1"],
+      "epics": [
+        {
+          "epicName": "Feature: Datas de Vencimento",
+          "description": "Permitir que tarefas tenham prazos definidos que possam ser adicionados e editados.",
+          "status": "Concluído",
+          "tasks": [
+            { "task": "[Model] Adicionar a propriedade `dueDate` ao objeto da tarefa.", "status": "Concluído" },
+            { "task": "[View] Modificar UI para exibir, editar e adicionar `dueDate` na criação.", "status": "Concluído" },
+            { "task": "[Controller] Orquestrar a atualização da UI após a edição da data.", "status": "Concluído" }
+          ]
+        },
+        {
+          "epicName": "Feature: Lembretes (Notificações)",
+          "description": "Notificar o usuário quando a data de vencimento de uma tarefa estiver próxima.",
+          "status": "Pendente",
+          "tasks": [
+            { "task": "[Controller] Implementar a lógica para solicitar permissão de notificação.", "status": "Pendente" },
+            { "task": "[Controller] Criar um serviço para verificar periodicamente as datas e disparar a Notification API.", "status": "Pendente" }
+          ]
+        },
+        {
+          "epicName": "Feature: Subtarefas (Checklists)",
+          "description": "Permitir que tarefas complexas sejam divididas em passos menores.",
+          "status": "Pendente",
+          "tasks": [
+            { "task": "[Model] Adicionar a propriedade `subtasks: []` ao objeto da tarefa.", "status": "Pendente" },
+            { "task": "[View] Atualizar `createTaskElement` para renderizar a lista de subtarefas.", "status": "Pendente" },
+            { "task": "[Controller] Criar `eventHandlers` para gerenciar as subtarefas.", "status": "Pendente" }
+          ]
+        }
+      ]
+    },
+    {
+      "phaseId": 3,
+      "phaseName": "Visão de Futuro (Funcionalidades Avançadas)",
+      "objective": "Transformar a ferramenta em um ecossistema de produtividade completo e conectado.",
+      "status": "Pendente",
+      "prerequisites": ["Conclusão bem-sucedida da Fase 2"],
+      "epics": [
+        {
+          "epicName": "Feature: Sincronização na Nuvem",
+          "status": "Pendente"
+        },
+        {
+          "epicName": "Feature: Arquivamento e Histórico",
+          "status": "Pendente"
+        }
+      ]
+    }
+  ]
+}
