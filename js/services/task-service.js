@@ -30,12 +30,10 @@ function generateId() {
     return Date.now() + Math.random().toString(36).substr(2, 9);
 }
 
-// **ALTERAÇÃO AQUI:** Adicionamos a propriedade `dueDate` às tarefas de exemplo.
 function getSampleTasks() {
-    // Para a tarefa de exemplo urgente, vamos definir uma data de vencimento para amanhã.
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowISO = tomorrow.toISOString().split('T')[0]; // Formato AAAA-MM-DD
+    const tomorrowISO = tomorrow.toISOString().split('T')[0];
 
     return [
         {
@@ -44,7 +42,7 @@ function getSampleTasks() {
             quadrant: "q1",
             completed: false,
             createdAt: new Date().toISOString(),
-            dueDate: tomorrowISO // Exemplo de data de vencimento
+            dueDate: tomorrowISO
         },
         {
             id: generateId(),
@@ -52,7 +50,7 @@ function getSampleTasks() {
             quadrant: "q2",
             completed: false,
             createdAt: new Date().toISOString(),
-            dueDate: null // Tarefas podem não ter data de vencimento
+            dueDate: null
         },
         {
             id: generateId(),
@@ -70,17 +68,16 @@ export const taskService = {
         return loadTasks();
     },
 
-    addTask: (tasks, quadrant, text) => {
+    addTask: (tasks, quadrant, text, dueDate) => {
         if (!text || !text.trim()) return tasks;
 
-        // **ALTERAÇÃO AQUI:** Novas tarefas são criadas com `dueDate` nulo por padrão.
         const newTask = {
             id: generateId(),
             text: text.trim(),
             quadrant,
             completed: false,
             createdAt: new Date().toISOString(),
-            dueDate: null 
+            dueDate: dueDate || null
         };
         const updatedTasks = [...tasks, newTask];
         saveTasks(updatedTasks);

@@ -10,11 +10,9 @@ const selectors = {
 
 let currentTaskInput = null;
 
-// Função auxiliar para formatar a data para o padrão brasileiro.
 function formatDate(isoDate) {
     if (!isoDate) return '';
     const date = new Date(isoDate);
-    // Adiciona o T00:00:00 para evitar problemas de fuso horário que podem mudar o dia.
     const userTimezoneDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
     return userTimezoneDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
@@ -22,7 +20,6 @@ function formatDate(isoDate) {
 function createTaskElement(task, eventHandlers) {
     const taskEl = selectors.taskTemplate.content.cloneNode(true);
     
-    // Seleciona todos os elementos necessários do template
     const taskDiv = taskEl.querySelector('.task');
     const checkbox = taskEl.querySelector('.task__checkbox');
     const textSpan = taskEl.querySelector('.task__text');
@@ -30,7 +27,6 @@ function createTaskElement(task, eventHandlers) {
     const dueDateDiv = taskEl.querySelector('.task__due-date');
     const dateInput = taskEl.querySelector('.task__date-input');
 
-    // Configurações básicas da tarefa
     taskDiv.setAttribute('draggable', 'true');
     taskDiv.setAttribute('data-task-id', task.id);
     textSpan.textContent = task.text;
@@ -40,17 +36,13 @@ function createTaskElement(task, eventHandlers) {
         checkbox.checked = true;
     }
 
-    // Lógica para exibir a data de vencimento
     if (task.dueDate) {
-        dueDateDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> <span>${formatDate(task.dueDate)}</span>`;
+        dueDateDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18M-7.5 14.25h.008v.008H-7.5v-.008Zm0 4.5h.008v.008H-7.5v-.008Zm4.5-4.5h.008v.008H-3v-.008Zm0 4.5h.008v.008H-3v-.008Zm4.5-4.5h.008v.008H1.5v-.008Zm0 4.5h.008v.008H1.5v-.008Zm4.5-4.5h.008v.008H6v-.008Zm0 4.5h.008v.008H6v-.008Zm4.5-4.5h.008v.008H10.5v-.008Zm0 4.5h.008v.008H10.5v-.008Zm4.5-4.5h.008v.008H15v-.008Zm0 4.5h.008v.008H15v-.008Z" /></svg> <span>${formatDate(task.dueDate)}</span>`;
         dateInput.value = task.dueDate;
     } else {
-        dueDateDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> <span>Adicionar data</span>`;
+        dueDateDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18M-7.5 14.25h.008v.008H-7.5v-.008Zm0 4.5h.008v.008H-7.5v-.008Zm4.5-4.5h.008v.008H-3v-.008Zm0 4.5h.008v.008H-3v-.008Zm4.5-4.5h.008v.008H1.5v-.008Zm0 4.5h.008v.008H1.5v-.008Zm4.5-4.5h.008v.008H6v-.008Zm0 4.5h.008v.008H6v-.008Zm4.5-4.5h.008v.008H10.5v-.008Zm0 4.5h.008v.008H10.5v-.008Zm4.5-4.5h.008v.008H15v-.008Zm0 4.5h.008v.008H15v-.008Z" /></svg>`;
     }
 
-    // --- Vinculação de TODOS os eventos ---
-
-    // Eventos para a data de vencimento
     dueDateDiv.addEventListener('click', () => {
         dueDateDiv.classList.add('hidden');
         dateInput.classList.remove('hidden');
@@ -62,17 +54,24 @@ function createTaskElement(task, eventHandlers) {
         if (newDate !== task.dueDate) {
             eventHandlers.onUpdate(task.id, { dueDate: newDate || null });
         }
-        // A UI não é redesenhada aqui, por isso trocamos as classes manualmente.
-        // O app.js vai precisar chamar render() para atualizar o texto da data.
         dateInput.classList.add('hidden');
         dueDateDiv.classList.remove('hidden');
     };
     dateInput.addEventListener('blur', saveDate);
     dateInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveDate(); });
 
-    // Eventos de CRUD (Esta parte estava faltando/incorreta no snippet anterior)
     checkbox.addEventListener('change', () => eventHandlers.onToggleComplete(task.id));
     deleteBtn.addEventListener('click', () => eventHandlers.onDelete(task.id));
+    
+    taskDiv.addEventListener('dragstart', () => {
+        taskDiv.classList.add('dragging');
+        eventHandlers.onDragStart(task.id);
+    });
+
+    taskDiv.addEventListener('dragend', () => {
+        taskDiv.classList.remove('dragging');
+    });
+
     textSpan.addEventListener('blur', () => {
         const newText = textSpan.textContent.trim();
         if (newText && newText !== task.text) {
@@ -81,20 +80,12 @@ function createTaskElement(task, eventHandlers) {
             textSpan.textContent = task.text;
         }
     });
+    
     textSpan.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             textSpan.blur();
         }
-    });
-
-    // Eventos de Drag-and-Drop (Esta parte também estava faltando/incorreta)
-    taskDiv.addEventListener('dragstart', () => {
-        taskDiv.classList.add('dragging');
-        eventHandlers.onDragStart(task.id);
-    });
-    taskDiv.addEventListener('dragend', () => {
-        taskDiv.classList.remove('dragging');
     });
 
     return taskEl;
@@ -129,11 +120,12 @@ export const uiManager = {
         const inputElDiv = selectors.taskInputTemplate.content.cloneNode(true);
         
         const inputField = inputElDiv.querySelector('.task-input__field');
+        const dateField = inputElDiv.querySelector('.task-input__date-field');
         const saveBtn = inputElDiv.querySelector('.task-input__save');
         const cancelBtn = inputElDiv.querySelector('.task-input__cancel');
 
         saveBtn.addEventListener('click', () => {
-            eventHandlers.onSaveNewTask(quadrant, inputField.value);
+            eventHandlers.onSaveNewTask(quadrant, inputField.value, dateField.value);
             removeCurrentTaskInput();
         });
 
