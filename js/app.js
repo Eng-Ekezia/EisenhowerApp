@@ -98,7 +98,7 @@ function init() {
     tasks = taskService.getTasks();
     bindStaticEvents();
     uiManager.bindDragAndDropEvents(eventHandlers);
-    notificationService.init(tasks); // 2. ADICIONE ESTA LINHA
+    notificationService.start(() => tasks); // 2. INICIE O SERVIÇO DE NOTIFICAÇÕES AQUI
     render();
 }
 

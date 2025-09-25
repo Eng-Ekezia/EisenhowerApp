@@ -13,8 +13,9 @@ let currentTaskInput = null;
 function formatDate(isoDate) {
     if (!isoDate) return '';
     const date = new Date(isoDate);
+    // Adiciona o fuso horário local para evitar problemas de data "um dia antes"
     const userTimezoneDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
-    return userTimezoneDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return userTimezoneDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 }
 
 function createTaskElement(task, eventHandlers) {
@@ -39,11 +40,13 @@ function createTaskElement(task, eventHandlers) {
         checkbox.checked = true;
     }
 
+    // Gerenciamento da Data de Vencimento
+    const calendarIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18" /></svg>`;
     if (task.dueDate) {
-        dueDateDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18M-7.5 14.25h.008v.008H-7.5v-.008Zm0 4.5h.008v.008H-7.5v-.008Zm4.5-4.5h.008v.008H-3v-.008Zm0 4.5h.008v.008H-3v-.008Zm4.5-4.5h.008v.008H1.5v-.008Zm0 4.5h.008v.008H1.5v-.008Zm4.5-4.5h.008v.008H6v-.008Zm0 4.5h.008v.008H6v-.008Zm4.5-4.5h.008v.008H10.5v-.008Zm0 4.5h.008v.008H10.5v-.008Zm4.5-4.5h.008v.008H15v-.008Zm0 4.5h.008v.008H15v-.008Z" /></svg> <span>${formatDate(task.dueDate)}</span>`;
+        dueDateDiv.innerHTML = `${calendarIcon} <span>${formatDate(task.dueDate)}</span>`;
         dateInput.value = task.dueDate;
     } else {
-        dueDateDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18M-7.5 14.25h.008v.008H-7.5v-.008Zm0 4.5h.008v.008H-7.5v-.008Zm4.5-4.5h.008v.008H-3v-.008Zm0 4.5h.008v.008H-3v-.008Zm4.5-4.5h.008v.008H1.5v-.008Zm0 4.5h.008v.008H1.5v-.008Zm4.5-4.5h.008v.008H6v-.008Zm0 4.5h.008v.008H6v-.008Zm4.5-4.5h.008v.008H10.5v-.008Zm0 4.5h.008v.008H10.5v-.008Zm4.5-4.5h.008v.008H15v-.008Zm0 4.5h.008v.008H15v-.008Z" /></svg>`;
+        dueDateDiv.innerHTML = calendarIcon;
     }
 
     dueDateDiv.addEventListener('click', () => {
@@ -56,6 +59,12 @@ function createTaskElement(task, eventHandlers) {
         const newDate = dateInput.value;
         if (newDate !== task.dueDate) {
             eventHandlers.onUpdate(task.id, { dueDate: newDate || null });
+            // Atualiza a exibição sem precisar renderizar tudo
+            if(newDate) {
+                dueDateDiv.innerHTML = `${calendarIcon} <span>${formatDate(newDate)}</span>`;
+            } else {
+                dueDateDiv.innerHTML = calendarIcon;
+            }
         }
         dateInput.classList.add('hidden');
         dueDateDiv.classList.remove('hidden');
@@ -63,25 +72,24 @@ function createTaskElement(task, eventHandlers) {
     dateInput.addEventListener('blur', saveDate);
     dateInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveDate(); });
 
+    // Eventos principais da tarefa
     checkbox.addEventListener('change', () => eventHandlers.onToggleComplete(task.id));
     deleteBtn.addEventListener('click', () => eventHandlers.onDelete(task.id));
     
-    taskDiv.addEventListener('dragstart', () => {
+    taskDiv.addEventListener('dragstart', (e) => {
         taskDiv.classList.add('dragging');
         eventHandlers.onDragStart(task.id);
+        e.dataTransfer.effectAllowed = 'move';
     });
 
-    taskDiv.addEventListener('dragend', () => {
-        taskDiv.classList.remove('dragging');
-    });
+    taskDiv.addEventListener('dragend', () => taskDiv.classList.remove('dragging'));
 
     textSpan.addEventListener('blur', () => {
         const newText = textSpan.textContent.trim();
         if (newText && newText !== task.text) {
             eventHandlers.onUpdate(task.id, { text: newText });
-        } else {
-            textSpan.textContent = task.text;
         }
+        textSpan.textContent = task.text; // Garante que o texto volte ao original se for salvo vazio
     });
     
     textSpan.addEventListener('keydown', (e) => {
@@ -91,7 +99,9 @@ function createTaskElement(task, eventHandlers) {
         }
     });
 
-    if (task.subtasks && task.subtasks.length > 0) {
+    // --- INÍCIO DAS CORREÇÕES ---
+    // Renderização e eventos das subtarefas
+    if (task.subtasks) {
         task.subtasks.forEach(subtask => {
             const subtaskItem = document.createElement('div');
             subtaskItem.className = 'subtask-item';
@@ -118,9 +128,12 @@ function createTaskElement(task, eventHandlers) {
                 eventHandlers.onDeleteSubtask(task.id, subtask.id);
             });
 
+            // Adiciona os elementos ao item da subtarefa
             subtaskItem.appendChild(subtaskCheckbox);
             subtaskItem.appendChild(subtaskText);
             subtaskItem.appendChild(subtaskDeleteBtn);
+            
+            // Adiciona o item da subtarefa à lista
             subtaskList.appendChild(subtaskItem);
         });
     }
@@ -130,8 +143,10 @@ function createTaskElement(task, eventHandlers) {
         const newSubtaskText = addSubtaskInput.value.trim();
         if (newSubtaskText) {
             eventHandlers.onAddSubtask(task.id, newSubtaskText);
+            // O render() subsequente cuidará de limpar o input
         }
     });
+    // --- FIM DAS CORREÇÕES ---
 
     return taskEl;
 }
@@ -147,7 +162,14 @@ export const uiManager = {
     renderTasks: (tasks, eventHandlers) => {
         ['q1', 'q2', 'q3', 'q4'].forEach(quadrant => {
             const taskList = selectors.getTaskList(quadrant);
-            if (taskList) taskList.innerHTML = '';
+            if (taskList) {
+                taskList.innerHTML = '';
+                 if (tasks.filter(t => t.quadrant === quadrant).length === 0) {
+                    taskList.classList.add('empty');
+                } else {
+                    taskList.classList.remove('empty');
+                }
+            }
         });
         
         tasks.forEach(task => {
@@ -170,8 +192,10 @@ export const uiManager = {
         const cancelBtn = inputElDiv.querySelector('.task-input__cancel');
 
         saveBtn.addEventListener('click', () => {
-            eventHandlers.onSaveNewTask(quadrant, inputField.value, dateField.value);
-            removeCurrentTaskInput();
+            if (inputField.value.trim()) {
+                eventHandlers.onSaveNewTask(quadrant, inputField.value, dateField.value);
+                removeCurrentTaskInput();
+            }
         });
 
         cancelBtn.addEventListener('click', () => removeCurrentTaskInput());
@@ -179,8 +203,9 @@ export const uiManager = {
             if (e.key === 'Enter') saveBtn.click();
             if (e.key === 'Escape') cancelBtn.click();
         });
-
-        container.appendChild(inputElDiv);
+        
+        // Adiciona o elemento de input no topo da lista
+        container.insertAdjacentElement('afterbegin', inputElDiv.querySelector('.task-input'));
         currentTaskInput = container.querySelector('.task-input');
         inputField.focus();
     },

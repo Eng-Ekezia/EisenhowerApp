@@ -10,7 +10,8 @@ function loadTasks() {
         if (!tasks || tasks.length === 0) {
             return getSampleTasks();
         }
-        return tasks;
+        // Garante que tarefas antigas tenham a propriedade subtasks
+        return tasks.map(task => ({ subtasks: [], ...task }));
 
     } catch (e) {
         console.error('Erro ao carregar tarefas:', e);
@@ -111,7 +112,9 @@ export const taskService = {
         const newSubtask = { id: generateId(), text: subtaskText.trim(), completed: false };
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
-                return { ...task, subtasks: [...task.subtasks, newSubtask] };
+                // CORREÇÃO AQUI: Garante que task.subtasks seja um array antes de espalhar (spread)
+                const existingSubtasks = task.subtasks || [];
+                return { ...task, subtasks: [...existingSubtasks, newSubtask] };
             }
             return task;
         });
@@ -122,7 +125,9 @@ export const taskService = {
     updateSubtask: (tasks, taskId, subtaskId, updates) => {
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
-                const updatedSubtasks = task.subtasks.map(subtask => 
+                // CORREÇÃO AQUI: Garante que task.subtasks seja um array antes do .map
+                const existingSubtasks = task.subtasks || [];
+                const updatedSubtasks = existingSubtasks.map(subtask => 
                     subtask.id === subtaskId ? { ...subtask, ...updates } : subtask
                 );
                 return { ...task, subtasks: updatedSubtasks };
@@ -136,7 +141,9 @@ export const taskService = {
     deleteSubtask: (tasks, taskId, subtaskId) => {
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
-                return { ...task, subtasks: task.subtasks.filter(sub => sub.id !== subtaskId) };
+                 // CORREÇÃO AQUI: Garante que task.subtasks seja um array antes do .filter
+                const existingSubtasks = task.subtasks || [];
+                return { ...task, subtasks: existingSubtasks.filter(sub => sub.id !== subtaskId) };
             }
             return task;
         });
