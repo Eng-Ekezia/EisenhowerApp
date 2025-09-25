@@ -4,7 +4,6 @@ import { taskService } from './services/task-service.js';
 import { uiManager } from './ui/ui-manager.js';
 
 let tasks = [];
-// **NOVO: Variável para guardar o estado do arraste**
 let draggedTaskId = null;
 
 const eventHandlers = {
@@ -23,28 +22,33 @@ const eventHandlers = {
         }
     },
     
+    /** ATUALIZAÇÃO 1: onUpdate agora chama render() */
     onUpdate: (taskId, updates) => {
         tasks = taskService.updateTask(tasks, taskId, updates);
+        // Esta chamada garante que a UI seja redesenhada após qualquer atualização,
+        // como a mudança de uma data de vencimento.
+        render();
     },
     
-    onSaveNewTask: (quadrant, text) => {
-        tasks = taskService.addTask(tasks, quadrant, text);
+    /** ATUALIZAÇÃO 2: onSaveNewTask agora aceita dueDate */
+    onSaveNewTask: (quadrant, text, dueDate) => {
+        tasks = taskService.addTask(tasks, quadrant, text, dueDate);
         render();
     },
 
-    // **NOVO: Handlers para a lógica de Drag-and-Drop**
-    /** Guarda o ID da tarefa quando o arraste começa. */
     onDragStart: (taskId) => {
         draggedTaskId = taskId;
     },
 
-    /** Lida com o evento de soltar a tarefa. */
     onDrop: (newQuadrantId) => {
         if (draggedTaskId) {
-            tasks = taskService.updateTask(tasks, draggedTaskId, { quadrant: newQuadrantId });
-            render();
+            // Verifica se a tarefa foi solta em um quadrante diferente para evitar renderização desnecessária
+            const task = tasks.find(t => t.id === draggedTaskId);
+            if (task && task.quadrant !== newQuadrantId) {
+                tasks = taskService.updateTask(tasks, draggedTaskId, { quadrant: newQuadrantId });
+                render();
+            }
         }
-        // Limpa o estado após o drop
         draggedTaskId = null;
     }
 };
@@ -65,7 +69,6 @@ function bindStaticEvents() {
 function init() {
     tasks = taskService.getTasks();
     bindStaticEvents();
-    // **NOVO: Vincula os eventos de drop aos quadrantes**
     uiManager.bindDragAndDropEvents(eventHandlers);
     render();
 }
