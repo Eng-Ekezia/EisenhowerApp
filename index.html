@@ -49,8 +49,8 @@
     <main class="main">
         <div class="container">
             <div class="matrix" id="matrix">
-                <section class="quadrant" data-quadrant="q1" style="border-color: #22c55e;">
-                    <header class="quadrant__header" style="background-color: #22c55e;">
+                <section class="quadrant" data-quadrant="q1" style="border-color: #ef4444;">
+                    <header class="quadrant__header" style="background-color: #ef4444;">
                         <h2 class="quadrant__title">Fazer Primeiro</h2>
                         <p class="quadrant__subtitle">Urgente e Importante</p>
                         <span class="quadrant__action">FAZER AGORA</span>
@@ -82,8 +82,9 @@
                         <button class="add-task-btn" data-quadrant="q3"><span>+</span> <span>Adicionar Tarefa</span></button>
                     </div>
                 </section>
-                <section class="quadrant" data-quadrant="q4" style="border-color: #ef4444;">
-                    <header class="quadrant__header" style="background-color: #ef4444;">
+
+                <section class="quadrant" data-quadrant="q4" style="border-color: #22c55e;">
+                    <header class="quadrant__header" style="background-color: #22c55e;">
                         <h2 class="quadrant__title">Eliminar</h2>
                         <p class="quadrant__subtitle">Nem Urgente nem Importante</p>
                         <span class="quadrant__action">ELIMINAR</span>
@@ -93,10 +94,10 @@
                         <button class="add-task-btn" data-quadrant="q4"><span>+</span> <span>Adicionar Tarefa</span></button>
                     </div>
                 </section>
-            </div>
+                </div>
         </div>
     </main>
-    <div class="modal hidden" id="help-modal"><div class="modal__overlay"></div><div class="modal__content"><div class="modal__header"><h3>Como usar a Matriz de Eisenhower</h3><button class="modal__close" id="close-help">&times;</button></div><div class="modal__body"><div class="help-section"><h4 style="color: #22c55e;">🟢 Fazer Primeiro (Urgente e Importante)</h4><p>Tarefas críticas que exigem ação imediata. Ex: prazos críticos, emergências.</p></div><div class="help-section"><h4 style="color: #3b82f6;">🔵 Agendar (Importante mas não Urgente)</h4><p>Tarefas importantes para crescimento. Ex: planejamento, desenvolvimento pessoal.</p></div><div class="help-section"><h4 style="color: #f59e0b;">🟡 Delegar (Urgente mas não Importante)</h4><p>Tarefas urgentes que podem ser feitas por outros. Ex: interrupções, reuniões rotineiras.</p></div><div class="help-section"><h4 style="color: #ef4444;">🔴 Eliminar (Nem Urgente nem Importante)</h4><p>Atividades que consomem tempo sem agregar valor. Ex: redes sociais, distrações.</p></div></div></div></div>
+    <div class="modal hidden" id="help-modal"><div class="modal__overlay"></div><div class="modal__content"><div class="modal__header"><h3>Como usar a Matriz de Eisenhower</h3><button class="modal__close" id="close-help">&times;</button></div><div class="modal__body"><div class="help-section"><h4 style="color: #ef4444;">🔴 Fazer Primeiro (Urgente e Importante)</h4><p>Tarefas críticas que exigem ação imediata. Ex: prazos críticos, emergências.</p></div><div class="help-section"><h4 style="color: #3b82f6;">🔵 Agendar (Importante mas não Urgente)</h4><p>Tarefas importantes para crescimento. Ex: planejamento, desenvolvimento pessoal.</p></div><div class="help-section"><h4 style="color: #f59e0b;">🟡 Delegar (Urgente mas não Importante)</h4><p>Tarefas urgentes que podem ser feitas por outros. Ex: interrupções, reuniões rotineiras.</p></div><div class="help-section"><h4 style="color: #22c55e;">🟢 Eliminar (Nem Urgente nem Importante)</h4><p>Atividades que consomem tempo sem agregar valor. Ex: redes sociais, distrações.</p></div></div></div></div>
     <div class="modal hidden" id="stats-modal"><div class="modal__overlay"></div><div class="modal__content"><div class="modal__header"><h3>Estatísticas das Tarefas</h3><button class="modal__close" id="close-stats">&times;</button></div><div class="modal__body" id="stats-content"></div></div></div>
     <template id="task-template">
         <div class="task" draggable="true">
