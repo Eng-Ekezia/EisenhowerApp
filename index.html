@@ -5,42 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matriz de Eisenhower - Gestão de Tarefas</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Estilos existentes */
-        .task { position: relative; padding-top: 16px; }
-        .task__delete { position: absolute; top: -8px; right: -8px; background: var(--color-surface); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border); cursor: pointer; padding: 0; transition: transform 0.2s, box-shadow 0.2s; }
-        .task__delete:hover { transform: scale(1.1); box-shadow: var(--shadow-md); }
-        .task__delete svg { width: 18px; height: 18px; color: var(--color-error); }
-        .task__details { display: flex; align-items: center; justify-content: flex-start; margin-top: 8px; flex-wrap: wrap;}
-        .task__due-date { font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; }
-        .task__due-date:hover { background-color: var(--color-secondary); }
-        .task__due-date svg { width: 16px; height: 16px; }
-        .task__date-input { border: 1px solid var(--color-border); border-radius: 4px; font-family: inherit; }
-        .task-input__extra-fields { margin-top: 8px; display: flex; flex-direction: column; gap: 4px;}
-        .task-input__actions { margin-top: 12px; }
-        .hidden { display: none; }
-
-        /* NOVOS ESTILOS PARA SUBTAREFAS */
-        .subtask-section { margin-top: 12px; border-top: 1px solid var(--color-border); padding-top: 8px; }
-        .subtask-list { display: flex; flex-direction: column; gap: 4px; max-height: 150px; overflow-y: auto; padding-right: 5px; }
-        .subtask-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 4px; border-radius: 4px; position: relative; }
-        .subtask-item:hover { background-color: var(--color-secondary); }
-        .subtask-item .subtask-text { flex-grow: 1; }
-        .subtask-item.completed .subtask-text { text-decoration: line-through; color: var(--color-text-secondary); }
-        .add-subtask-form { display: flex; margin-top: 8px; gap: 4px; }
-        .add-subtask-input { flex-grow: 1; border: 1px solid var(--color-border); font-size: 12px; padding: 4px 8px; border-radius: 4px; background-color: var(--color-surface); }
-        .add-subtask-btn { background: var(--color-primary); color: var(--color-btn-primary-text); border: none; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
-        .subtask-delete-btn { background: none; border: none; cursor: pointer; padding: 0; margin-left: auto; display: none; line-height: 1; }
-        .subtask-item:hover .subtask-delete-btn { display: inline-block; }
-        .subtask-delete-btn svg { width: 16px; height: 16px; color: var(--color-text-secondary); }
-        .subtask-delete-btn:hover svg { color: var(--color-error); }
-    </style>
 </head>
 <body>
     <header class="header">
         <div class="container">
-            <h1 class="header__title">Matriz de Eisenhower</h1>
+            <div class="header__title-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                </svg>
+                <h1 class="header__title">Matriz de Eisenhower</h1>
+            </div>
+
             <div class="header__actions">
+                <button class="btn btn--sm btn--secondary" id="view-toggle-btn" title="Alterar modo de visualização">
+                    <svg id="icon-grid-view" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                        <rect x="3.75" y="3.75" width="6.75" height="6.75" rx="2.25" fill="#ef4444" opacity="0.8"/>
+                        <rect x="13.5" y="3.75" width="6.75" height="6.75" rx="2.25" fill="#3b82f6" opacity="0.8"/>
+                        <rect x="3.75" y="13.5" width="6.75" height="6.75" rx="2.25" fill="#f59e0b" opacity="0.8"/>
+                        <rect x="13.5" y="13.5" width="6.75" height="6.75" rx="2.25" fill="#22c55e" opacity="0.8"/>
+                        <path stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                    </svg>
+                    <svg id="icon-column-view" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" class="hidden">
+                        <path fill="#ef4444" d="M3 5.625C3 5.004 3.504 4.5 4.125 4.5H6.5V19.5H4.125C3.504 19.5 3 18.996 3 18.375V5.625Z" opacity="0.8"/>
+                        <path fill="#3b82f6" d="M7.5 4.5H11.5V19.5H7.5V4.5Z" opacity="0.8"/>
+                        <path fill="#f59e0b" d="M12.5 4.5H16.5V19.5H12.5V4.5Z" opacity="0.8"/>
+                        <path fill="#22c55e" d="M17.5 4.5h2.375c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125H17.5V4.5Z" opacity="0.8"/>
+                        <path stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M3 5.625v12.75c0 .621.504 1.125 1.125 1.125h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625ZM7 4.5v15m5-15v15m5-15v15" />
+                    </svg>
+                </button>
                 <button class="btn btn--sm btn--secondary" id="help-btn"><span>?</span></button>
                 <button class="btn btn--sm btn--secondary" id="stats-btn"><span>📊</span></button>
             </div>
@@ -48,79 +40,85 @@
     </header>
     <main class="main">
         <div class="container">
-            <div class="matrix" id="matrix">
-                <section class="quadrant" data-quadrant="q1" style="border-color: #ef4444;">
+            <div class="matrix" id="matrix" data-view-mode="grid">
+                <section class="quadrant" data-quadrant="q1">
                     <header class="quadrant__header" style="background-color: #ef4444;">
                         <h2 class="quadrant__title">Fazer Primeiro</h2>
                         <p class="quadrant__subtitle">Urgente e Importante</p>
-                        <span class="quadrant__action">FAZER AGORA</span>
                     </header>
                     <div class="quadrant__content">
                         <div class="task-list" id="tasks-q1"></div>
                         <button class="add-task-btn" data-quadrant="q1"><span>+</span> <span>Adicionar Tarefa</span></button>
                     </div>
                 </section>
-                <section class="quadrant" data-quadrant="q2" style="border-color: #3b82f6;">
+                <section class="quadrant" data-quadrant="q2">
                     <header class="quadrant__header" style="background-color: #3b82f6;">
                         <h2 class="quadrant__title">Agendar</h2>
                         <p class="quadrant__subtitle">Importante mas não Urgente</p>
-                        <span class="quadrant__action">PROGRAMAR</span>
                     </header>
                     <div class="quadrant__content">
                         <div class="task-list" id="tasks-q2"></div>
                         <button class="add-task-btn" data-quadrant="q2"><span>+</span> <span>Adicionar Tarefa</span></button>
                     </div>
                 </section>
-                <section class="quadrant" data-quadrant="q3" style="border-color: #f59e0b;">
+                <section class="quadrant" data-quadrant="q3">
                     <header class="quadrant__header" style="background-color: #f59e0b;">
                         <h2 class="quadrant__title">Delegar</h2>
                         <p class="quadrant__subtitle">Urgente mas não Importante</p>
-                        <span class="quadrant__action">DELEGAR</span>
                     </header>
                     <div class="quadrant__content">
                         <div class="task-list" id="tasks-q3"></div>
                         <button class="add-task-btn" data-quadrant="q3"><span>+</span> <span>Adicionar Tarefa</span></button>
                     </div>
                 </section>
-
-                <section class="quadrant" data-quadrant="q4" style="border-color: #22c55e;">
+                <section class="quadrant" data-quadrant="q4">
                     <header class="quadrant__header" style="background-color: #22c55e;">
                         <h2 class="quadrant__title">Eliminar</h2>
                         <p class="quadrant__subtitle">Nem Urgente nem Importante</p>
-                        <span class="quadrant__action">ELIMINAR</span>
                     </header>
                     <div class="quadrant__content">
                         <div class="task-list" id="tasks-q4"></div>
                         <button class="add-task-btn" data-quadrant="q4"><span>+</span> <span>Adicionar Tarefa</span></button>
                     </div>
                 </section>
-                </div>
-        </div>
+            </div>
+            </div>
     </main>
-    <div class="modal hidden" id="help-modal"><div class="modal__overlay"></div><div class="modal__content"><div class="modal__header"><h3>Como usar a Matriz de Eisenhower</h3><button class="modal__close" id="close-help">&times;</button></div><div class="modal__body"><div class="help-section"><h4 style="color: #ef4444;">🔴 Fazer Primeiro (Urgente e Importante)</h4><p>Tarefas críticas que exigem ação imediata. Ex: prazos críticos, emergências.</p></div><div class="help-section"><h4 style="color: #3b82f6;">🔵 Agendar (Importante mas não Urgente)</h4><p>Tarefas importantes para crescimento. Ex: planejamento, desenvolvimento pessoal.</p></div><div class="help-section"><h4 style="color: #f59e0b;">🟡 Delegar (Urgente mas não Importante)</h4><p>Tarefas urgentes que podem ser feitas por outros. Ex: interrupções, reuniões rotineiras.</p></div><div class="help-section"><h4 style="color: #22c55e;">🟢 Eliminar (Nem Urgente nem Importante)</h4><p>Atividades que consomem tempo sem agregar valor. Ex: redes sociais, distrações.</p></div></div></div></div>
-    <div class="modal hidden" id="stats-modal"><div class="modal__overlay"></div><div class="modal__content"><div class="modal__header"><h3>Estatísticas das Tarefas</h3><button class="modal__close" id="close-stats">&times;</button></div><div class="modal__body" id="stats-content"></div></div></div>
+    <div class="modal hidden" id="help-modal"> </div>
+    <div class="modal hidden" id="stats-modal"> </div>
+
     <template id="task-template">
         <div class="task" draggable="true">
-             <button class="task__delete" title="Excluir tarefa">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-            </button>
-            <div class="task__content">
-                <input type="checkbox" class="task__checkbox">
-                <span class="task__text" contenteditable="true"></span>
+            <div class="task__main">
+                <div class="task__content">
+                    <input type="checkbox" class="task__checkbox">
+                    <span class="task__text" contenteditable="true"></span>
+                </div>
             </div>
-            <div class="task__details">
-                <div class="task__due-date" title="Clique para alterar a data"></div>
-                <input type="date" class="task__date-input hidden" title="Pressione Enter ou clique fora para salvar">
+            <div class="task__aside">
+                <div class="task__due-date" title="Definir/alterar data de vencimento">
+                    </div>
+                <input type="date" class="task__date-input hidden">
             </div>
             <div class="subtask-section">
                 <div class="subtask-list"></div>
-                <form class="add-subtask-form">
+                <button class="add-subtask-placeholder-btn" title="Adicionar subtarefa">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <span>Adicionar subtarefa</span>
+                </button>
+                <form class="add-subtask-form hidden">
                     <input type="text" class="add-subtask-input" placeholder="Nova subtarefa..." maxlength="100">
-                    <button type="submit" class="add-subtask-btn" title="Adicionar subtarefa">+</button>
+                    <button type="submit" class="add-subtask-btn" title="Salvar subtarefa">+</button>
                 </form>
             </div>
+            <button class="task__delete" title="Excluir tarefa">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+            </button>
         </div>
     </template>
+    
     <template id="task-input-template">
         <div class="task-input">
             <input type="text" class="task-input__field" placeholder="Digite sua tarefa..." maxlength="200">
@@ -134,6 +132,7 @@
             </div>
         </div>
     </template>
+
     <script src="js/app.js" type="module"></script>
 </body>
 </html>

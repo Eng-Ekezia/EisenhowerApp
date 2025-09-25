@@ -1276,3 +1276,179 @@ select.form-control {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* AJUSTES GLOBAIS DE LAYOUT */
+.container {
+    max-width: 1600px; 
+}
+.header {
+    padding: var(--space-8) 0;
+    box-shadow: none;
+    border-bottom: 1px solid var(--color-border);
+}
+.header__title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+    color: var(--color-primary);
+}
+.header__title-wrapper svg {
+    width: 28px;
+    height: 28px;
+    opacity: 0.8;
+}
+#view-toggle-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#view-toggle-btn svg {
+    width: 20px;
+    height: 20px;
+}
+.matrix[data-view-mode="grid"] {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-24);
+}
+.matrix[data-view-mode="columns"] {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-16);
+}
+@media (max-width: 1023px) {
+    .matrix[data-view-mode="grid"],
+    .matrix[data-view-mode="columns"] {
+        grid-template-columns: 1fr;
+        gap: var(--space-16);
+    }
+}
+@media (max-width: 1200px) and (min-width: 1024px) {
+    .matrix[data-view-mode="columns"] {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* --- INÍCIO DOS ESTILOS DO NOVO CARD DE TAREFA --- */
+.task {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-8);
+    position: relative;
+    padding: var(--space-12);
+}
+
+.task.due-today {
+    border-left: 3px solid var(--color-error);
+}
+
+.task__main {
+    flex-grow: 1;
+    flex-basis: 70%;
+    display: flex;
+    flex-direction: column;
+}
+
+.task__aside {
+    flex-shrink: 0;
+}
+
+.task__delete {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.task:hover .task__delete {
+    opacity: 0.7;
+}
+.task__delete:hover {
+    opacity: 1;
+}
+
+.task__due-date {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 4px;
+}
+.task__due-date:hover {
+    background-color: var(--color-secondary);
+}
+.task__due-date svg {
+    width: 20px;
+    height: 20px;
+}
+
+.subtask-section {
+    width: 100%;
+    flex-basis: 100%;
+    margin-top: var(--space-8);
+    padding-left: 28px; /* Indentação das subtarefas */
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-8);
+}
+
+/* Lógica de exibição da seção de subtarefas */
+.task.has-subtasks .add-subtask-placeholder-btn {
+    display: none;
+}
+.task:not(.has-subtasks) .subtask-list {
+    display: none;
+}
+.task:not(.has-subtasks) .add-subtask-form {
+    display: none;
+}
+
+.add-subtask-placeholder-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    padding: 4px;
+    width: 100%;
+    border-radius: 4px;
+}
+.add-subtask-placeholder-btn:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+}
+.add-subtask-placeholder-btn svg {
+    width: 20px;
+    height: 20px;
+}
+/* --- FIM DOS ESTILOS DO NOVO CARD DE TAREFA --- */
+
+/* Estilos antigos movidos do index.html */
+.hidden { display: none !important; } /* Adicionado !important para garantir a sobreposição */
+.task-input__extra-fields { margin-top: 8px; display: flex; flex-direction: column; gap: 4px;}
+.task-input__actions { margin-top: 12px; }
+.subtask-list { display: flex; flex-direction: column; gap: 4px; max-height: 150px; overflow-y: auto; padding-right: 5px; }
+.subtask-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 4px; border-radius: 4px; position: relative; }
+.subtask-item:hover { background-color: var(--color-secondary); }
+.subtask-item .subtask-text { flex-grow: 1; }
+.subtask-item.completed .subtask-text { text-decoration: line-through; color: var(--color-text-secondary); }
+.add-subtask-form { display: flex; margin-top: 8px; gap: 4px; }
+.add-subtask-input { flex-grow: 1; border: 1px solid var(--color-border); font-size: 12px; padding: 4px 8px; border-radius: 4px; background-color: var(--color-surface); }
+.add-subtask-btn { background: var(--color-primary); color: var(--color-btn-primary-text); border: none; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
+.subtask-delete-btn { background: none; border: none; cursor: pointer; padding: 0; margin-left: auto; display: none; line-height: 1; }
+.subtask-item:hover .subtask-delete-btn { display: inline-block; }
+.subtask-delete-btn svg { width: 16px; height: 16px; color: var(--color-text-secondary); }
+.subtask-delete-btn:hover svg { color: var(--color-error); }
+/* O FECHA-CHAVES EXTRA QUE ESTAVA AQUI FOI REMOVIDO */
