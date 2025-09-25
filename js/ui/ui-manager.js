@@ -1,21 +1,15 @@
 // js/ui/ui-manager.js
 
-// Centralizamos os seletores do DOM para fácil manutenção.
 const selectors = {
     getTaskList: (quadrant) => document.getElementById(`tasks-${quadrant}`),
-    getQuadrant: (quadrant) => document.querySelector(`[data-quadrant="${quadrant}"]`),
+    getQuadrant: (quadrantId) => document.querySelector(`[data-quadrant="${quadrantId}"]`),
+    getAllQuadrants: () => document.querySelectorAll('[data-quadrant]'),
     taskTemplate: document.getElementById('task-template'),
     taskInputTemplate: document.getElementById('task-input-template'),
 };
 
-let currentTaskInput = null; // Controla o campo de input aberto
+let currentTaskInput = null;
 
-/**
- * Cria o elemento HTML para uma única tarefa.
- * @param {object} task - O objeto da tarefa.
- * @param {object} eventHandlers - Objeto com as funções de callback para os eventos.
- * @returns {Node} O elemento da tarefa pronto para ser inserido no DOM.
- */
 function createTaskElement(task, eventHandlers) {
     const taskEl = selectors.taskTemplate.content.cloneNode(true);
     
@@ -24,7 +18,10 @@ function createTaskElement(task, eventHandlers) {
     const textSpan = taskEl.querySelector('.task__text');
     const deleteBtn = taskEl.querySelector('.task__delete');
 
+    // **NOVO: Habilita o arraste**
+    taskDiv.setAttribute('draggable', 'true');
     taskDiv.setAttribute('data-task-id', task.id);
+
     if (task.completed) {
         taskDiv.classList.add('completed');
         checkbox.checked = true;
@@ -32,16 +29,28 @@ function createTaskElement(task, eventHandlers) {
 
     textSpan.textContent = task.text;
     
-    // Vincula os eventos às funções de callback fornecidas pelo orquestrador.
+    // Vincula os eventos às funções de callback
     checkbox.addEventListener('change', () => eventHandlers.onToggleComplete(task.id));
     deleteBtn.addEventListener('click', () => eventHandlers.onDelete(task.id));
     
+    // **NOVO: Adiciona o listener para o início do arraste**
+    taskDiv.addEventListener('dragstart', (e) => {
+        taskDiv.classList.add('dragging');
+        // Notifica o orquestrador que uma tarefa começou a ser arrastada
+        eventHandlers.onDragStart(task.id);
+    });
+
+    // **NOVO: Limpa a classe visual ao final do arraste**
+    taskDiv.addEventListener('dragend', () => {
+        taskDiv.classList.remove('dragging');
+    });
+
     textSpan.addEventListener('blur', () => {
         const newText = textSpan.textContent.trim();
         if (newText && newText !== task.text) {
             eventHandlers.onUpdate(task.id, { text: newText });
         } else {
-            textSpan.textContent = task.text; // Reverte se o texto for vazio
+            textSpan.textContent = task.text;
         }
     });
 
@@ -55,9 +64,6 @@ function createTaskElement(task, eventHandlers) {
     return taskEl;
 }
 
-/**
- * Remove o campo de input de nova tarefa, se existir.
- */
 function removeCurrentTaskInput() {
     if (currentTaskInput) {
         currentTaskInput.remove();
@@ -65,23 +71,13 @@ function removeCurrentTaskInput() {
     }
 }
 
-// "API" pública do nosso gerenciador de UI.
 export const uiManager = {
-    /**
-     * Renderiza todas as tarefas na tela.
-     * @param {Array} tasks - A lista completa de tarefas.
-     * @param {object} eventHandlers - As funções de callback a serem vinculadas às tarefas.
-     */
     renderTasks: (tasks, eventHandlers) => {
-        // Limpa todas as listas de tarefas existentes
         for (let i = 1; i <= 4; i++) {
             const taskList = selectors.getTaskList(`q${i}`);
-            if (taskList) {
-                taskList.innerHTML = '';
-            }
+            if (taskList) taskList.innerHTML = '';
         }
         
-        // Renderiza cada tarefa no seu respectivo quadrante
         tasks.forEach(task => {
             const taskList = selectors.getTaskList(task.quadrant);
             if (taskList) {
@@ -91,13 +87,8 @@ export const uiManager = {
         });
     },
 
-    /**
-     * Mostra o campo para adicionar uma nova tarefa em um quadrante.
-     * @param {string} quadrant - O quadrante onde o input deve aparecer.
-     * @param {object} eventHandlers - Objeto com as funções de callback.
-     */
     showTaskInput: (quadrant, eventHandlers) => {
-        removeCurrentTaskInput(); // Garante que apenas um input esteja aberto
+        removeCurrentTaskInput(); 
 
         const container = selectors.getTaskList(quadrant);
         const inputElFragment = selectors.taskInputTemplate.content.cloneNode(true);
@@ -112,9 +103,7 @@ export const uiManager = {
             removeCurrentTaskInput();
         });
 
-        cancelBtn.addEventListener('click', () => {
-            removeCurrentTaskInput();
-        });
+        cancelBtn.addEventListener('click', () => removeCurrentTaskInput());
 
         inputField.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') saveBtn.click();
@@ -126,5 +115,25 @@ export const uiManager = {
         inputField.focus();
     },
 
-    // Adicionaremos mais funções de UI aqui (modais, drag-and-drop) em fases futuras.
+    // **NOVO: Função para vincular os eventos de drop aos quadrantes**
+    bindDragAndDropEvents: (eventHandlers) => {
+        selectors.getAllQuadrants().forEach(quadrant => {
+            quadrant.addEventListener('dragover', (e) => {
+                e.preventDefault(); // Necessário para permitir o drop
+                quadrant.classList.add('drag-over');
+            });
+
+            quadrant.addEventListener('dragleave', () => {
+                quadrant.classList.remove('drag-over');
+            });
+
+            quadrant.addEventListener('drop', (e) => {
+                e.preventDefault();
+                quadrant.classList.remove('drag-over');
+                const newQuadrantId = quadrant.dataset.quadrant;
+                // Notifica o orquestrador que uma tarefa foi solta em um novo quadrante
+                eventHandlers.onDrop(newQuadrantId);
+            });
+        });
+    }
 };
