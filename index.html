@@ -5,145 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matriz de Eisenhower - Gestão de Tarefas</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .task__details { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+        .task__due-date { font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; }
+        .task__due-date:hover { background-color: var(--color-secondary); }
+        .task__date-input { border: 1px solid var(--color-border); border-radius: 4px; font-family: inherit; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <h1 class="header__title">Matriz de Eisenhower</h1>
-            <div class="header__actions">
-                <button class="btn btn--sm btn--secondary" id="help-btn">
-                    <span>?</span>
-                </button>
-                <button class="btn btn--sm btn--secondary" id="stats-btn">
-                    <span>📊</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <main class="main">
-        <div class="container">
-            <div class="matrix" id="matrix">
-                <section class="quadrant" data-quadrant="q1" style="border-color: #22c55e;">
-                    <header class="quadrant__header" style="background-color: #22c55e;">
-                        <h2 class="quadrant__title">Fazer Primeiro</h2>
-                        <p class="quadrant__subtitle">Urgente e Importante</p>
-                        <span class="quadrant__action">FAZER AGORA</span>
-                    </header>
-                    <div class="quadrant__content">
-                        <div class="task-list" id="tasks-q1"></div>
-                        <button class="add-task-btn" data-quadrant="q1">
-                            <span>+</span>
-                            <span>Adicionar Tarefa</span>
-                        </button>
-                    </div>
-                </section>
-
-                <section class="quadrant" data-quadrant="q2" style="border-color: #3b82f6;">
-                    <header class="quadrant__header" style="background-color: #3b82f6;">
-                        <h2 class="quadrant__title">Agendar</h2>
-                        <p class="quadrant__subtitle">Importante mas não Urgente</p>
-                        <span class="quadrant__action">PROGRAMAR</span>
-                    </header>
-                    <div class="quadrant__content">
-                        <div class="task-list" id="tasks-q2"></div>
-                        <button class="add-task-btn" data-quadrant="q2">
-                            <span>+</span>
-                            <span>Adicionar Tarefa</span>
-                        </button>
-                    </div>
-                </section>
-
-                <section class="quadrant" data-quadrant="q3" style="border-color: #f59e0b;">
-                    <header class="quadrant__header" style="background-color: #f59e0b;">
-                        <h2 class="quadrant__title">Delegar</h2>
-                        <p class="quadrant__subtitle">Urgente mas não Importante</p>
-                        <span class="quadrant__action">DELEGAR</span>
-                    </header>
-                    <div class="quadrant__content">
-                        <div class="task-list" id="tasks-q3"></div>
-                        <button class="add-task-btn" data-quadrant="q3">
-                            <span>+</span>
-                            <span>Adicionar Tarefa</span>
-                        </button>
-                    </div>
-                </section>
-
-                <section class="quadrant" data-quadrant="q4" style="border-color: #ef4444;">
-                    <header class="quadrant__header" style="background-color: #ef4444;">
-                        <h2 class="quadrant__title">Eliminar</h2>
-                        <p class="quadrant__subtitle">Nem Urgente nem Importante</p>
-                        <span class="quadrant__action">ELIMINAR</span>
-                    </header>
-                    <div class="quadrant__content">
-                        <div class="task-list" id="tasks-q4"></div>
-                        <button class="add-task-btn" data-quadrant="q4">
-                            <span>+</span>
-                            <span>Adicionar Tarefa</span>
-                        </button>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </main>
-
-    <div class="modal hidden" id="help-modal">
-        <div class="modal__overlay"></div>
-        <div class="modal__content">
-            <div class="modal__header">
-                <h3>Como usar a Matriz de Eisenhower</h3>
-                <button class="modal__close" id="close-help">&times;</button>
-            </div>
-            <div class="modal__body">
-                <div class="help-section">
-                    <h4 style="color: #22c55e;">🟢 Fazer Primeiro (Urgente e Importante)</h4>
-                    <p>Tarefas críticas que exigem ação imediata. Ex: prazos críticos, emergências.</p>
-                </div>
-                <div class="help-section">
-                    <h4 style="color: #3b82f6;">🔵 Agendar (Importante mas não Urgente)</h4>
-                    <p>Tarefas importantes para crescimento. Ex: planejamento, desenvolvimento pessoal.</p>
-                </div>
-                <div class="help-section">
-                    <h4 style="color: #f59e0b;">🟡 Delegar (Urgente mas não Importante)</h4>
-                    <p>Tarefas urgentes que podem ser feitas por outros. Ex: interrupções, reuniões rotineiras.</p>
-                </div>
-                <div class="help-section">
-                    <h4 style="color: #ef4444;">🔴 Eliminar (Nem Urgente nem Importante)</h4>
-                    <p>Atividades que consomem tempo sem agregar valor. Ex: redes sociais, distrações.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal hidden" id="stats-modal">
-        <div class="modal__overlay"></div>
-        <div class="modal__content">
-            <div class="modal__header">
-                <h3>Estatísticas das Tarefas</h3>
-                <button class="modal__close" id="close-stats">&times;</button>
-            </div>
-            <div class="modal__body" id="stats-content">
-                </div>
-        </div>
-    </div>
-
     <template id="task-template">
         <div class="task" draggable="true">
             <div class="task__content">
                 <input type="checkbox" class="task__checkbox">
                 <span class="task__text" contenteditable="true"></span>
             </div>
-            <button class="task__delete" title="Excluir tarefa">×</button>
-        </div>
-    </template>
-
-    <template id="task-input-template">
-        <div class="task-input">
-            <input type="text" class="task-input__field" placeholder="Digite sua tarefa..." maxlength="200">
-            <div class="task-input__actions">
-                <button class="btn btn--sm btn--primary task-input__save">Salvar</button>
-                <button class="btn btn--sm btn--secondary task-input__cancel">Cancelar</button>
+            <div class="task__details">
+                <div class="task__due-date" title="Clique para alterar a data">
+                    </div>
+                <input type="date" class="task__date-input hidden" title="Pressione Enter ou clique fora para salvar">
             </div>
+            <button class="task__delete" title="Excluir tarefa">×</button>
         </div>
     </template>
 
