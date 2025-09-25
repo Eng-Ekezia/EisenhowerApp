@@ -1,26 +1,20 @@
 // js/services/notification-service.js
 
-// Usamos um Set para armazenar os IDs das tarefas já notificadas no dia.
-// É mais eficiente que um array para verificar se um item existe.
 const notifiedTaskIds = new Set();
-let tasksProvider = () => []; // Função que nos dará acesso à lista de tarefas atualizada
+let tasksProvider = () => [];
 
-// Função principal que inicia o serviço
 function start(getTasksFunction) {
     console.log("Serviço de notificação iniciado.");
-    tasksProvider = getTasksFunction; // Armazena a função que busca as tarefas
+    tasksProvider = getTasksFunction;
     
     requestPermission().then(permission => {
         if (permission === "granted") {
-            // Verifica as tarefas a cada 60 segundos
             setInterval(checkForDueTasks, 60000); 
-            // Roda uma primeira vez para feedback imediato
             checkForDueTasks();
         }
     });
 }
 
-// Pede permissão ao usuário (retorna uma Promise com o status)
 function requestPermission() {
     return new Promise((resolve) => {
         if (!("Notification" in window)) {
@@ -39,9 +33,8 @@ function requestPermission() {
     });
 }
 
-// A lógica principal que verifica as tarefas
 function checkForDueTasks() {
-    const tasks = tasksProvider(); // Obtém a lista de tarefas mais recente
+    const tasks = tasksProvider();
     const today = new Date();
 
     console.log(`Verificando tarefas às ${today.toLocaleTimeString()}`);
@@ -53,7 +46,6 @@ function checkForDueTasks() {
     );
 
     for (const task of dueTodayTasks) {
-        // Só notifica se ainda não o fez hoje
         if (!notifiedTaskIds.has(task.id)) {
             showNotification(task);
             notifiedTaskIds.add(task.id);
@@ -61,10 +53,8 @@ function checkForDueTasks() {
     }
 }
 
-// Função auxiliar para comparar datas ignorando a hora e o fuso horário
 function isToday(someDate) {
     const today = new Date();
-    // Adiciona o fuso horário para corrigir a conversão de 'YYYY-MM-DD'
     const adjustedSomeDate = new Date(someDate.valueOf() + someDate.getTimezoneOffset() * 60 * 1000);
     
     return adjustedSomeDate.getDate() === today.getDate() &&
@@ -72,19 +62,46 @@ function isToday(someDate) {
            adjustedSomeDate.getFullYear() === today.getFullYear();
 }
 
-// Mostra a notificação de fato
+// --- INÍCIO DA ATUALIZAÇÃO ---
+// Mostra a notificação e adiciona o evento de clique
 function showNotification(task) {
     const title = `Tarefa Urgente: ${task.text}`;
     const options = {
         body: `Sua tarefa no quadrante "${task.quadrant.toUpperCase()}" vence hoje!`,
-        icon: './assets/icon.png' // Opcional: adicione um ícone na pasta do projeto
+        // Opcional: adicione um ícone na pasta do projeto
+        // icon: './assets/icon.png' 
     };
 
-    new Notification(title, options);
+    const notification = new Notification(title, options);
+
+    // Adiciona a mágica do clique aqui
+    notification.onclick = (event) => {
+        // Previne o comportamento padrão do navegador
+        event.preventDefault(); 
+        
+        // Procura por uma aba já aberta da nossa aplicação
+        window.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientsArr => {
+            const hasWindow = clientsArr.some(
+                windowClient => windowClient.url === window.location.href
+            );
+
+            // Se encontrar uma aba, foca nela
+            if (hasWindow) {
+                const appWindow = clientsArr[0];
+                appWindow.focus();
+            } else {
+                // Se não encontrar, abre uma nova
+                window.open(window.location.href, '_blank');
+            }
+        });
+        
+        // Fecha a notificação após o clique
+        notification.close();
+    };
 }
+// --- FIM DA ATUALIZAÇÃO ---
 
 
-// Exporta o serviço como um objeto.
 export const notificationService = {
     start,
 };
