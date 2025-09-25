@@ -10,6 +10,14 @@ const selectors = {
 
 let currentTaskInput = null;
 
+function formatDate(isoDate) {
+    if (!isoDate) return '';
+    const date = new Date(isoDate);
+    // Adiciona o T00:00:00 para evitar problemas de fuso horário que podem mudar o dia.
+    const userTimezoneDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
+    return userTimezoneDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
 function createTaskElement(task, eventHandlers) {
     const taskEl = selectors.taskTemplate.content.cloneNode(true);
     
@@ -17,6 +25,10 @@ function createTaskElement(task, eventHandlers) {
     const checkbox = taskEl.querySelector('.task__checkbox');
     const textSpan = taskEl.querySelector('.task__text');
     const deleteBtn = taskEl.querySelector('.task__delete');
+    // **NOVO: Seleciona os novos elementos de data**
+    const dueDateDiv = taskEl.querySelector('.task__due-date');
+    const dateInput = taskEl.querySelector('.task__date-input');
+
 
     // **NOVO: Habilita o arraste**
     taskDiv.setAttribute('draggable', 'true');
@@ -28,6 +40,46 @@ function createTaskElement(task, eventHandlers) {
     }
 
     textSpan.textContent = task.text;
+
+        // **INÍCIO DA NOVA LÓGICA DE DATA**
+    if (task.dueDate) {
+        // Mostra a data formatada se ela existir
+        dueDateDiv.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span>${formatDate(task.dueDate)}</span>
+        `;
+        dateInput.value = task.dueDate;
+    } else {
+        dueDateDiv.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span>Adicionar data</span>
+        `;
+    }
+
+    // Evento para mostrar o input de data ao clicar
+    dueDateDiv.addEventListener('click', () => {
+        dueDateDiv.classList.add('hidden');
+        dateInput.classList.remove('hidden');
+        dateInput.focus();
+    });
+
+    // Evento para salvar a nova data
+    const saveDate = () => {
+        // Compara para evitar atualizações desnecessárias
+        if (dateInput.value !== task.dueDate) {
+            eventHandlers.onUpdate(task.id, { dueDate: dateInput.value || null });
+        }
+        dateInput.classList.add('hidden');
+        dueDateDiv.classList.remove('hidden');
+    };
+    
+    dateInput.addEventListener('blur', saveDate);
+    dateInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            saveDate();
+        }
+    });
+    // **FIM DA NOVA LÓGICA DE DATA**
     
     // Vincula os eventos às funções de callback
     checkbox.addEventListener('change', () => eventHandlers.onToggleComplete(task.id));
