@@ -6,6 +6,7 @@
     <title>Matriz de Eisenhower - Gestão de Tarefas</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Estilos existentes da funcionalidade de data */
         .task { position: relative; padding-top: 16px; }
         .task__delete { position: absolute; top: -8px; right: -8px; background: var(--color-surface); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border); cursor: pointer; padding: 0; transition: transform 0.2s, box-shadow 0.2s; }
         .task__delete:hover { transform: scale(1.1); box-shadow: var(--shadow-md); }
@@ -18,6 +19,16 @@
         .task-input__extra-fields { margin-top: 8px; display: flex; flex-direction: column; gap: 4px;}
         .task-input__actions { margin-top: 12px; }
         .hidden { display: none; }
+
+        /* NOVOS ESTILOS PARA SUBTAREFAS */
+        .subtask-section { margin-top: 12px; border-top: 1px solid var(--color-border); padding-top: 8px; }
+        .subtask-list { display: flex; flex-direction: column; gap: 4px; max-height: 150px; overflow-y: auto; padding-right: 5px; }
+        .subtask-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 4px; border-radius: 4px; }
+        .subtask-item:hover { background-color: var(--color-secondary); }
+        .subtask-item.completed .subtask-text { text-decoration: line-through; color: var(--color-text-secondary); }
+        .add-subtask-form { display: flex; margin-top: 8px; gap: 4px; }
+        .add-subtask-input { flex-grow: 1; border: 1px solid var(--color-border); font-size: 12px; padding: 4px 8px; border-radius: 4px; background-color: var(--color-surface); }
+        .add-subtask-btn { background: var(--color-primary); color: var(--color-btn-primary-text); border: none; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -139,6 +150,13 @@
                 <div class="task__due-date" title="Clique para alterar a data">
                 </div>
                 <input type="date" class="task__date-input hidden" title="Pressione Enter ou clique fora para salvar">
+            </div>
+            <div class="subtask-section">
+                <div class="subtask-list"></div>
+                <form class="add-subtask-form">
+                    <input type="text" class="add-subtask-input" placeholder="Nova subtarefa..." maxlength="100">
+                    <button type="submit" class="add-subtask-btn" title="Adicionar subtarefa">+</button>
+                </form>
             </div>
         </div>
     </template>
