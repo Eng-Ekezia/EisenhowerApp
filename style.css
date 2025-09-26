@@ -1485,6 +1485,75 @@ select.form-control {
 }
 /* --- FIM DOS ESTILOS --- */
 
+/* --- INÍCIO DOS ESTILOS DE COR DOS ÍCONES DE VISUALIZAÇÃO --- */
+
+/* Define o estilo do contorno para ambos os ícones */
+#view-toggle-btn .outline {
+    stroke: #fff;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none; /* Garante que o contorno não tenha preenchimento */
+}
+
+/* Define a opacidade geral das formas coloridas */
+#view-toggle-btn .q1,
+#view-toggle-btn .q2,
+#view-toggle-btn .q3,
+#view-toggle-btn .q4 {
+    opacity: 0.8;
+}
+
+/* Cores dos quadrantes para AMBOS os ícones */
+#view-toggle-btn .q1 { fill: #ef4444; } /* Vermelho */
+#view-toggle-btn .q2 { fill: #3b82f6; } /* Azul */
+#view-toggle-btn .q3 { fill: #f59e0b; } /* Laranja */
+#view-toggle-btn .q4 { fill: #22c55e; } /* Verde */
+
+/* --- FIM DOS ESTILOS --- */
+
+/* --- INÍCIO DOS ESTILOS DE NOTIFICAÇÃO TOAST --- */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    padding: 16px;
+    border-radius: var(--radius-base);
+    box-shadow: var(--shadow-lg);
+    border-left: 4px solid var(--color-primary);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.5s var(--ease-standard);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast__title {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+}
+
+.toast__body {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+}
+/* --- FIM DOS ESTILOS --- */
+
 /* --- FIM DOS ESTILOS DO NOVO CARD DE TAREFA --- */
 
 /* Estilos antigos movidos do index.html */

@@ -1,38 +1,29 @@
 // js/services/notification-service.js
 
+// 1. Importa o uiManager para poder chamar a função de toast
+import { uiManager } from '../ui/ui-manager.js';
+
 const notifiedTaskIds = new Set();
 let tasksProvider = () => [];
 
+/**
+ * Inicia o serviço de verificação de tarefas.
+ * @param {function} getTasksFunction - Uma função que retorna a lista atual de tarefas.
+ */
 function start(getTasksFunction) {
-    console.log("Serviço de notificação iniciado.");
+    console.log("Serviço de notificação (Toast) iniciado.");
     tasksProvider = getTasksFunction;
     
-    requestPermission().then(permission => {
-        if (permission === "granted") {
-            setInterval(checkForDueTasks, 60000); 
-            checkForDueTasks();
-        }
-    });
+    // Roda o verificador a cada minuto, sem a necessidade de pedir permissão
+    setInterval(checkForDueTasks, 1200000); 
+    
+    // Verifica imediatamente ao carregar a página para o caso de já haver tarefas vencendo
+    checkForDueTasks(); 
 }
 
-function requestPermission() {
-    return new Promise((resolve) => {
-        if (!("Notification" in window)) {
-            console.log("Este navegador não suporta notificações.");
-            resolve("denied");
-            return;
-        }
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                console.log("Permissão para notificações concedida!");
-            } else {
-                console.log("Permissão para notificações negada.");
-            }
-            resolve(permission);
-        });
-    });
-}
-
+/**
+ * Verifica a lista de tarefas e dispara notificações para as que vencem hoje.
+ */
 function checkForDueTasks() {
     const tasks = tasksProvider();
     const today = new Date();
@@ -53,8 +44,14 @@ function checkForDueTasks() {
     }
 }
 
+/**
+ * Checa se uma determinada data corresponde ao dia de hoje.
+ * @param {Date} someDate - A data a ser verificada.
+ * @returns {boolean} - Verdadeiro se for hoje.
+ */
 function isToday(someDate) {
     const today = new Date();
+    // Ajusta a data da tarefa para a timezone do usuário para evitar erros de um dia a mais/menos
     const adjustedSomeDate = new Date(someDate.valueOf() + someDate.getTimezoneOffset() * 60 * 1000);
     
     return adjustedSomeDate.getDate() === today.getDate() &&
@@ -62,45 +59,17 @@ function isToday(someDate) {
            adjustedSomeDate.getFullYear() === today.getFullYear();
 }
 
-// --- INÍCIO DA ATUALIZAÇÃO ---
-// Mostra a notificação e adiciona o evento de clique
+/**
+ * Dispara a notificação "toast" na interface do usuário.
+ * @param {object} task - O objeto da tarefa.
+ */
 function showNotification(task) {
     const title = `Tarefa Urgente: ${task.text}`;
-    const options = {
-        body: `Sua tarefa no quadrante "${task.quadrant.toUpperCase()}" vence hoje!`,
-        // Opcional: adicione um ícone na pasta do projeto
-        // icon: './assets/icon.png' 
-    };
+    const body = `Sua tarefa no quadrante "${task.quadrant.toUpperCase()}" vence hoje!`;
 
-    const notification = new Notification(title, options);
-
-    // Adiciona a mágica do clique aqui
-    notification.onclick = (event) => {
-        // Previne o comportamento padrão do navegador
-        event.preventDefault(); 
-        
-        // Procura por uma aba já aberta da nossa aplicação
-        window.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientsArr => {
-            const hasWindow = clientsArr.some(
-                windowClient => windowClient.url === window.location.href
-            );
-
-            // Se encontrar uma aba, foca nela
-            if (hasWindow) {
-                const appWindow = clientsArr[0];
-                appWindow.focus();
-            } else {
-                // Se não encontrar, abre uma nova
-                window.open(window.location.href, '_blank');
-            }
-        });
-        
-        // Fecha a notificação após o clique
-        notification.close();
-    };
+    // 2. Chama a função showToast do uiManager em vez da API nativa
+    uiManager.showToast(title, body);
 }
-// --- FIM DA ATUALIZAÇÃO ---
-
 
 export const notificationService = {
     start,

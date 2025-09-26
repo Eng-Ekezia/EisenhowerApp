@@ -100,5 +100,32 @@ export const uiManager = {
     },
     
     // Expõe a função do componente para que o app.js possa usá-la
-    appendSubtask: appendSubtask
+    appendSubtask: appendSubtask,
+
+    // --- INÍCIO DA NOVA FUNÇÃO showToast ---
+    showToast: (title, body) => {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+            <span class="toast__title">${title}</span>
+            <span class="toast__body">${body}</span>
+        `;
+        container.appendChild(toast);
+
+        // Força o navegador a aplicar o estilo inicial antes de adicionar a classe 'show'
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+
+        // Remove o toast após 5 segundos
+        setTimeout(() => {
+            toast.classList.remove('show');
+            // Remove o elemento do DOM após a animação de saída
+            toast.addEventListener('transitionend', () => toast.remove());
+        }, 5000);
+    }
+    // --- FIM DA NOVA FUNÇÃO ---
 };
