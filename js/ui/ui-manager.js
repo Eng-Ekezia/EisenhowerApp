@@ -78,13 +78,29 @@ export const uiManager = {
         inputField.focus();
     },
 
-    bindDragAndDropEvents: (eventHandlers) => {
-        document.querySelectorAll('.task-list').forEach(taskList => {
-            taskList.addEventListener('dragover', (e) => { /* ... */ });
-            taskList.addEventListener('dragleave', () => { /* ... */ });
-            taskList.addEventListener('drop', (e) => { /* ... */ });
-        });
-    },
+    // --- CORREÇÃO APLICADA AQUI ---
+        bindDragAndDropEvents: (eventHandlers) => {
+            // Alvo alterado de '.task-list' para '.quadrant'
+            document.querySelectorAll('.quadrant').forEach(quadrant => {
+                quadrant.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    // Adiciona a classe diretamente ao quadrante
+                    quadrant.classList.add('drag-over');
+                });
+                quadrant.addEventListener('dragleave', () => {
+                    // Remove a classe diretamente do quadrante
+                    quadrant.classList.remove('drag-over');
+                });
+                quadrant.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    // Remove a classe e obtém o ID do quadrante
+                    quadrant.classList.remove('drag-over');
+                    const newQuadrantId = quadrant.dataset.quadrant;
+                    eventHandlers.onDrop(newQuadrantId);
+                });
+            });
+        },
+        // --- FIM DA CORREÇÃO ---
     
     appendSubtask: appendSubtask,
 
