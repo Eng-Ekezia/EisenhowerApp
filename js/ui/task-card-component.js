@@ -127,18 +127,33 @@ export function createTaskCard(task, eventHandlers) {
     });
     taskDiv.addEventListener('dragend', () => taskDiv.classList.remove('dragging'));
 
+    // --- INÍCIO DA IMPLEMENTAÇÃO CORRETA (CONCEITO 2) ---
+
+    // Quando o usuário CLICA no texto para editar, adicione a classe 'is-editing'
+    textSpan.addEventListener('focus', () => {
+        taskDiv.classList.add('is-editing');
+    });
+
+    // Quando o usuário CLICA FORA (ou pressiona Enter)...
     textSpan.addEventListener('blur', () => {
+        // 1. Remova a classe 'is-editing' para sair do modo de foco
+        taskDiv.classList.remove('is-editing');
+
+        // 2. Salve o novo texto, como já fazia antes
         const newText = textSpan.textContent.trim();
         if (newText !== task.text) {
             eventHandlers.onUpdate(task.id, { text: newText });
         }
     });
+
+    // A lógica para o 'Enter' permanece a mesma
     textSpan.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            e.preventDefault();
-            textSpan.blur();
+            e.preventDefault(); // Impede a quebra de linha
+            textSpan.blur();    // Dispara o evento 'blur' para salvar e sair do foco
         }
     });
+    // --- FIM DA IMPLEMENTAÇÃO CORRETA (CONCEITO 2) ---
 
     if (task.subtasks) {
         task.subtasks.forEach(subtask => {
