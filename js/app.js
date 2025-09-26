@@ -74,59 +74,78 @@ function render() {
 }
 
 function bindStaticEvents() {
-    // --- INÍCIO DA CORREÇÃO DOS BOTÕES DO HEADER ---
-    const helpBtn = document.getElementById('help-btn');
-    const statsBtn = document.getElementById('stats-btn');
-    const helpModal = document.getElementById('help-modal');
-    const statsModal = document.getElementById('stats-modal');
-    const closeHelpModal = document.getElementById('close-help-modal');
-    const closeStatsModal = document.getElementById('close-stats-modal');
+    // --- INÍCIO DA NOVA LÓGICA DO MENU LATERAL (SHEET) ---
 
-    // Função para abrir um modal
-    const openModal = (modal) => modal.classList.remove('hidden');
+    const sheet = document.getElementById('sheet-menu');
+    const openBtn = document.getElementById('menu-btn');
+    const closeTriggers = document.querySelectorAll('[data-action="close-sheet"]');
 
-    // Função para fechar um modal
-    const closeModal = (modal) => modal.classList.add('hidden');
+    const openSheet = () => {
+        sheet.classList.remove('is-closing');
+        sheet.classList.add('is-open');
+    };
 
-    // Eventos dos botões e modais
-    if (helpBtn && helpModal && closeHelpModal) {
-        helpBtn.addEventListener('click', () => openModal(helpModal));
-        closeHelpModal.addEventListener('click', () => closeModal(helpModal));
-        helpModal.querySelector('.modal__overlay').addEventListener('click', () => closeModal(helpModal));
+    const closeSheet = () => {
+        sheet.classList.add('is-closing');
+        // Remove a classe 'is-open' após a animação de saída terminar
+        sheet.addEventListener('animationend', () => {
+            sheet.classList.remove('is-open');
+            sheet.classList.remove('is-closing');
+        }, { once: true });
+    };
+
+    if (sheet && openBtn) {
+        openBtn.addEventListener('click', openSheet);
+        closeTriggers.forEach(trigger => trigger.addEventListener('click', closeSheet));
     }
 
-    if (statsBtn && statsModal && closeStatsModal) {
-        statsBtn.addEventListener('click', () => openModal(statsModal));
-        closeStatsModal.addEventListener('click', () => closeModal(statsModal));
-        statsModal.querySelector('.modal__overlay').addEventListener('click', () => closeModal(statsModal));
-    }
-    // --- FIM DA CORREÇÃO ---
+    // --- FIM DA LÓGICA DO SHEET ---
 
-    // Listener para o botão de troca de visualização
-    const viewToggleBtn = document.getElementById('view-toggle-btn');
+    // Lógica dos botões DENTRO do menu
+    const viewToggleBtn = document.getElementById('sheet-view-toggle-btn');
     if (viewToggleBtn) {
         const matrix = document.getElementById('matrix');
         const iconGrid = document.getElementById('icon-grid-view');
         const iconColumn = document.getElementById('icon-column-view');
 
         viewToggleBtn.addEventListener('click', () => {
-            // Pega o modo de visualização atual pelo atributo data-*
             const currentView = matrix.dataset.viewMode;
-
             if (currentView === 'grid') {
-                // Se está em grid, muda para colunas
                 matrix.dataset.viewMode = 'columns';
                 iconGrid.classList.add('hidden');
                 iconColumn.classList.remove('hidden');
             } else {
-                // Se está em colunas, volta para grid
                 matrix.dataset.viewMode = 'grid';
                 iconGrid.classList.remove('hidden');
                 iconColumn.classList.add('hidden');
             }
         });
     }
-    
+
+    const helpBtn = document.getElementById('sheet-help-btn');
+    const statsBtn = document.getElementById('sheet-stats-btn');
+    const helpModal = document.getElementById('help-modal');
+    const statsModal = document.getElementById('stats-modal');
+
+    if (helpBtn && helpModal) {
+        helpBtn.addEventListener('click', () => {
+            helpModal.classList.remove('hidden');
+            closeSheet(); // Fecha o menu ao abrir o modal
+        });
+        helpModal.querySelector('.modal__overlay').addEventListener('click', () => helpModal.classList.add('hidden'));
+        helpModal.querySelector('.modal__close').addEventListener('click', () => helpModal.classList.add('hidden'));
+    }
+
+    if (statsBtn && statsModal) {
+        statsBtn.addEventListener('click', () => {
+            statsModal.classList.remove('hidden');
+            closeSheet(); // Fecha o menu ao abrir o modal
+        });
+        statsModal.querySelector('.modal__overlay').addEventListener('click', () => statsModal.classList.add('hidden'));
+        statsModal.querySelector('.modal__close').addEventListener('click', () => statsModal.classList.add('hidden'));
+    }
+
+    // Listener para os botões "Adicionar Tarefa" (permanece o mesmo)
     document.querySelectorAll('.add-task-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const quadrant = btn.closest('.quadrant').dataset.quadrant;

@@ -1,7 +1,7 @@
 {
   "projectName": "Plano de Evolução da Matriz de Eisenhower",
-  "version": "1.2",
-  "lastUpdated": "2025-09-26T07:55:00Z",
+  "version": "1.5",
+  "lastUpdated": "2025-09-26T11:12:00Z",
   "projectGoals": [
     "Aumentar a manutenibilidade e escalabilidade do código-fonte.",
     "Melhorar a produtividade do usuário através de novas funcionalidades e refinamentos de UX.",
@@ -68,27 +68,28 @@
       "epics": [
         {
           "epicName": "Correções de UI/UX em Cards de Tarefa",
-          "status": "Concluído",
-          "tasks": [
-            { "task": "[CSS] Corrigir bug de visibilidade no formulário de adicionar subtarefa.", "status": "Concluído" },
-            { "task": "[CSS] Corrigir sobreposição de elementos no card, movendo o ícone de excluir para o canto superior direito com estilo de 'badge'.", "status": "Concluído" }
-          ]
+          "status": "Concluído"
         },
         {
           "epicName": "Aprimoramento Visual da Matriz",
-          "status": "Concluído",
-          "tasks": [
-            { "task": "[CSS] Refinar as bordas dos quadrantes para utilizar a cor do cabeçalho, removendo o contorno branco.", "status": "Concluído" },
-            { "task": "[CSS] Unificar o efeito 'hover' dos quadrantes para replicar o comportamento dos cards de tarefa (sombra e elevação).", "status": "Concluído" }
-          ]
+          "status": "Concluído"
         },
         {
             "epicName": "Implementação de Controles do Cabeçalho",
+            "status": "Concluído"
+        },
+        {
+            "epicName": "Refinamento Visual e de Foco (UI/UX)",
+            "status": "Concluído"
+        },
+        {
+            "epicName": "Interface Minimalista (Header e Menu)",
+            "description": "Refatorar o cabeçalho e as opções secundárias para uma experiência de usuário mais limpa, utilizando um menu lateral 'Sheet'.",
             "status": "Concluído",
             "tasks": [
-              { "task": "[JS/HTML] Ativar a funcionalidade dos botões 'Ajuda' e 'Estatísticas' com a exibição de modais.", "status": "Concluído" },
-              { "task": "[HTML/CSS/JS] Implementar a funcionalidade de troca de layout (Grid 2x2 vs. Colunas 4x1).", "status": "Concluído" },
-              { "task": "[SVG/CSS] Personalizar os ícones de troca de visualização para refletir as cores dos quadrantes, melhorando a intuitividade.", "status": "Concluído" }
+              { "task": "[UI/HTML] Substituir os múltiplos botões do header por um único 'botão-sanduíche'.", "status": "Concluído" },
+              { "task": "[UI/CSS/JS] Implementar um componente de menu lateral 'Sheet' inspirado na shadcn/ui para abrigar as opções.", "status": "Concluído" },
+              { "task": "[UI/CSS] Refinar os itens do menu 'Sheet' para um formato de texto (estilo dropdown), removendo ícones e maximizando o minimalismo.", "status": "Concluído" }
             ]
         }
       ]
