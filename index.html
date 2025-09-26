@@ -165,19 +165,22 @@
             <div class="sheet__header">
                 <h3 class="sheet__title">Opções</h3>
                 <p class="sheet__description">
-                    Ajustes de visualização e ajuda.
-                </p>
+                    Ajustes, ajuda e gerenciamento de dados. </p>
             </div>
             <div class="sheet__body">
                 <button class="sheet__button" id="sheet-view-toggle-btn">Alternar Visualização</button>
                 <button class="sheet__button" id="sheet-help-btn">Ajuda e Guia Rápido</button>
                 <button class="sheet__button" id="sheet-stats-btn">Estatísticas</button>
+                <button class="sheet__button" id="sheet-export-btn">Exportar Tarefas</button>
+                <button class="sheet__button" id="sheet-import-btn">Importar Tarefas</button>
             </div>
             <div class="sheet__footer">
                 <button class="btn btn--outline" data-action="close-sheet">Fechar</button>
             </div>
         </div>
     </div>
+
+    <input type="file" id="import-file-input" class="hidden" accept=".json">
 
     <script src="js/app.js" type="module"></script>
 </body>
