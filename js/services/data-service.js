@@ -37,5 +37,32 @@ export const dataService = {
 
         // 7. Libera a memória revogando a URL do objeto.
         URL.revokeObjectURL(url);
+    },
+
+    /**
+     * Importa tarefas de uma string JSON.
+     * @param {string} jsonContent - O conteúdo do arquivo JSON.
+     * @returns {Array<object>|null} - Retorna a lista de tarefas se o JSON for válido, caso contrário, retorna null.
+     */
+    importTasks: (jsonContent) => {
+        try {
+            // 1. Tenta analisar a string JSON.
+            const data = JSON.parse(jsonContent);
+
+            // 2. Valida a estrutura do arquivo.
+            // Verifica se 'data' é um objeto, se possui a chave 'tasks' e se 'tasks' é um array.
+            if (typeof data === 'object' && data !== null && Array.isArray(data.tasks)) {
+                // 3. Se tudo estiver correto, retorna apenas o array de tarefas.
+                return data.tasks;
+            }
+
+            // 4. Se a estrutura for inválida, loga um erro e retorna null.
+            console.error("Erro de importação: O arquivo JSON não tem o formato esperado.");
+            return null;
+        } catch (error) {
+            // 5. Se ocorrer um erro ao analisar o JSON (ex: arquivo mal formatado), loga e retorna null.
+            console.error("Erro de importação: Falha ao analisar o arquivo JSON.", error);
+            return null;
+        }
     }
 };
