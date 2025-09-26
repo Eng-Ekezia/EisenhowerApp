@@ -74,6 +74,9 @@ export const taskService = {
         return loadTasks();
     },
 
+    // NOVO: Tornamos a função saveTasks pública para ser usada na importação
+    saveTasks,
+
     addTask: (tasks, quadrant, text, dueDate) => {
         if (!text || !text.trim()) return tasks;
 
@@ -105,7 +108,6 @@ export const taskService = {
         return updatedTasks;
     },
 
-    // --- INÍCIO DA ATUALIZAÇÃO ---
     addSubtask: (tasks, taskId, subtaskText) => {
         if (!subtaskText || !subtaskText.trim()) return { updatedTasks: tasks, newSubtask: null };
         
@@ -123,13 +125,11 @@ export const taskService = {
 
         if (taskWasFound) {
             saveTasks(updatedTasks);
-            // Retorna ambos: a lista completa e o objeto da nova subtarefa
             return { updatedTasks, newSubtask };
         }
         
         return { updatedTasks: tasks, newSubtask: null };
     },
-    // --- FIM DA ATUALIZAÇÃO ---
 
     updateSubtask: (tasks, taskId, subtaskId, updates) => {
         const updatedTasks = tasks.map(task => {
