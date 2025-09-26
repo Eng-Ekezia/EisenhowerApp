@@ -10,7 +10,6 @@ function loadTasks() {
         if (!tasks || tasks.length === 0) {
             return getSampleTasks();
         }
-        // Garante que tarefas antigas tenham a propriedade subtasks
         return tasks.map(task => ({ subtasks: [], ...task }));
 
     } catch (e) {
@@ -32,9 +31,8 @@ function generateId() {
 }
 
 function getSampleTasks() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowISO = tomorrow.toISOString().split('T')[0];
+    const today = new Date();
+    const todayISO = today.toISOString().split('T')[0];
 
     return [
         {
@@ -43,7 +41,7 @@ function getSampleTasks() {
             quadrant: "q1",
             completed: false,
             createdAt: new Date().toISOString(),
-            dueDate: tomorrowISO,
+            dueDate: todayISO,
             subtasks: []
         },
         {
@@ -107,25 +105,35 @@ export const taskService = {
         return updatedTasks;
     },
 
+    // --- INÍCIO DA ATUALIZAÇÃO ---
     addSubtask: (tasks, taskId, subtaskText) => {
-        if (!subtaskText || !subtaskText.trim()) return tasks;
+        if (!subtaskText || !subtaskText.trim()) return { updatedTasks: tasks, newSubtask: null };
+        
         const newSubtask = { id: generateId(), text: subtaskText.trim(), completed: false };
+        let taskWasFound = false;
+
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
-                // CORREÇÃO AQUI: Garante que task.subtasks seja um array antes de espalhar (spread)
+                taskWasFound = true;
                 const existingSubtasks = task.subtasks || [];
                 return { ...task, subtasks: [...existingSubtasks, newSubtask] };
             }
             return task;
         });
-        saveTasks(updatedTasks);
-        return updatedTasks;
+
+        if (taskWasFound) {
+            saveTasks(updatedTasks);
+            // Retorna ambos: a lista completa e o objeto da nova subtarefa
+            return { updatedTasks, newSubtask };
+        }
+        
+        return { updatedTasks: tasks, newSubtask: null };
     },
+    // --- FIM DA ATUALIZAÇÃO ---
 
     updateSubtask: (tasks, taskId, subtaskId, updates) => {
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
-                // CORREÇÃO AQUI: Garante que task.subtasks seja um array antes do .map
                 const existingSubtasks = task.subtasks || [];
                 const updatedSubtasks = existingSubtasks.map(subtask => 
                     subtask.id === subtaskId ? { ...subtask, ...updates } : subtask
@@ -141,7 +149,6 @@ export const taskService = {
     deleteSubtask: (tasks, taskId, subtaskId) => {
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
-                 // CORREÇÃO AQUI: Garante que task.subtasks seja um array antes do .filter
                 const existingSubtasks = task.subtasks || [];
                 return { ...task, subtasks: existingSubtasks.filter(sub => sub.id !== subtaskId) };
             }

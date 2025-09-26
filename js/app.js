@@ -2,18 +2,17 @@
 
 import { taskService } from './services/task-service.js';
 import { uiManager } from './ui/ui-manager.js';
-import { notificationService } from './services/notification-service.js'; // 1. ADICIONE ESTA LINHA
+import { notificationService } from './services/notification-service.js';
 
 let tasks = [];
 let draggedTaskId = null;
 
 const eventHandlers = {
-    // ... (todo o seu código de eventHandlers permanece igual)
     onToggleComplete: (taskId) => {
         const task = tasks.find(t => t.id === taskId);
         if (task) {
             tasks = taskService.updateTask(tasks, taskId, { completed: !task.completed });
-            render();
+            render(); // Render() é ok aqui pois afeta o estado visual completo da tarefa
         }
     },
     
@@ -26,6 +25,7 @@ const eventHandlers = {
     
     onUpdate: (taskId, updates) => {
         tasks = taskService.updateTask(tasks, taskId, updates);
+        // Não renderiza para não interromper a edição. O 'blur' salva.
     },
     
     onSaveNewTask: (quadrant, text, dueDate) => {
@@ -39,23 +39,28 @@ const eventHandlers = {
 
     onDrop: (newQuadrantId) => {
         if (draggedTaskId) {
-            const task = tasks.find(t => t.id === draggedTaskId);
-            if (task && task.quadrant !== newQuadrantId) {
-                tasks = taskService.updateTask(tasks, draggedTaskId, { quadrant: newQuadrantId });
-                render();
-            }
+            tasks = taskService.updateTask(tasks, draggedTaskId, { quadrant: newQuadrantId });
+            render();
         }
         draggedTaskId = null;
     },
 
+    // --- INÍCIO DA ATUALIZAÇÃO ---
     onAddSubtask: (taskId, subtaskText) => {
-        tasks = taskService.addSubtask(tasks, taskId, subtaskText);
-        render();
+        const { updatedTasks, newSubtask } = taskService.addSubtask(tasks, taskId, subtaskText);
+        tasks = updatedTasks;
+
+        // Se a subtarefa foi criada com sucesso, apenas a adiciona na tela
+        if (newSubtask) {
+            uiManager.appendSubtask(taskId, newSubtask, eventHandlers);
+        }
+        // NENHUMA CHAMADA PARA render() AQUI!
     },
+    // --- FIM DA ATUALIZAÇÃO ---
 
     onUpdateSubtask: (taskId, subtaskId, updates) => {
         tasks = taskService.updateSubtask(tasks, taskId, subtaskId, updates);
-        render();
+        render(); // Render() é necessário para atualizar o estado visual (ex: texto riscado)
     },
     
     onDeleteSubtask: (taskId, subtaskId) => {
@@ -69,26 +74,62 @@ function render() {
 }
 
 function bindStaticEvents() {
-    // ... (toda a função bindStaticEvents permanece igual)
+    // --- INÍCIO DA CORREÇÃO DOS BOTÕES DO HEADER ---
     const helpBtn = document.getElementById('help-btn');
     const statsBtn = document.getElementById('stats-btn');
     const helpModal = document.getElementById('help-modal');
     const statsModal = document.getElementById('stats-modal');
-    const closeHelpBtn = document.getElementById('close-help');
-    const closeStatsBtn = document.getElementById('close-stats');
+    const closeHelpModal = document.getElementById('close-help-modal');
+    const closeStatsModal = document.getElementById('close-stats-modal');
 
-    if(helpBtn) helpBtn.addEventListener('click', () => helpModal.classList.remove('hidden'));
-    if(statsBtn) statsBtn.addEventListener('click', () => {
-        document.getElementById('stats-content').innerHTML = `<p>Total de tarefas: ${tasks.length}</p>`;
-        statsModal.classList.remove('hidden');
-    });
-    
-    if(closeHelpBtn) closeHelpBtn.addEventListener('click', () => helpModal.classList.add('hidden'));
-    if(closeStatsBtn) closeStatsBtn.addEventListener('click', () => statsModal.classList.add('hidden'));
+    // Função para abrir um modal
+    const openModal = (modal) => modal.classList.remove('hidden');
+
+    // Função para fechar um modal
+    const closeModal = (modal) => modal.classList.add('hidden');
+
+    // Eventos dos botões e modais
+    if (helpBtn && helpModal && closeHelpModal) {
+        helpBtn.addEventListener('click', () => openModal(helpModal));
+        closeHelpModal.addEventListener('click', () => closeModal(helpModal));
+        helpModal.querySelector('.modal__overlay').addEventListener('click', () => closeModal(helpModal));
+    }
+
+    if (statsBtn && statsModal && closeStatsModal) {
+        statsBtn.addEventListener('click', () => openModal(statsModal));
+        closeStatsModal.addEventListener('click', () => closeModal(statsModal));
+        statsModal.querySelector('.modal__overlay').addEventListener('click', () => closeModal(statsModal));
+    }
+    // --- FIM DA CORREÇÃO ---
+
+    // Listener para o botão de troca de visualização
+    const viewToggleBtn = document.getElementById('view-toggle-btn');
+    if (viewToggleBtn) {
+        const matrix = document.getElementById('matrix');
+        const iconGrid = document.getElementById('icon-grid-view');
+        const iconColumn = document.getElementById('icon-column-view');
+
+        viewToggleBtn.addEventListener('click', () => {
+            // Pega o modo de visualização atual pelo atributo data-*
+            const currentView = matrix.dataset.viewMode;
+
+            if (currentView === 'grid') {
+                // Se está em grid, muda para colunas
+                matrix.dataset.viewMode = 'columns';
+                iconGrid.classList.add('hidden');
+                iconColumn.classList.remove('hidden');
+            } else {
+                // Se está em colunas, volta para grid
+                matrix.dataset.viewMode = 'grid';
+                iconGrid.classList.remove('hidden');
+                iconColumn.classList.add('hidden');
+            }
+        });
+    }
     
     document.querySelectorAll('.add-task-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const quadrant = btn.dataset.quadrant;
+            const quadrant = btn.closest('.quadrant').dataset.quadrant;
             uiManager.showTaskInput(quadrant, eventHandlers);
         });
     });
@@ -98,7 +139,7 @@ function init() {
     tasks = taskService.getTasks();
     bindStaticEvents();
     uiManager.bindDragAndDropEvents(eventHandlers);
-    notificationService.start(() => tasks); // 2. INICIE O SERVIÇO DE NOTIFICAÇÕES AQUI
+    notificationService.start(() => tasks); 
     render();
 }
 

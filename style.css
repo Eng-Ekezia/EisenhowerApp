@@ -793,19 +793,32 @@ select.form-control {
 }
 
 /* Quadrantes */
+/* --- INÍCIO DA CORREÇÃO DOS QUADRANTES --- */
 .quadrant {
     background-color: var(--color-surface);
     border-radius: var(--radius-lg);
-    border: 2px solid;
+    /* A borda agora é definida por padrão com a cor do quadrante */
+    border: 2px solid; 
     box-shadow: var(--shadow-md);
     overflow: hidden;
     min-height: 200px;
-    transition: transform var(--duration-normal) var(--ease-standard);
+    /* Adicionamos box-shadow à transição para o efeito hover ficar suave */
+    transition: transform var(--duration-normal) var(--ease-standard), 
+                box-shadow var(--duration-normal) var(--ease-standard);
 }
 
+/* Definimos a cor da borda para cada quadrante específico */
+.quadrant[data-quadrant="q1"] { border-color: #ef4444; }
+.quadrant[data-quadrant="q2"] { border-color: #3b82f6; }
+.quadrant[data-quadrant="q3"] { border-color: #f59e0b; }
+.quadrant[data-quadrant="q4"] { border-color: #22c55e; }
+
+/* Efeito hover aprimorado, igual ao dos cards de tarefa */
 .quadrant:hover {
     transform: translateY(-2px);
+    box-shadow: var(--shadow-lg); /* Sombra mais pronunciada no hover */
 }
+/* --- FIM DA CORREÇÃO --- */
 
 .quadrant__header {
     padding: var(--space-16);
@@ -919,31 +932,7 @@ select.form-control {
     font-style: italic;
 }
 
-.task__delete {
-    background: var(--color-error);
-    color: var(--color-white);
-    border: none;
-    border-radius: var(--radius-full);
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: var(--font-size-lg);
-    line-height: 1;
-    transition: all var(--duration-fast) var(--ease-standard);
-    opacity: 0;
-}
 
-.task:hover .task__delete {
-    opacity: 1;
-}
-
-.task__delete:hover {
-    background: var(--color-red-500);
-    transform: scale(1.1);
-}
 
 /* Botão adicionar tarefa */
 .add-task-btn {
@@ -1357,23 +1346,6 @@ select.form-control {
     flex-shrink: 0;
 }
 
-.task__delete {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: none;
-    border: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.task:hover .task__delete {
-    opacity: 0.7;
-}
-.task__delete:hover {
-    opacity: 1;
-}
-
 .task__due-date {
     font-size: 12px;
     color: var(--color-text-secondary);
@@ -1408,9 +1380,7 @@ select.form-control {
 .task:not(.has-subtasks) .subtask-list {
     display: none;
 }
-.task:not(.has-subtasks) .add-subtask-form {
-    display: none;
-}
+
 
 .add-subtask-placeholder-btn {
     background: none;
@@ -1433,6 +1403,88 @@ select.form-control {
     width: 20px;
     height: 20px;
 }
+
+/* --- INÍCIO DA CORREÇÃO DO ÍCONE DE EXCLUIR (ESTILO BADGE) --- */
+.task__delete {
+    /* 1. Posicionamento de Canto (estilo Badge) */
+    position: absolute;
+    top: -8px;   /* Puxa o ícone para cima, para fora do card */
+    right: -8px;  /* Puxa o ícone para a direita */
+
+    /* 2. Estilo Circular e Visual */
+    background-color: var(--color-error);
+    color: var(--color-white);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%; /* Transforma o botão em um círculo perfeito */
+    border: 2px solid var(--color-surface); /* Adiciona uma borda que combina com o fundo do card */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra para dar profundidade */
+
+    /* 3. Centraliza o ícone SVG dentro do círculo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* 4. Interação e Animação */
+    cursor: pointer;
+    opacity: 0; /* Começa invisível para uma transição suave */
+    transform: scale(0.5); /* Começa pequeno */
+    transition: opacity 0.2s var(--ease-standard), transform 0.2s var(--ease-standard);
+}
+
+/* O ícone aparece quando o mouse passa sobre o card da tarefa */
+.task:hover .task__delete {
+    opacity: 1; /* Torna o badge visível */
+    transform: scale(1); /* Anima o badge para seu tamanho normal */
+}
+
+/* Efeito de hover no próprio ícone para feedback */
+.task__delete:hover {
+    transform: scale(1.15); /* Aumenta um pouco mais para indicar que é clicável */
+    background-color: var(--color-red-500); /* Escurece o fundo */
+}
+
+/* Ajusta o tamanho do ícone 'X' dentro do círculo */
+.task__delete svg {
+    width: 14px;
+    height: 14px;
+}
+/* --- FIM DA CORREÇÃO --- */
+
+
+/* --- INÍCIO DOS ESTILOS DE TROCA DE VISUALIZAÇÃO --- */
+
+/* Por padrão, a matriz está no modo GRID (quadrantes) */
+.matrix[data-view-mode="grid"] {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas em telas grandes */
+    gap: var(--space-24);
+}
+
+/* Quando o modo for COLUMNS... */
+.matrix[data-view-mode="columns"] {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas em telas grandes */
+    gap: var(--space-16);
+}
+
+/* Em telas de tablet, o modo COLUNAS exibe 2 colunas para não apertar o conteúdo */
+@media (max-width: 1200px) and (min-width: 1024px) {
+    .matrix[data-view-mode="columns"] {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Em telas de celular, AMBOS os modos ficam com 1 coluna vertical */
+@media (max-width: 1023px) {
+    .matrix[data-view-mode="grid"],
+    .matrix[data-view-mode="columns"] {
+        grid-template-columns: 1fr;
+        gap: var(--space-16);
+    }
+}
+/* --- FIM DOS ESTILOS --- */
+
 /* --- FIM DOS ESTILOS DO NOVO CARD DE TAREFA --- */
 
 /* Estilos antigos movidos do index.html */
