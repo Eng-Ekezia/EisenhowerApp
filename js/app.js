@@ -3,7 +3,6 @@
 import { taskService } from './services/task-service.js';
 import { uiManager } from './ui/ui-manager.js';
 import { notificationService } from './services/notification-service.js';
-// NOVO: Importa o nosso novo serviço de dados
 import { dataService } from './services/data-service.js';
 
 let tasks = [];
@@ -17,27 +16,22 @@ const eventHandlers = {
             render();
         }
     },
-    
     onDelete: (taskId) => {
         if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
             tasks = taskService.deleteTask(tasks, taskId);
             render();
         }
     },
-    
     onUpdate: (taskId, updates) => {
         tasks = taskService.updateTask(tasks, taskId, updates);
     },
-    
     onSaveNewTask: (quadrant, text, dueDate) => {
         tasks = taskService.addTask(tasks, quadrant, text, dueDate);
         render();
     },
-
     onDragStart: (taskId) => {
         draggedTaskId = taskId;
     },
-
     onDrop: (newQuadrantId) => {
         if (draggedTaskId) {
             tasks = taskService.updateTask(tasks, draggedTaskId, { quadrant: newQuadrantId });
@@ -45,21 +39,17 @@ const eventHandlers = {
         }
         draggedTaskId = null;
     },
-
     onAddSubtask: (taskId, subtaskText) => {
         const { updatedTasks, newSubtask } = taskService.addSubtask(tasks, taskId, subtaskText);
         tasks = updatedTasks;
-
         if (newSubtask) {
             uiManager.appendSubtask(taskId, newSubtask, eventHandlers);
         }
     },
-
     onUpdateSubtask: (taskId, subtaskId, updates) => {
         tasks = taskService.updateSubtask(tasks, taskId, subtaskId, updates);
         render();
     },
-    
     onDeleteSubtask: (taskId, subtaskId) => {
         tasks = taskService.deleteSubtask(tasks, taskId, subtaskId);
         render();
@@ -71,19 +61,26 @@ function render() {
 }
 
 function bindStaticEvents() {
-    // --- LÓGICA DO MENU LATERAL (SHEET) ---
-
+    // --- SELEÇÃO DE ELEMENTOS ---
     const sheet = document.getElementById('sheet-menu');
     const openBtn = document.getElementById('menu-btn');
-    // ATENÇÃO: Esta linha já cuida de TODOS os botões com o atributo data-action="close-sheet",
-    // incluindo o botão "Fechar" e o overlay.
     const closeTriggers = document.querySelectorAll('[data-action="close-sheet"]');
+    
+    const helpBtn = document.getElementById('sheet-help-btn');
+    const helpModal = document.getElementById('help-modal');
+    
+    const statsBtn = document.getElementById('sheet-stats-btn');
+    const statsModal = document.getElementById('stats-modal');
 
+    const exportBtn = document.getElementById('sheet-export-btn');
+    const importBtn = document.getElementById('sheet-import-btn');
+    const fileInput = document.getElementById('import-file-input');
+
+    // --- LÓGICA DO MENU LATERAL (SHEET) ---
     const openSheet = () => {
         sheet.classList.remove('is-closing');
         sheet.classList.add('is-open');
     };
-
     const closeSheet = () => {
         sheet.classList.add('is-closing');
         sheet.addEventListener('animationend', () => {
@@ -97,67 +94,63 @@ function bindStaticEvents() {
         closeTriggers.forEach(trigger => trigger.addEventListener('click', closeSheet));
     }
 
-    // --- Lógica dos botões DENTRO do menu ---
+    // --- LÓGICA DOS BOTÕES E MODAIS ---
+    if (helpBtn && helpModal) {
+        helpBtn.addEventListener('click', () => {
+            helpModal.classList.remove('hidden');
+            closeSheet();
+        });
+        helpModal.querySelector('.modal__close').addEventListener('click', () => helpModal.classList.add('hidden'));
+        helpModal.querySelector('.modal__overlay').addEventListener('click', () => helpModal.classList.add('hidden'));
+    }
 
-    // Botões existentes
-    const viewToggleBtn = document.getElementById('sheet-view-toggle-btn');
-    if (viewToggleBtn) { /* ... lógica de visualização ... */ }
-    const helpBtn = document.getElementById('sheet-help-btn');
-    const statsBtn = document.getElementById('sheet-stats-btn');
-    if (helpBtn) { /* ... lógica do modal de ajuda ... */ }
-    if (statsBtn) { /* ... lógica do modal de estatísticas ... */ }
-
-    // --- NOVO: LÓGICA DE IMPORTAÇÃO E EXPORTAÇÃO ---
-    
-    const exportBtn = document.getElementById('sheet-export-btn');
-    const importBtn = document.getElementById('sheet-import-btn');
-    const fileInput = document.getElementById('import-file-input');
+    if (statsBtn && statsModal) {
+        statsBtn.addEventListener('click', () => {
+            const stats = dataService.calculateStats(tasks);
+            uiManager.displayStats(stats);
+            statsModal.classList.remove('hidden');
+            closeSheet();
+        });
+        statsModal.querySelector('#close-stats-modal').addEventListener('click', () => statsModal.classList.add('hidden'));
+        statsModal.querySelector('[data-action="close-stats-modal"]').addEventListener('click', () => statsModal.classList.add('hidden'));
+    }
 
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
             dataService.exportTasks(tasks);
-            closeSheet(); // Fecha o menu após a ação
+            closeSheet();
         });
     }
 
     if (importBtn && fileInput) {
-        // 1. O botão do menu aciona o input de arquivo escondido
         importBtn.addEventListener('click', () => {
             fileInput.click();
             closeSheet();
         });
-
-        // 2. Quando um arquivo é selecionado no input, ele é processado
         fileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
-            if (!file) {
-                return; // Nenhum arquivo selecionado
-            }
+            if (!file) return;
 
             const reader = new FileReader();
             reader.onload = (e) => {
                 const jsonContent = e.target.result;
-                
                 if (confirm('Atenção: Isso substituirá todas as suas tarefas atuais. Deseja continuar?')) {
                     const newTasks = dataService.importTasks(jsonContent);
-
                     if (newTasks) {
                         tasks = newTasks;
-                        taskService.saveTasks(tasks); // Salva as novas tarefas no localStorage
-                        render(); // Re-renderiza a UI com as novas tarefas
+                        taskService.saveTasks(tasks);
+                        render();
                         alert('Tarefas importadas com sucesso!');
                     } else {
                         alert('Erro: O arquivo selecionado é inválido ou está corrompido.');
                     }
                 }
-                // Limpa o valor do input para permitir importar o mesmo arquivo novamente
-                fileInput.value = ''; 
+                fileInput.value = '';
             };
             reader.readAsText(file);
         });
     }
 
-    // Listener para os botões "Adicionar Tarefa" (permanece o mesmo)
     document.querySelectorAll('.add-task-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const quadrant = btn.closest('.quadrant').dataset.quadrant;
@@ -170,7 +163,7 @@ function init() {
     tasks = taskService.getTasks();
     bindStaticEvents();
     uiManager.bindDragAndDropEvents(eventHandlers);
-    notificationService.start(() => tasks); 
+    notificationService.start(() => tasks);
     render();
 }
 
