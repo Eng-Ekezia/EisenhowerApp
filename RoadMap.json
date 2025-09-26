@@ -1,7 +1,7 @@
 {
   "projectName": "Plano de Evolução da Matriz de Eisenhower",
-  "version": "1.6-planning",
-  "lastUpdated": "2025-09-26T16:06:00Z",
+  "version": "1.5.2",
+  "lastUpdated": "2025-09-26T16:29:00Z",
   "projectGoals": [
     "Aumentar a manutenibilidade e escalabilidade do código-fonte.",
     "Melhorar a produtividade do usuário através de novas funcionalidades e refinamentos de UX.",
@@ -25,7 +25,38 @@
     {
       "phaseId": "2.5",
       "phaseName": "Refinamento e Correção de Bugs",
-      "status": "Concluído"
+      "objective": "Aprimorar a interface do usuário e corrigir problemas de implementação identificados após a Fase 2.",
+      "status": "Concluído",
+      "epics": [
+        {
+          "epicName": "Correções de UI/UX em Cards de Tarefa",
+          "status": "Concluído"
+        },
+        {
+          "epicName": "Aprimoramento Visual da Matriz",
+          "status": "Concluído"
+        },
+        {
+            "epicName": "Implementação de Controles do Cabeçalho",
+            "status": "Concluído"
+        },
+        {
+            "epicName": "Refinamento Visual e de Foco (UI/UX)",
+            "status": "Concluído"
+        },
+        {
+            "epicName": "Interface Minimalista (Header e Menu)",
+            "status": "Concluído"
+        },
+        {
+            "epicName": "Correção de Regressões",
+            "description": "Corrigir funcionalidades que deixaram de funcionar corretamente após refatorações.",
+            "status": "Concluído",
+            "tasks": [
+              { "task": "[FIX] Restaurar a funcionalidade de arrastar e soltar (drag-and-drop) corrigindo o seletor de alvo do evento no ui-manager.", "status": "Concluído" }
+            ]
+        }
+      ]
     },
     {
       "phaseId": 3,
@@ -38,53 +69,19 @@
       "epics": [
         {
           "epicName": "Feature: Exportar e Importar JSON",
-          "status": "Concluído",
-          "tasks": [
-            {
-              "task": "[FEAT] Implementar lógica de exportação e importação em um módulo de serviço de dados dedicado.",
-              "status": "Concluído"
-            },
-            {
-              "task": "[FIX] Corrigir bug que impedia a persistência de tarefas importadas no localStorage.",
-              "status": "Concluído"
-            }
-          ]
+          "status": "Concluído"
         },
         {
           "epicName": "Feature: Estatísticas de Produtividade",
-          "description": "Migrar a funcionalidade de estatísticas do app monolítico para a nova arquitetura modular.",
           "status": "Concluído"
         },
         {
           "epicName": "Feature: Arquivamento e Histórico",
           "description": "Permitir que usuários arquivem tarefas concluídas para manter a matriz limpa, com a opção de visualizar, restaurar ou excluir permanentemente o histórico. O backup via JSON será unificado para incluir tanto tarefas ativas quanto arquivadas, garantindo uma experiência de usuário segura e intuitiva.",
-          "status": "Em Planejamento",
-          "tasks": [
-            {
-              "task": "[ARQUITETURA] Criar um novo 'archive-service.js' dedicado para gerenciar o ciclo de vida das tarefas arquivadas (CRUD), mantendo a separação de responsabilidades.",
-              "status": "Pendente"
-            },
-            {
-              "task": "[UI] Preparar o 'index.html' com todos os novos elementos: botão 'Arquivar' nos cards, botão 'Ver Histórico' no menu, e um novo modal com template para a lista de arquivados.",
-              "status": "Pendente"
-            },
-            {
-              "task": "[REFACTOR] Aprimorar o 'data-service.js' para que a exportação gere um backup unificado (ativas + arquivadas) e a importação restaure ambos os estados.",
-              "status": "Pendente"
-            },
-            {
-              "task": "[ORQUESTRAÇÃO] Implementar no 'app.js' a lógica de arquivamento, que coordena a remoção da tarefa ativa ('task-service') e a adição ao histórico ('archive-service').",
-              "status": "Pendente"
-            },
-            {
-              "task": "[UI/LÓGICA] Implementar no 'ui-manager.js' e 'app.js' a visualização do modal de histórico e as ações de restaurar e excluir permanentemente, orquestrando as chamadas aos serviços correspondentes.",
-              "status": "Pendente"
-            }
-          ]
+          "status": "Em Planejamento"
         },
         {
           "epicName": "Feature: Integração com Google Agenda (via Link)",
-          "description": "Permitir que o usuário envie uma tarefa com data de vencimento para o Google Agenda através de um link pré-formatado.",
           "status": "Pendente"
         }
       ]
