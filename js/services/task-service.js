@@ -95,9 +95,21 @@ export const taskService = {
     },
 
     updateTask: (tasks, id, updates) => {
-        const updatedTasks = tasks.map(task =>
-            task.id === id ? { ...task, ...updates } : task
-        );
+        const updatedTasks = tasks.map(task => {
+            if (task.id === id) {
+                const updatedTask = { ...task, ...updates };
+
+                // NOVO: Adiciona o timestamp 'completedAt' quando a tarefa é concluída.
+                if (updates.completed === true && !task.completed) {
+                    updatedTask.completedAt = new Date().toISOString();
+                } else if (updates.completed === false && task.completed) {
+                    updatedTask.completedAt = null; // Remove o timestamp se a tarefa for reaberta
+                }
+
+                return updatedTask;
+            }
+            return task;
+        });
         saveTasks(updatedTasks);
         return updatedTasks;
     },
