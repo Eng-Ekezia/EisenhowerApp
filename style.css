@@ -871,7 +871,9 @@ select.form-control {
     border-radius: var(--radius-base);
     padding: var(--space-12);
     display: flex;
-    align-items: center;
+    /* NOVO: Permite que os itens quebrem para a próxima linha */
+    flex-wrap: wrap; 
+    align-items: flex-start; /* Alinha os itens ao topo */
     justify-content: space-between;
     transition: all var(--duration-normal) var(--ease-standard);
     cursor: move;
@@ -903,6 +905,7 @@ select.form-control {
     align-items: center;
     gap: var(--space-8);
     flex: 1;
+    width: 100%;
 }
 
 .task__checkbox {
@@ -934,7 +937,55 @@ select.form-control {
     font-style: italic;
 }
 
+.task__archive {
+    /* Posicionamento e estilo similar ao de exclusão */
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--color-success); /* Verde para indicar uma ação positiva */
+    color: var(--color-white);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--color-surface);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    transform: scale(0.5);
+    opacity: 0;
+}
 
+/* Animação de aparição do botão de arquivar */
+.task.completed:hover .task__archive {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.task__archive:hover {
+    transform: scale(1.15);
+}
+
+.task__archive svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Estilo para a data de criação */
+.task__meta {
+    width: 100%;
+    flex-basis: 100%;
+    padding-left: 28px; /* Alinha com as subtarefas */
+    margin-top: 8px;
+}
+
+.task__creation-date {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
 
 /* Botão adicionar tarefa */
 .add-task-btn {
@@ -1424,29 +1475,24 @@ select.form-control {
 }
 
 /* 3. Estilo específico do botão de excluir (Badge) */
-.task__delete {
-    /* Posicionamento */
+/* Estilos dos botões de ação */
+.task__delete, .task__archive {
     position: absolute;
     top: -8px;
     right: -8px;
-    
-    /* Estilo Circular */
-    background-color: var(--color-error);
     color: var(--color-white);
     width: 24px;
     height: 24px;
     border-radius: 50%;
     border: 2px solid var(--color-surface);
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-
-    /* Centraliza o ícone SVG */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    
-    /* Animação inicial (começa pequeno, já que a opacidade é controlada acima) */
+    transition: all 0.2s ease-in-out;
     transform: scale(0.5);
+    opacity: 0;
 }
 
 /* 4. Animação de aparição do badge no hover do card */
@@ -1471,6 +1517,29 @@ select.form-control {
 .task.is-editing .subtask-section,
 .task.is-editing .task__delete {
     opacity: 0.3 !important; /* !important para sobrepor a regra do hover */
+}
+
+.task__delete {
+    background-color: var(--color-error);
+}
+
+.task__archive {
+    background-color: var(--color-success);
+}
+
+.task:hover .task__delete:not(.hidden),
+.task:hover .task__archive:not(.hidden) {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.task__delete:hover, .task__archive:hover {
+    transform: scale(1.15);
+}
+
+.task__delete svg, .task__archive svg {
+    width: 14px;
+    height: 14px;
 }
 /* --- FIM DO ESTILO --- */
 

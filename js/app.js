@@ -22,6 +22,13 @@ const eventHandlers = {
             render();
         }
     },
+    // NOVO: Handler para arquivar a tarefa
+    onArchive: (taskId) => {
+        if (confirm('Deseja arquivar esta tarefa concluída?')) {
+            tasks = taskService.archiveTask(tasks, taskId);
+            render();
+        }
+    },
     onUpdate: (taskId, updates) => {
         tasks = taskService.updateTask(tasks, taskId, updates);
     },
