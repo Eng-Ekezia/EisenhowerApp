@@ -75,22 +75,17 @@ export const taskService = {
         return loadTasks();
     },
 
-    // NOVO: Tornamos a função saveTasks pública para ser usada na importação
     saveTasks,
 
-    // NOVO: Função para arquivar uma tarefa.
     archiveTask: (tasks, taskId) => {
         const taskToArchive = tasks.find(task => task.id === taskId);
         if (taskToArchive) {
-            // 1. Adiciona a tarefa ao arquivo morto através do archiveService.
             archiveService.archiveTask(taskToArchive);
-            
-            // 2. Remove a tarefa da lista de tarefas ativas.
             const updatedTasks = tasks.filter(task => task.id !== taskId);
             saveTasks(updatedTasks);
             return updatedTasks;
         }
-        return tasks; // Retorna as tarefas sem alteração se o ID não for encontrado.
+        return tasks;
     },
 
     addTask: (tasks, quadrant, text, dueDate) => {
@@ -114,14 +109,11 @@ export const taskService = {
         const updatedTasks = tasks.map(task => {
             if (task.id === id) {
                 const updatedTask = { ...task, ...updates };
-
-                // NOVO: Adiciona o timestamp 'completedAt' quando a tarefa é concluída.
                 if (updates.completed === true && !task.completed) {
                     updatedTask.completedAt = new Date().toISOString();
                 } else if (updates.completed === false && task.completed) {
-                    updatedTask.completedAt = null; // Remove o timestamp se a tarefa for reaberta
+                    updatedTask.completedAt = null;
                 }
-
                 return updatedTask;
             }
             return task;
@@ -134,6 +126,22 @@ export const taskService = {
         const updatedTasks = tasks.filter(task => task.id !== id);
         saveTasks(updatedTasks);
         return updatedTasks;
+    },
+
+    // CORREÇÃO APLICADA AQUI: Funções dentro do objeto exportado
+    restoreTask: (taskId) => {
+        const { restoredTask } = archiveService.restoreTask(taskId);
+        if (restoredTask) {
+            const currentTasks = loadTasks();
+            const updatedTasks = [...currentTasks, restoredTask];
+            saveTasks(updatedTasks);
+            return restoredTask;
+        }
+        return null;
+    },
+
+    deletePermanently: (taskId) => {
+        archiveService.deletePermanently(taskId);
     },
 
     addSubtask: (tasks, taskId, subtaskText) => {
