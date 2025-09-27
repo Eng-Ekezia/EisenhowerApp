@@ -37,21 +37,10 @@ function createSubtaskElement(taskId, subtask, eventHandlers) {
     subtaskDeleteBtn.className = 'subtask-delete-btn';
     subtaskDeleteBtn.title = 'Excluir subtarefa';
     subtaskDeleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>`;
+    
+    // Lógica simplificada: Apenas chama o handler. A renderização principal cuidará do resto.
     subtaskDeleteBtn.addEventListener('click', () => {
         eventHandlers.onDeleteSubtask(taskId, subtask.id);
-        // CORREÇÃO: Após a exclusão, verifica se o botão "Adicionar" deve reaparecer.
-        // Se a lista de subtarefas ficar vazia, o botão placeholder deve voltar.
-        const taskDiv = subtaskDeleteBtn.closest('.task');
-        if (taskDiv) {
-            const subtaskList = taskDiv.querySelector('.subtask-list');
-            if (subtaskList && subtaskList.children.length <= 1) { // <= 1 porque o item atual ainda está no DOM
-                taskDiv.classList.remove('has-subtasks');
-                const placeholderBtn = taskDiv.querySelector('.add-subtask-placeholder-btn');
-                const form = taskDiv.querySelector('.add-subtask-form');
-                form.classList.add('hidden');
-                placeholderBtn.classList.remove('hidden');
-            }
-        }
     });    
 
     subtaskItem.appendChild(subtaskCheckbox);
@@ -62,12 +51,6 @@ function createSubtaskElement(taskId, subtask, eventHandlers) {
 
 // --- Funções Públicas (Exportadas) ---
 
-/**
- * Cria o elemento DOM completo para um card de tarefa.
- * @param {object} task - O objeto da tarefa.
- * @param {object} eventHandlers - Os manipuladores de evento do app.
- * @returns {Node} - O nó do DOM do elemento da tarefa.
- */
 export function createTaskCard(task, eventHandlers) {
     const taskEl = document.getElementById('task-template').content.cloneNode(true);
     
@@ -178,8 +161,6 @@ export function createTaskCard(task, eventHandlers) {
         });
     }
 
-    // --- LÓGICA DO FORMULÁRIO DE SUBTAREFA (COM A NOVA IMPLEMENTAÇÃO) ---
-
     const closeSubtaskForm = () => {
         addSubtaskForm.classList.add('hidden');
         addSubtaskPlaceholderBtn.classList.remove('hidden');
@@ -200,12 +181,10 @@ export function createTaskCard(task, eventHandlers) {
     });
 
     addSubtaskPlaceholderBtn.addEventListener('click', (e) => {
-        // Impede que o clique no botão propague para o document e feche o form imediatamente.
         e.stopPropagation(); 
         addSubtaskPlaceholderBtn.classList.add('hidden');
         addSubtaskForm.classList.remove('hidden');
         addSubtaskInput.focus();
-        // Adiciona o listener de clique fora apenas quando o formulário está aberto.
         setTimeout(() => document.addEventListener('click', handleClickOutside), 0);
     });
 
@@ -215,21 +194,15 @@ export function createTaskCard(task, eventHandlers) {
         if (newSubtaskText) {
             eventHandlers.onAddSubtask(task.id, newSubtaskText);
             addSubtaskInput.value = '';
-            addSubtaskInput.focus(); // Mantém o foco para adicionar outra subtarefa.
+            addSubtaskInput.focus();
         } else {
-            closeSubtaskForm(); // Fecha se submeter em branco.
+            closeSubtaskForm();
         }
     });
 
     return taskEl;
 }
 
-/**
- * Adiciona um elemento de subtarefa a um card de tarefa já existente na tela.
- * @param {string} taskId - O ID da tarefa pai.
- * @param {object} subtask - O objeto da nova subtarefa.
- * @param {object} eventHandlers - Os manipuladores de evento do app.
- */
 export function appendSubtask(taskId, subtask, eventHandlers) {
     const taskDiv = document.querySelector(`.task[data-task-id="${taskId}"]`);
     if (!taskDiv) return;
@@ -238,12 +211,11 @@ export function appendSubtask(taskId, subtask, eventHandlers) {
     const subtaskEl = createSubtaskElement(taskId, subtask, eventHandlers);
     subtaskList.appendChild(subtaskEl);
 
-    // Garante que o estado visual esteja correto
     taskDiv.classList.add('has-subtasks');
     const placeholderBtn = taskDiv.querySelector('.add-subtask-placeholder-btn');
     const form = taskDiv.querySelector('.add-subtask-form');
 
-    placeholderBtn.classList.add('hidden'); // Esconde o placeholder
-    form.classList.remove('hidden'); // Deixa o form visível para adicionar mais
+    placeholderBtn.classList.add('hidden');
+    form.classList.remove('hidden');
     form.querySelector('.add-subtask-input').focus();
 }
