@@ -39,7 +39,20 @@ function createSubtaskElement(taskId, subtask, eventHandlers) {
     subtaskDeleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>`;
     subtaskDeleteBtn.addEventListener('click', () => {
         eventHandlers.onDeleteSubtask(taskId, subtask.id);
-    });
+        // CORREÇÃO: Após a exclusão, verifica se o botão "Adicionar" deve reaparecer.
+        // Se a lista de subtarefas ficar vazia, o botão placeholder deve voltar.
+        const taskDiv = subtaskDeleteBtn.closest('.task');
+        if (taskDiv) {
+            const subtaskList = taskDiv.querySelector('.subtask-list');
+            if (subtaskList && subtaskList.children.length <= 1) { // <= 1 porque o item atual ainda está no DOM
+                taskDiv.classList.remove('has-subtasks');
+                const placeholderBtn = taskDiv.querySelector('.add-subtask-placeholder-btn');
+                const form = taskDiv.querySelector('.add-subtask-form');
+                form.classList.add('hidden');
+                placeholderBtn.classList.remove('hidden');
+            }
+        }
+    });    
 
     subtaskItem.appendChild(subtaskCheckbox);
     subtaskItem.appendChild(subtaskText);
@@ -225,12 +238,12 @@ export function appendSubtask(taskId, subtask, eventHandlers) {
     const subtaskEl = createSubtaskElement(taskId, subtask, eventHandlers);
     subtaskList.appendChild(subtaskEl);
 
+    // Garante que o estado visual esteja correto
     taskDiv.classList.add('has-subtasks');
     const placeholderBtn = taskDiv.querySelector('.add-subtask-placeholder-btn');
-    if(placeholderBtn) placeholderBtn.classList.remove('hidden'); // Garante que o placeholder não fique escondido.
-    
     const form = taskDiv.querySelector('.add-subtask-form');
-    // Garante que o form esteja visível caso o usuário queira adicionar mais.
-    form.classList.add('hidden'); 
-    placeholderBtn.classList.remove('hidden');
+
+    placeholderBtn.classList.add('hidden'); // Esconde o placeholder
+    form.classList.remove('hidden'); // Deixa o form visível para adicionar mais
+    form.querySelector('.add-subtask-input').focus();
 }
