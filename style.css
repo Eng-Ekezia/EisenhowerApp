@@ -1604,7 +1604,9 @@ select.form-control {
 
 /* --- FIM DOS ESTILOS --- */
 
-/* --- INÍCIO DOS ESTILOS DE NOTIFICAÇÃO TOAST --- */
+/* =================================================================== */
+/* ----------- INÍCIO DOS ESTILOS DE NOTIFICAÇÃO TOAST --------------- */
+/* =================================================================== */
 #toast-container {
     position: fixed;
     bottom: 20px;
@@ -1646,9 +1648,10 @@ select.form-control {
 }
 /* --- FIM DOS ESTILOS --- */
 
-/* --- FIM DOS ESTILOS DO NOVO CARD DE TAREFA --- */
 
+/* =================================================== */
 /* --- INÍCIO DOS ESTILOS DO MENU LATERAL (SHEET) --- */
+/* =================================================== */
 @keyframes fadeIn {
     from { opacity: 0; } to { opacity: 1; }
 }
@@ -1756,6 +1759,68 @@ select.form-control {
     justify-content: flex-end;
 }
 /* --- FIM DOS ESTILOS --- */
+
+/* ============================================= */
+/* =         MODAL DE TAREFAS ARQUIVADAS         = */
+/* ============================================= */
+
+#archive-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+}
+
+.archived-task-item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-12);
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-base);
+    border-left: 3px solid var(--color-text-secondary);
+}
+
+.archived-task-item__main {
+    flex-grow: 1;
+}
+
+.archived-task-item__text {
+    display: block;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+}
+
+.archived-task-item__meta {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-top: var(--space-4);
+}
+
+.archived-task-item__actions {
+    display: flex;
+    gap: var(--space-8);
+    margin-left: var(--space-16);
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 480px) {
+    .archived-task-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .archived-task-item__actions {
+        margin-left: 0;
+        margin-top: var(--space-12);
+        width: 100%;
+    }
+
+    .archived-task-item__actions .btn {
+        flex-grow: 1;
+    }
+}
 
 /* Estilos antigos movidos do index.html */
 .hidden { display: none !important; } /* Adicionado !important para garantir a sobreposição */

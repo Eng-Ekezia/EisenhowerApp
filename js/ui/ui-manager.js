@@ -8,8 +8,10 @@ const selectors = {
     getAllQuadrants: () => document.querySelectorAll('[data-quadrant]'),
     taskTemplate: document.getElementById('task-template'),
     taskInputTemplate: document.getElementById('task-input-template'),
-    // NOVO: Seletor para o conteúdo do modal de estatísticas
-    statsContent: document.getElementById('stats-content') 
+    statsContent: document.getElementById('stats-content'),
+    // NOVO: Seletores para o conteúdo do modal de histórico.
+    archiveListContainer: document.getElementById('archive-list-container'),
+    emptyArchiveMessage: document.getElementById('empty-archive-message')
 };
 
 let currentTaskInput = null;
@@ -78,47 +80,96 @@ export const uiManager = {
         inputField.focus();
     },
 
-    // --- CORREÇÃO APLICADA AQUI ---
-        bindDragAndDropEvents: (eventHandlers) => {
-            // Alvo alterado de '.task-list' para '.quadrant'
-            document.querySelectorAll('.quadrant').forEach(quadrant => {
-                quadrant.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    // Adiciona a classe diretamente ao quadrante
-                    quadrant.classList.add('drag-over');
-                });
-                quadrant.addEventListener('dragleave', () => {
-                    // Remove a classe diretamente do quadrante
-                    quadrant.classList.remove('drag-over');
-                });
-                quadrant.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    // Remove a classe e obtém o ID do quadrante
-                    quadrant.classList.remove('drag-over');
-                    const newQuadrantId = quadrant.dataset.quadrant;
-                    eventHandlers.onDrop(newQuadrantId);
-                });
+    bindDragAndDropEvents: (eventHandlers) => {
+        document.querySelectorAll('.quadrant').forEach(quadrant => {
+            quadrant.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                quadrant.classList.add('drag-over');
             });
-        },
-        // --- FIM DA CORREÇÃO ---
+            quadrant.addEventListener('dragleave', () => {
+                quadrant.classList.remove('drag-over');
+            });
+            quadrant.addEventListener('drop', (e) => {
+                e.preventDefault();
+                quadrant.classList.remove('drag-over');
+                const newQuadrantId = quadrant.dataset.quadrant;
+                eventHandlers.onDrop(newQuadrantId);
+            });
+        });
+    },
     
     appendSubtask: appendSubtask,
 
     showToast: (title, body) => {
-        // ... (código do toast permanece o mesmo)
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+            <div class="toast__title">${title}</div>
+            <div class="toast__body">${body}</div>
+        `;
+
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10); // Adiciona a classe após um pequeno delay para a transição funcionar
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            toast.addEventListener('transitionend', () => toast.remove());
+        }, 5000);
+    },
+    
+    // NOVO: Função para renderizar as tarefas arquivadas.
+    renderArchivedTasks: (archivedTasks, eventHandlers) => {
+        if (!selectors.archiveListContainer || !selectors.emptyArchiveMessage) return;
+
+        selectors.archiveListContainer.innerHTML = '';
+
+        if (archivedTasks.length === 0) {
+            selectors.emptyArchiveMessage.classList.remove('hidden');
+            return;
+        }
+        
+        selectors.emptyArchiveMessage.classList.add('hidden');
+
+        const fragment = document.createDocumentFragment();
+        // Ordena as tarefas arquivadas pela data de arquivamento, da mais recente para a mais antiga.
+        archivedTasks.sort((a, b) => new Date(b.archivedAt) - new Date(a.archivedAt));
+
+        archivedTasks.forEach(task => {
+            const taskEl = document.createElement('div');
+            taskEl.className = 'archived-task-item';
+            
+            const completedAt = task.completedAt ? new Date(task.completedAt).toLocaleDateString('pt-BR') : 'N/A';
+            const archivedAt = new Date(task.archivedAt).toLocaleDateString('pt-BR');
+
+            taskEl.innerHTML = `
+                <div class="archived-task-item__main">
+                    <span class="archived-task-item__text">${task.text}</span>
+                    <span class="archived-task-item__meta">Concluída em: ${completedAt} | Arquivada em: ${archivedAt}</span>
+                </div>
+                <div class="archived-task-item__actions">
+                    <button class="btn btn--sm btn--secondary restore-btn" title="Restaurar Tarefa">Restaurar</button>
+                    <button class="btn btn--sm btn--outline delete-btn" title="Excluir Permanentemente">Excluir</button>
+                </div>
+            `;
+
+            taskEl.querySelector('.restore-btn').addEventListener('click', () => eventHandlers.onRestore(task.id));
+            taskEl.querySelector('.delete-btn').addEventListener('click', () => eventHandlers.onDeletePermanently(task.id));
+            
+            fragment.appendChild(taskEl);
+        });
+
+        selectors.archiveListContainer.appendChild(fragment);
     },
 
-    /**
-     * Renderiza o conteúdo HTML das estatísticas dentro do modal.
-     * @param {object} stats - O objeto de estatísticas calculado pelo dataService.
-     */
     displayStats: (stats) => {
         if (!selectors.statsContent) {
             console.error('Container de estatísticas não encontrado!');
             return;
         }
 
-        // A estrutura HTML é migrada do app.js original
         const contentHTML = `
             <div class="stats-overview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-12); margin-bottom: var(--space-16);">
                 <div class="stat-card" style="background: var(--color-bg-1); padding: var(--space-16); border-radius: var(--radius-base); text-align: center;">

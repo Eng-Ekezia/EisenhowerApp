@@ -4,6 +4,8 @@ import { taskService } from './services/task-service.js';
 import { uiManager } from './ui/ui-manager.js';
 import { notificationService } from './services/notification-service.js';
 import { dataService } from './services/data-service.js';
+// NOVO: Importamos o archiveService para obter os dados do arquivo morto.
+import { archiveService } from './services/archive-service.js';
 
 let tasks = [];
 let draggedTaskId = null;
@@ -22,15 +24,33 @@ const eventHandlers = {
             render();
         }
     },
-    // NOVO: Handler para arquivar a tarefa
     onArchive: (taskId) => {
         if (confirm('Deseja arquivar esta tarefa concluída?')) {
             tasks = taskService.archiveTask(tasks, taskId);
             render();
         }
     },
+    // NOVO: Handler para restaurar uma tarefa do arquivo morto.
+    onRestore: (taskId) => {
+        const restoredTask = taskService.restoreTask(taskId);
+        if (restoredTask) {
+            tasks = [...tasks, restoredTask];
+            render();
+            // Reabre o modal com a lista atualizada.
+            openArchiveModal(); 
+        }
+    },
+    // NOVO: Handler para excluir permanentemente uma tarefa.
+    onDeletePermanently: (taskId) => {
+        if (confirm('Esta ação não pode ser desfeita. Excluir permanentemente?')) {
+            taskService.deletePermanently(taskId);
+            // Reabre o modal com a lista atualizada.
+            openArchiveModal();
+        }
+    },
     onUpdate: (taskId, updates) => {
         tasks = taskService.updateTask(tasks, taskId, updates);
+        // Não renderiza aqui para evitar perder o foco durante a edição do texto
     },
     onSaveNewTask: (quadrant, text, dueDate) => {
         tasks = taskService.addTask(tasks, quadrant, text, dueDate);
@@ -67,6 +87,21 @@ function render() {
     uiManager.renderTasks(tasks, eventHandlers);
 }
 
+// NOVO: Função para abrir e popular o modal de histórico.
+function openArchiveModal() {
+    const archivedTasks = archiveService.getArchivedTasks();
+    uiManager.renderArchivedTasks(archivedTasks, eventHandlers);
+    
+    const archiveModal = document.getElementById('archive-modal');
+    archiveModal.classList.remove('hidden');
+    
+    // Fecha o menu lateral se estiver aberto.
+    const sheet = document.getElementById('sheet-menu');
+    if (sheet.classList.contains('is-open')) {
+        sheet.querySelector('[data-action="close-sheet"]').click();
+    }
+}
+
 function bindStaticEvents() {
     // --- SELEÇÃO DE ELEMENTOS ---
     const sheet = document.getElementById('sheet-menu');
@@ -78,6 +113,11 @@ function bindStaticEvents() {
     
     const statsBtn = document.getElementById('sheet-stats-btn');
     const statsModal = document.getElementById('stats-modal');
+
+    // NOVO: Seleção dos elementos do modal de histórico.
+    const archiveBtn = document.getElementById('sheet-archive-btn');
+    const archiveModal = document.getElementById('archive-modal');
+    const closeArchiveTriggers = document.querySelectorAll('[data-action="close-archive-modal"]');
 
     const exportBtn = document.getElementById('sheet-export-btn');
     const importBtn = document.getElementById('sheet-import-btn');
@@ -118,8 +158,16 @@ function bindStaticEvents() {
             statsModal.classList.remove('hidden');
             closeSheet();
         });
-        statsModal.querySelector('#close-stats-modal').addEventListener('click', () => statsModal.classList.add('hidden'));
-        statsModal.querySelector('[data-action="close-stats-modal"]').addEventListener('click', () => statsModal.classList.add('hidden'));
+        statsModal.querySelector('.modal__close').addEventListener('click', () => statsModal.classList.add('hidden'));
+        statsModal.querySelector('.modal__overlay').addEventListener('click', () => statsModal.classList.add('hidden'));
+    }
+    
+    // NOVO: Lógica para o modal de histórico.
+    if (archiveBtn && archiveModal) {
+        archiveBtn.addEventListener('click', openArchiveModal);
+        closeArchiveTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => archiveModal.classList.add('hidden'));
+        });
     }
 
     if (exportBtn) {

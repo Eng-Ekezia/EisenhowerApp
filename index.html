@@ -180,6 +180,7 @@
                 <button class="sheet__button" id="sheet-view-toggle-btn">Alternar Visualização</button>
                 <button class="sheet__button" id="sheet-help-btn">Ajuda e Guia Rápido</button>
                 <button class="sheet__button" id="sheet-stats-btn">Estatísticas</button>
+                <button class="sheet__button" id="sheet-archive-btn">Histórico de Tarefas</button>
                 <button class="sheet__button" id="sheet-export-btn">Exportar Tarefas</button>
                 <button class="sheet__button" id="sheet-import-btn">Importar Tarefas</button>
             </div>
@@ -190,6 +191,23 @@
     </div>
 
     <input type="file" id="import-file-input" class="hidden" accept=".json">
+
+    <div class="modal hidden" id="archive-modal">
+        <div class="modal__overlay" data-action="close-archive-modal"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h3>Tarefas Arquivadas</h3>
+                <button class="modal__close" data-action="close-archive-modal">&times;</button>
+            </div>
+            <div class="modal__body">
+                <div id="archive-list-container">
+                    </div>
+                <p id="empty-archive-message" class="hidden" style="text-align: center; color: var(--color-text-secondary);">
+                    Você ainda não tem tarefas arquivadas.
+                </p>
+            </div>
+        </div>
+    </div>
 
     <script src="js/app.js" type="module"></script>
 </body>
