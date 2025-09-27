@@ -14,10 +14,8 @@ function formatDate(isoDate) {
     if (!isoDate) return '';
     const date = new Date(isoDate);
     const userTimezoneDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
-    // Alterado para um formato mais completo para a data de criação
     return userTimezoneDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
-
 
 function createSubtaskElement(taskId, subtask, eventHandlers) {
     const subtaskItem = document.createElement('div');
@@ -64,7 +62,6 @@ export function createTaskCard(task, eventHandlers) {
     const checkbox = taskEl.querySelector('.task__checkbox');
     const textSpan = taskEl.querySelector('.task__text');
     const deleteBtn = taskEl.querySelector('.task__delete');
-    // NOVO: Seleciona os novos elementos do template
     const archiveBtn = taskEl.querySelector('.task__archive');
     const creationDateSpan = taskEl.querySelector('.task__creation-date');
     const dueDateDiv = taskEl.querySelector('.task__due-date');
@@ -89,14 +86,13 @@ export function createTaskCard(task, eventHandlers) {
     if (task.completed) {
         taskDiv.classList.add('completed');
         checkbox.checked = true;
-        archiveBtn.classList.remove('hidden'); // Mostra o botão de arquivar
-        deleteBtn.classList.add('hidden'); // Esconde o botão de deletar para dar lugar ao de arquivar
+        archiveBtn.classList.remove('hidden');
+        deleteBtn.classList.add('hidden');
     } else {
         archiveBtn.classList.add('hidden');
         deleteBtn.classList.remove('hidden');
     }
 
-    // NOVO: Adiciona a data de criação ao card
     if (task.createdAt) {
         creationDateSpan.textContent = `Criada em: ${formatDate(task.createdAt)}`;
     }
@@ -104,7 +100,7 @@ export function createTaskCard(task, eventHandlers) {
     const calendarIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" /></svg>`;
     
     if (task.dueDate) {
-        dueDateDiv.innerHTML = `<span>${formatDate(task.dueDate)}</span>`;
+        dueDateDiv.innerHTML = `<span>${new Date(task.dueDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>`;
         dateInput.value = task.dueDate;
     } else {
         dueDateDiv.innerHTML = calendarIcon;
@@ -122,7 +118,7 @@ export function createTaskCard(task, eventHandlers) {
             eventHandlers.onUpdate(task.id, { dueDate: newDate || null });
         }
         if (newDate) {
-            dueDateDiv.innerHTML = `<span>${formatDate(newDate)}</span>`;
+            dueDateDiv.innerHTML = `<span>${new Date(newDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>`;
         } else {
             dueDateDiv.innerHTML = calendarIcon;
         }
@@ -134,7 +130,7 @@ export function createTaskCard(task, eventHandlers) {
 
     checkbox.addEventListener('change', () => eventHandlers.onToggleComplete(task.id));
     deleteBtn.addEventListener('click', () => eventHandlers.onDelete(task.id));
-    archiveBtn.addEventListener('click', () => eventHandlers.onArchive(task.id)); // NOVO: Event handler para o botão de arquivar
+    archiveBtn.addEventListener('click', () => eventHandlers.onArchive(task.id));
     
     taskDiv.addEventListener('dragstart', (e) => {
         taskDiv.classList.add('dragging');
@@ -143,33 +139,24 @@ export function createTaskCard(task, eventHandlers) {
     });
     taskDiv.addEventListener('dragend', () => taskDiv.classList.remove('dragging'));
 
-    // --- INÍCIO DA IMPLEMENTAÇÃO CORRETA (CONCEITO 2) ---
-
-    // Quando o usuário CLICA no texto para editar, adicione a classe 'is-editing'
     textSpan.addEventListener('focus', () => {
         taskDiv.classList.add('is-editing');
     });
 
-    // Quando o usuário CLICA FORA (ou pressiona Enter)...
     textSpan.addEventListener('blur', () => {
-        // 1. Remova a classe 'is-editing' para sair do modo de foco
         taskDiv.classList.remove('is-editing');
-
-        // 2. Salve o novo texto, como já fazia antes
         const newText = textSpan.textContent.trim();
         if (newText !== task.text) {
             eventHandlers.onUpdate(task.id, { text: newText });
         }
     });
 
-    // A lógica para o 'Enter' permanece a mesma
     textSpan.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            e.preventDefault(); // Impede a quebra de linha
-            textSpan.blur();    // Dispara o evento 'blur' para salvar e sair do foco
+            e.preventDefault();
+            textSpan.blur();
         }
     });
-    // --- FIM DA IMPLEMENTAÇÃO CORRETA (CONCEITO 2) ---
 
     if (task.subtasks) {
         task.subtasks.forEach(subtask => {
@@ -178,10 +165,35 @@ export function createTaskCard(task, eventHandlers) {
         });
     }
 
-    addSubtaskPlaceholderBtn.addEventListener('click', () => {
+    // --- LÓGICA DO FORMULÁRIO DE SUBTAREFA (COM A NOVA IMPLEMENTAÇÃO) ---
+
+    const closeSubtaskForm = () => {
+        addSubtaskForm.classList.add('hidden');
+        addSubtaskPlaceholderBtn.classList.remove('hidden');
+        addSubtaskInput.value = ''; 
+        document.removeEventListener('click', handleClickOutside);
+    };
+
+    const handleClickOutside = (e) => {
+        if (!addSubtaskForm.contains(e.target)) {
+            closeSubtaskForm();
+        }
+    };
+
+    addSubtaskInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeSubtaskForm();
+        }
+    });
+
+    addSubtaskPlaceholderBtn.addEventListener('click', (e) => {
+        // Impede que o clique no botão propague para o document e feche o form imediatamente.
+        e.stopPropagation(); 
         addSubtaskPlaceholderBtn.classList.add('hidden');
         addSubtaskForm.classList.remove('hidden');
         addSubtaskInput.focus();
+        // Adiciona o listener de clique fora apenas quando o formulário está aberto.
+        setTimeout(() => document.addEventListener('click', handleClickOutside), 0);
     });
 
     addSubtaskForm.addEventListener('submit', (e) => {
@@ -189,8 +201,11 @@ export function createTaskCard(task, eventHandlers) {
         const newSubtaskText = addSubtaskInput.value.trim();
         if (newSubtaskText) {
             eventHandlers.onAddSubtask(task.id, newSubtaskText);
+            addSubtaskInput.value = '';
+            addSubtaskInput.focus(); // Mantém o foco para adicionar outra subtarefa.
+        } else {
+            closeSubtaskForm(); // Fecha se submeter em branco.
         }
-        addSubtaskInput.value = ''; 
     });
 
     return taskEl;
@@ -212,9 +227,10 @@ export function appendSubtask(taskId, subtask, eventHandlers) {
 
     taskDiv.classList.add('has-subtasks');
     const placeholderBtn = taskDiv.querySelector('.add-subtask-placeholder-btn');
-    if(placeholderBtn) placeholderBtn.classList.add('hidden');
+    if(placeholderBtn) placeholderBtn.classList.remove('hidden'); // Garante que o placeholder não fique escondido.
     
     const form = taskDiv.querySelector('.add-subtask-form');
-    form.classList.remove('hidden');
-    form.querySelector('.add-subtask-input').focus();
+    // Garante que o form esteja visível caso o usuário queira adicionar mais.
+    form.classList.add('hidden'); 
+    placeholderBtn.classList.remove('hidden');
 }
