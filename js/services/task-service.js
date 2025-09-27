@@ -1,4 +1,5 @@
 // js/services/task-service.js
+import { archiveService } from './archive-service.js';
 
 const STORAGE_KEY = 'eisenhower-tasks';
 
@@ -76,6 +77,21 @@ export const taskService = {
 
     // NOVO: Tornamos a função saveTasks pública para ser usada na importação
     saveTasks,
+
+    // NOVO: Função para arquivar uma tarefa.
+    archiveTask: (tasks, taskId) => {
+        const taskToArchive = tasks.find(task => task.id === taskId);
+        if (taskToArchive) {
+            // 1. Adiciona a tarefa ao arquivo morto através do archiveService.
+            archiveService.archiveTask(taskToArchive);
+            
+            // 2. Remove a tarefa da lista de tarefas ativas.
+            const updatedTasks = tasks.filter(task => task.id !== taskId);
+            saveTasks(updatedTasks);
+            return updatedTasks;
+        }
+        return tasks; // Retorna as tarefas sem alteração se o ID não for encontrado.
+    },
 
     addTask: (tasks, quadrant, text, dueDate) => {
         if (!text || !text.trim()) return tasks;
