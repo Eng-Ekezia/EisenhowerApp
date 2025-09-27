@@ -172,7 +172,8 @@ function bindStaticEvents() {
 
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
-            dataService.exportTasks(tasks);
+            // A chamada agora não precisa de argumentos, pois o dataService busca os dados.
+            dataService.exportTasks();
             closeSheet();
         });
     }
@@ -189,12 +190,17 @@ function bindStaticEvents() {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const jsonContent = e.target.result;
-                if (confirm('Atenção: Isso substituirá todas as suas tarefas atuais. Deseja continuar?')) {
-                    const newTasks = dataService.importTasks(jsonContent);
-                    if (newTasks) {
-                        tasks = newTasks;
-                        taskService.saveTasks(tasks);
+                if (confirm('Atenção: Isso substituirá todas as suas tarefas atuais e arquivadas. Deseja continuar?')) {
+                    const importedData = dataService.importTasks(jsonContent);
+                    if (importedData) {
+                        // Salva as tarefas ativas e arquivadas em seus respectivos locais.
+                        taskService.saveTasks(importedData.activeTasks);
+                        archiveService.saveArchivedTasks(importedData.archivedTasks);
+                        
+                        // Atualiza o estado da aplicação e renderiza.
+                        tasks = importedData.activeTasks;
                         render();
+                        
                         alert('Tarefas importadas com sucesso!');
                     } else {
                         alert('Erro: O arquivo selecionado é inválido ou está corrompido.');

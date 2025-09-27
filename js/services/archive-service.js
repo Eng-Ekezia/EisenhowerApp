@@ -25,6 +25,9 @@ export const archiveService = {
         return loadArchivedTasks();
     },
 
+    // NOVO: Expõe a função para uso externo (importação).
+    saveArchivedTasks,
+
     archiveTask: (task) => {
         const archivedTasks = loadArchivedTasks();
         const taskToArchive = {
