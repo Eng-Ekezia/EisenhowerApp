@@ -1,7 +1,7 @@
 {
   "projectName": "Plano de Evolução da Matriz de Eisenhower",
   "version": "1.6.0",
-  "lastUpdated": "2025-09-28T09:39:00Z",
+  "lastUpdated": "2025-09-28T10:11:00Z",
   "projectMethodology": {
     "title": "Metodologia de Desenvolvimento Colaborativo e Incremental",
     "description": "Este projeto segue um processo de desenvolvimento iterativo e rigoroso, onde cada nova funcionalidade ou correção é tratada como um mini-projeto. O objetivo é garantir a máxima qualidade, controle e alinhamento a cada passo, priorizando a estabilidade do código existente sobre a implementação de novas features.",
@@ -77,6 +77,24 @@
       ]
     },
     {
+      "phaseId": "3.2",
+      "phaseName": "Refatoração da Arquitetura para Múltiplas Visões",
+      "status": "Em Progresso",
+      "objective": "Modernizar a arquitetura do front-end para suportar múltiplas visões (Matriz, Projetos, etc.) de forma escalável, setorizando o estado, a lógica de controle e a renderização da UI.",
+      "epics": [
+        {
+          "epicName": "Implementação do Padrão State-Controller-View",
+          "status": "Em Progresso",
+          "tasks": [
+            { "task": "[REFACTOR] Criar um módulo 'state.js' para centralizar o estado da aplicação.", "status": "Em Progresso" },
+            { "task": "[REFACTOR] Criar um módulo 'controller.js' para isolar os manipuladores de eventos e a lógica de negócio.", "status": "Pendente" },
+            { "task": "[REFACTOR] Setorizar a UI, renomeando ui-manager.js para matrix-view.js e preparando o terreno para novas visões.", "status": "Pendente" },
+            { "task": "[REFACTOR] Simplificar o app.js para atuar apenas como ponto de entrada e inicialização.", "status": "Pendente" }
+          ]
+        }
+      ]
+    },
+    {
       "phaseId": 4,
       "phaseName": "Gestão de Projetos de Longo Prazo",
       "objective": "Evoluir de uma ferramenta de gerenciamento de tarefas para um sistema de gestão de objetivos, separando o planejamento de longo prazo da execução diária.",
@@ -85,14 +103,6 @@
         {
           "epicName": "Módulo 'Projetos' (O Hangar)",
           "description": "Criar uma nova seção dedicada onde o usuário pode listar projetos de longo prazo e fazer brainstorming de todas as tarefas associadas, sem sobrecarregar a Matriz principal."
-        },
-        {
-          "epicName": "Integração Matriz <-> Projetos (A Ponte)",
-          "description": "Implementar a funcionalidade chave 'Enviar para a Matriz', permitindo que o usuário promova uma tarefa de um projeto para a matriz de execução no momento oportuno. A tarefa promovida carregará automaticamente uma tag de seu projeto de origem."
-        },
-        {
-          "epicName": "Filtros Avançados por Tags",
-          "description": "Permitir que a visualização da Matriz seja filtrada por uma ou mais tags de projeto, oferecendo uma visão clara do status de cada iniciativa."
         }
       ]
     },
@@ -101,24 +111,7 @@
       "phaseName": "Produtividade Proativa (O Assistente Inteligente)",
       "objective": "Transformar o aplicativo de uma ferramenta passiva para um assistente ativo que ajuda o usuário a manter o 'momentum' e combater a procrastinação.",
       "status": "Pendente",
-      "epics": [
-        {
-          "epicName": "Fundação de Dados Temporais",
-          "description": "Enriquecer os modelos de dados de tarefas e projetos com timestamps 'createdAt' e 'lastModifiedAt' para permitir o rastreamento da inatividade."
-        },
-        {
-          "epicName": "Indicadores Visuais de 'Frescor'",
-          "description": "Implementar um sistema de feedback visual sutil (ex: bordas coloridas) que indica há quanto tempo uma tarefa ou projeto está inativo, servindo como um 'nudge' passivo."
-        },
-        {
-          "epicName": "Módulo de 'Revisão Semanal'",
-          "description": "Criar uma funcionalidade guiada que transforma a revisão semanal em um ritual, ajudando o usuário a celebrar vitórias, limpar tarefas estagnadas e planejar os próximos passos dos projetos."
-        },
-        {
-          "epicName": "Análise de Momentum",
-          "description": "Aprimorar a tela de 'Estatísticas' com um novo painel que identifica projetos parados e possíveis tarefas 'gargalo', fornecendo insights analíticos sobre o fluxo de trabalho."
-        }
-      ]
+      "epics": []
     }
   ]
 }
