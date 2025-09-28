@@ -1,7 +1,7 @@
 {
   "projectName": "Plano de Evolução da Matriz de Eisenhower",
-  "version": "1.5.2",
-  "lastUpdated": "2025-09-26T16:45:00Z",
+  "version": "1.6.0",
+  "lastUpdated": "2025-09-28T09:39:00Z",
   "projectMethodology": {
     "title": "Metodologia de Desenvolvimento Colaborativo e Incremental",
     "description": "Este projeto segue um processo de desenvolvimento iterativo e rigoroso, onde cada nova funcionalidade ou correção é tratada como um mini-projeto. O objetivo é garantir a máxima qualidade, controle e alinhamento a cada passo, priorizando a estabilidade do código existente sobre a implementação de novas features.",
@@ -40,27 +40,43 @@
       "status": "Concluído",
       "epics": [
         {
-            "epicName": "Correção de Regressões",
-            "status": "Concluído",
-            "tasks": [
-              { "task": "[FIX] Restaurar a funcionalidade de arrastar e soltar (drag-and-drop) corrigindo o seletor de alvo do evento no ui-manager.", "status": "Concluído" }
-            ]
+          "epicName": "Correção de Regressões",
+          "status": "Concluído",
+          "tasks": [
+            { "task": "[FIX] Restaurar a funcionalidade de arrastar e soltar (drag-and-drop) corrigindo o seletor de alvo do evento no ui-manager.", "status": "Concluído" }
+          ]
         }
       ]
     },
     {
       "phaseId": 3,
       "phaseName": "Visão de Futuro (Funcionalidades Avançadas)",
-      "status": "Em Progresso",
+      "status": "Concluído",
       "epics": [
         {
           "epicName": "Feature: Arquivamento e Histórico",
-          "description": "Permitir que usuários arquivem tarefas concluídas para manter a matriz limpa, com a opção de visualizar, restaurar ou excluir permanentemente o histórico. O backup via JSON será unificado para incluir tanto tarefas ativas quanto arquivadas.",
-          "status": "Em Planejamento"
+          "description": "Permitir que usuários arquivem tarefas concluídas para manter a matriz limpa, com a opção de visualizar, restaurar ou excluir permanentemente o histórico. O backup via JSON foi unificado para incluir tanto tarefas ativas quanto arquivadas.",
+          "status": "Concluído"
         }
       ]
     },
-	{
+    {
+      "phaseId": "3.1",
+      "phaseName": "Refinamento e Correção Pós-Fase 3",
+      "status": "Concluído",
+      "epics": [
+        {
+          "epicName": "Correção da Experiência do Usuário (UX)",
+          "status": "Concluído",
+          "tasks": [
+            { "task": "[FIX] Corrigir o fluxo de adição de subtarefas, implementando o fechamento do formulário com 'Escape' e clique externo.", "status": "Concluído" },
+            { "task": "[FIX] Resolver o bug de visibilidade que impedia o botão 'Adicionar subtarefa' de reaparecer corretamente.", "status": "Concluído" },
+            { "task": "[STYLE] Refinar a estética do formulário de subtarefas para alinhá-lo com o design system da aplicação.", "status": "Concluído" }
+          ]
+        }
+      ]
+    },
+    {
       "phaseId": 4,
       "phaseName": "Gestão de Projetos de Longo Prazo",
       "objective": "Evoluir de uma ferramenta de gerenciamento de tarefas para um sistema de gestão de objetivos, separando o planejamento de longo prazo da execução diária.",
@@ -85,8 +101,7 @@
       "phaseName": "Produtividade Proativa (O Assistente Inteligente)",
       "objective": "Transformar o aplicativo de uma ferramenta passiva para um assistente ativo que ajuda o usuário a manter o 'momentum' e combater a procrastinação.",
       "status": "Pendente",
-      "epics": 
-	[
+      "epics": [
         {
           "epicName": "Fundação de Dados Temporais",
           "description": "Enriquecer os modelos de dados de tarefas e projetos com timestamps 'createdAt' e 'lastModifiedAt' para permitir o rastreamento da inatividade."
