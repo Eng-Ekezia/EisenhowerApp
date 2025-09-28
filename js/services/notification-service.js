@@ -1,7 +1,7 @@
 // js/services/notification-service.js
 
 // 1. Importa o uiManager para poder chamar a função de toast
-import { uiManager } from '../ui/ui-manager.js';
+import { matrixView } from '../ui/matrix-view.js';
 
 const notifiedTaskIds = new Set();
 let tasksProvider = () => [];
@@ -68,7 +68,7 @@ function showNotification(task) {
     const body = `Sua tarefa no quadrante "${task.quadrant.toUpperCase()}" vence hoje!`;
 
     // 2. Chama a função showToast do uiManager em vez da API nativa
-    uiManager.showToast(title, body);
+    matrixView.showToast(title, body);
 }
 
 export const notificationService = {
