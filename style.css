@@ -1426,14 +1426,52 @@ select.form-control {
     padding-top: var(--space-8);
 }
 
-/* Lógica de exibição da seção de subtarefas */
-.task.has-subtasks .add-subtask-placeholder-btn {
-    display: none;
-}
+/* Lógica de exibição da seção de subtarefas
+*.task.has-subtasks .add-subtask-placeholder-btn {
+*    display: none;
+}*/
 .task:not(.has-subtasks) .subtask-list {
     display: none;
 }
 
+/* --- NOVOS ESTILOS PARA O FORMULÁRIO DE SUBTAREFA --- */
+
+/* Contêiner do formulário. */
+.add-subtask-form {
+    display: flex;
+    gap: var(--space-8);
+    align-items: center;
+    margin-top: var(--space-8);
+}
+
+/* Campo de input com o estilo padrão da aplicação. */
+.add-subtask-input {
+    flex-grow: 1; /* Ocupa o espaço disponível */
+    /* Aplica o mesmo estilo dos outros campos de formulário */
+    padding: var(--space-6) var(--space-10);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    transition: border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.add-subtask-input:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-focus-ring);
+}
+
+/* Botão de adicionar, agora com o estilo padrão .btn */
+.add-subtask-btn {
+    /* O estilo agora vem da classe .btn. Apenas ajustamos o tamanho. */
+    width: 32px;
+    height: 32px;
+    padding: 0; /* Remove padding para centralizar o ícone */
+}
+
+/* --- FIM DOS NOVOS ESTILOS --- */
 
 .add-subtask-placeholder-btn {
     background: none;

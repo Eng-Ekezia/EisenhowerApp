@@ -110,47 +110,52 @@
         </div>
     </div>
 
-    <template id="task-template">
-        <div class="task" draggable="true">
-            <div class="task__main">
-                <div class="task__content">
-                    <input type="checkbox" class="task__checkbox">
-                    <span class="task__text" contenteditable="true"></span>
-                </div>
-                <div class="task__meta">
-                    <span class="task__creation-date"></span>
-                </div>
+<template id="task-template">
+    <div class="task" draggable="true">
+        <div class="task__main">
+            <div class="task__content">
+                <input type="checkbox" class="task__checkbox">
+                <span class="task__text" contenteditable="true"></span>
             </div>
-
-            <div class="task__aside">
-                <div class="task__due-date" title="Definir/alterar data de vencimento"></div>
-                <input type="date" class="task__date-input hidden">
+            <div class="task__meta">
+                <span class="task__creation-date"></span>
             </div>
-
-            <div class="subtask-section">
-                <div class="subtask-list"></div>
-                <button type="button" class="add-subtask-placeholder-btn" title="Adicionar subtarefa">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-                    <span>Adicionar subtarefa</span>
-                </button>
-                <form class="add-subtask-form hidden">
-                    <input type="text" class="add-subtask-input" placeholder="Nova subtarefa..." maxlength="100">
-                    <button type="submit" class="add-subtask-btn" title="Salvar subtarefa">+</button>
-                </form>
-            </div>
-
-            <button class="task__delete" title="Excluir tarefa">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-            </button>
-            <button class="task__archive hidden" title="Arquivar tarefa">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:16px; height:16px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4" />
-                </svg>
-            </button>
         </div>
-    </template>
+
+        <div class="task__aside">
+            <div class="task__due-date" title="Definir/alterar data de vencimento"></div>
+            <input type="date" class="task__date-input hidden">
+        </div>
+
+        <div class="subtask-section">
+            <div class="subtask-list"></div>
+            <button type="button" class="add-subtask-placeholder-btn" title="Adicionar subtarefa">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span>Adicionar subtarefa</span>
+            </button>
+            
+            <form class="add-subtask-form hidden">
+                <input type="text" class="add-subtask-input" placeholder="Nova subtarefa..." maxlength="100">
+                <button type="submit" class="btn btn--sm btn--primary add-subtask-btn" title="Salvar subtarefa">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width: 16px; height: 16px;">
+                        <path fill-rule="evenodd" d="M10 5a.75.75 0 01.75.75v3.5h3.5a.75.75 0 010 1.5h-3.5v3.5a.75.75 0 01-1.5 0v-3.5H5a.75.75 0 010-1.5h3.5V5.75A.75.75 0 0110 5z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </form>
+            </div>
+
+        <button class="task__delete" title="Excluir tarefa">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+        </button>
+        <button class="task__archive hidden" title="Arquivar tarefa">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:16px; height:16px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4" />
+            </svg>
+        </button>
+    </div>
+</template> 
     
     <template id="task-input-template">
         <div class="task-input">
