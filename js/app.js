@@ -1,7 +1,7 @@
 // js/app.js
 
 import { taskService } from './services/task-service.js';
-import { uiManager } from './ui/ui-manager.js';
+import { uiManager } from './ui/matrix-view.js';
 import { notificationService } from './services/notification-service.js';
 import { dataService } from './services/data-service.js';
 // NOVO: Importamos o archiveService para obter os dados do arquivo morto.
