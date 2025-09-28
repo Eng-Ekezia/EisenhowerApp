@@ -23,7 +23,7 @@ function removeCurrentTaskInput() {
     }
 }
 
-export const uiManager = {
+export const matrixView = {
     renderTasks: (tasks, eventHandlers) => {
         const quadrantsContent = {};
         ['q1', 'q2', 'q3', 'q4'].forEach(qId => {
