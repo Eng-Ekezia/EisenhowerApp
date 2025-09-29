@@ -8,6 +8,8 @@ import { notificationService } from './services/notification-service.js';
 import { dataService } from './services/data-service.js';
 import { archiveService } from './services/archive-service.js';
 import { taskService } from './services/task-service.js';
+// 1. Importar o novo serviço de projetos
+import { projectService } from './services/project-service.js';
 
 function render() {
     const state = getState();
@@ -15,7 +17,6 @@ function render() {
     const matrixContainer = document.getElementById('matrix-view');
     const projectsContainer = document.getElementById('projects-view');
     
-    // ATUALIZADO: Passa o modo de visualização atual para a matrixView a cada renderização.
     matrixView.updateViewMode(state.matrixViewMode);
     
     if (state.activeView === 'matrix') {
@@ -63,11 +64,10 @@ function bindStaticEvents() {
         closeTriggers.forEach(trigger => trigger.addEventListener('click', closeSheet));
     }
 
-    // NOVO: Vincula o botão de alternância de visualização ao controller.
     if (viewToggleButton) {
         viewToggleButton.addEventListener('click', () => {
             eventHandlers.onToggleMatrixView();
-            closeSheet(); // Fecha o menu após a ação
+            closeSheet(); 
         });
     }
 
@@ -124,18 +124,22 @@ function bindStaticEvents() {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const jsonContent = e.target.result;
-                if (confirm('Atenção: Isso substituirá todas as suas tarefas atuais e arquivadas. Deseja continuar?')) {
+                if (confirm('Atenção: Isso substituirá todos os seus projetos, tarefas atuais e arquivadas. Deseja continuar?')) {
                     const importedData = dataService.importTasks(jsonContent);
                     if (importedData) {
+                        // 2. Salvar todos os dados importados usando os respectivos serviços
+                        projectService.saveProjects(importedData.projects);
                         taskService.saveTasks(importedData.activeTasks);
                         archiveService.saveArchivedTasks(importedData.archivedTasks);
                         
+                        // 3. Atualizar o estado da aplicação com todos os novos dados
                         setState({ 
+                            projects: importedData.projects,
                             tasks: importedData.activeTasks,
                             archivedTasks: importedData.archivedTasks
                         });
                         
-                        alert('Tarefas importadas com sucesso!');
+                        alert('Dados importados com sucesso!');
                     } else {
                         alert('Erro: O arquivo selecionado é inválido ou está corrompido.');
                     }

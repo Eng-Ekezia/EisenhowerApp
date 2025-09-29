@@ -1,26 +1,29 @@
 // js/services/data-service.js
 
-// NOVO: Importamos os serviços necessários para obter todos os dados.
+// Importamos os serviços necessários para obter todos os dados.
 import { taskService } from './task-service.js';
 import { archiveService } from './archive-service.js';
+import { projectService } from './project-service.js';
 
 /**
  * Serviço para lidar com operações de importação, exportação e análise de dados.
  */
 export const dataService = {
     /**
-     * Exporta a lista completa de tarefas (ativas e arquivadas) para um arquivo JSON.
+     * Exporta a lista completa de dados (tarefas ativas, arquivadas e projetos) para um arquivo JSON.
      */
     exportTasks: () => {
-        // Obter ambos os conjuntos de tarefas.
+        // Obter todos os conjuntos de dados.
         const activeTasks = taskService.getTasks();
         const archivedTasks = archiveService.getArchivedTasks();
+        const projects = projectService.getProjects();
 
         const dataToExport = {
-            version: "1.1", // Versão do schema de dados atualizada
+            version: "1.2", // Versão do schema de dados atualizada para incluir projetos
             exportedAt: new Date().toISOString(),
+            projects: projects,
             activeTasks: activeTasks,
-            archivedTasks: archivedTasks // Adiciona as tarefas arquivadas ao backup
+            archivedTasks: archivedTasks
         };
 
         const jsonString = JSON.stringify(dataToExport, null, 2);
@@ -36,27 +39,32 @@ export const dataService = {
     },
 
     /**
-     * Importa tarefas de uma string JSON, separando ativas e arquivadas.
+     * Importa dados de uma string JSON, separando projetos, tarefas ativas e arquivadas.
      * @param {string} jsonContent - O conteúdo do arquivo JSON.
-     * @returns {{activeTasks: Array<object>, archivedTasks: Array<object>}|null}
+     * @returns {{projects: Array<object>, activeTasks: Array<object>, archivedTasks: Array<object>}|null}
      */
     importTasks: (jsonContent) => {
         try {
             const data = JSON.parse(jsonContent);
-            // Verifica a nova estrutura de dados.
+            
+            // Verifica a nova estrutura de dados (v1.2+) que inclui projetos.
             if (typeof data === 'object' && data !== null && Array.isArray(data.activeTasks)) {
                 return {
+                    projects: data.projects || [],
                     activeTasks: data.activeTasks || [],
                     archivedTasks: data.archivedTasks || []
                 };
             }
-            // Lida com o formato antigo para retrocompatibilidade.
+            
+            // Lida com o formato antigo (v1.1) para retrocompatibilidade.
             if (Array.isArray(data.tasks)) {
                  return {
+                    projects: [],
                     activeTasks: data.tasks,
                     archivedTasks: []
                 };
             }
+            
             console.error("Erro de importação: O arquivo JSON não tem o formato esperado.");
             return null;
         } catch (error) {
