@@ -1,7 +1,7 @@
 {
   "projectName": "Plano de Evolução da Matriz de Eisenhower",
-  "version": "1.6.0",
-  "lastUpdated": "2025-09-29T12:00:00Z",
+  "version": "1.8.0",
+  "lastUpdated": "2025-09-29T12:30:00Z",
   "projectMethodology": {
     "title": "Metodologia de Desenvolvimento Colaborativo e Incremental",
     "description": "Este projeto segue um processo de desenvolvimento iterativo e rigoroso, onde cada nova funcionalidade ou correção é tratada como um mini-projeto. O objetivo é garantir a máxima qualidade, controle e alinhamento a cada passo, priorizando a estabilidade do código existente sobre a implementação de novas features.",
@@ -35,57 +35,89 @@
   ],
   "phases": [
     {
-      "phaseId": "2.5",
-      "phaseName": "Refinamento e Correção de Bugs",
-      "status": "Concluído"
-    },
-    {
-      "phaseId": 3,
-      "phaseName": "Visão de Futuro (Funcionalidades Avançadas)",
-      "status": "Concluído"
-    },
-    {
-      "phaseId": "3.1",
-      "phaseName": "Refinamento e Correção Pós-Fase 3",
-      "status": "Concluído"
-    },
-    {
       "phaseId": "3.2",
       "phaseName": "Refatoração da Arquitetura para Múltiplas Visões",
-      "status": "Concluído",
-      "objective": "Modernizar a arquitetura do front-end para suportar múltiplas visões (Matriz, Projetos, etc.) de forma escalável, setorizando o estado, a lógica de controle e a renderização da UI.",
+      "status": "Concluído"
+    },
+    {
+      "phaseId": 4,
+      "phaseName": "Gestão de Projetos de Longo Prazo",
+      "status": "Em Progresso",
+      "objective": "Permitir a organização de tarefas em objetivos maiores, separando o planejamento da execução.",
       "epics": [
         {
-          "epicName": "Implementação do Padrão State-Controller-View",
-          "status": "Concluído",
+          "epicName": "Arquitetura de Dados para Projetos",
+          "status": "Pendente",
           "tasks": [
-            { "task": "[REFACTOR] Criar um módulo 'state.js' para centralizar o estado da aplicação.", "status": "Concluído" },
-            { "task": "[REFACTOR] Criar um módulo 'controller.js' para isolar os manipuladores de eventos e a lógica de negócio.", "status": "Concluído" },
-            { "task": "[REFACTOR] Setorizar a UI, renomeando ui-manager.js para matrix-view.js.", "status": "Concluído" },
-            { "task": "[REFACTOR] Simplificar o app.js para atuar apenas como ponto de entrada.", "status": "Concluído" }
+            { "task": "[FEATURE] Criar 'project-service.js' para gerenciar o CRUD de projetos.", "status": "Pendente" },
+            { "task": "[REFACTOR] Adicionar um 'projectId' opcional à estrutura de dados das tarefas.", "status": "Pendente" },
+            { "task": "[REFACTOR] Aprimorar o 'data-service.js' para incluir projetos no backup unificado.", "status": "Pendente" }
           ]
         },
         {
-          "epicName": "Depuração Pós-Refatoração",
-          "status": "Concluído",
+          "epicName": "Módulo de Projetos (UI)",
+          "status": "Pendente",
           "tasks": [
-            { "task": "[FIX] Arrastar e soltar tarefas entre quadrantes está inoperante", "status": "Concluído" },
-            { "task": "[FIX] Botão alternar vizualização de 2x2 para 1x4 no sidesheet está inoperante", "status": "Concluído" },
-            { "task": "[FIX] Quando um quadrante está vazio e adicionamos a 1ª tarefa, o card aparece centralizado com o tamanho reduzido. Após o 1º, as demais adições ocorrem normalmente, com o card ocupando a largura do quadrante.", "status": "Concluído" },
-            { "task": "[FIX] Ao adicionar uma nova tarefa, o campo de data não está seguindo o padrão visual dos demais campos e está destoando a UI", "status": "Concluído" }
+            { "task": "[UI] Construir a view principal de projetos ('projects-view.js') para listar todos os projetos.", "status": "Pendente" },
+            { "task": "[UI] Implementar a visualização interna de um projeto, mostrando suas tarefas e uma barra de progresso.", "status": "Pendente" }
+          ]
+        },
+        {
+          "epicName": "Integração Matriz <-> Projetos",
+          "status": "Pendente",
+          "tasks": [
+            { "task": "[FEATURE] Criar a função 'Enviar para a Matriz', que move uma tarefa planejada do projeto para a matriz de execução.", "status": "Pendente" },
+            { "task": "[UI] Exibir uma tag visual nos cards da matriz indicando o projeto de origem.", "status": "Pendente" },
+            { "task": "[FEATURE] Garantir que a conclusão/arquivamento de uma tarefa na matriz atualize seu status na visão do projeto.", "status": "Pendente" }
+          ]
+        },
+        {
+          "epicName": "Filtros Avançados",
+          "status": "Pendente",
+          "tasks": [
+            { "task": "[FEATURE] Implementar um controle na 'matrix-view' para filtrar as tarefas por um ou mais projetos.", "status": "Pendente" }
           ]
         }
       ]
     },
     {
-      "phaseId": 4,
-      "phaseName": "Gestão de Projetos de Longo Prazo",
-      "status": "Em Progresso"
-    },
-    {
       "phaseId": 5,
       "phaseName": "Produtividade Proativa (O Assistente Inteligente)",
-      "status": "Pendente"
+      "status": "Pendente",
+      "objective": "Transformar a aplicação em um assistente ativo que ajuda o usuário a manter o foco, o momento e a clareza sobre suas tarefas e projetos.",
+      "epics": [
+        {
+          "epicName": "Fundação de Dados de Inatividade",
+          "status": "Pendente",
+          "tasks": [
+            { "task": "[REFACTOR] Adicionar um timestamp 'lastModifiedAt' aos modelos de dados de tarefas e projetos.", "status": "Pendente" }
+          ]
+        },
+        {
+          "epicName": "MVP - Nudges Passivos",
+          "status": "Pendente",
+          "tasks": [
+            { "task": "[UI] Implementar 'Indicadores Visuais de Frescor' nos cards com base na inatividade.", "status": "Pendente" }
+          ]
+        },
+        {
+          "epicName": "Feature Principal - O Ritual Estruturado",
+          "status": "Pendente",
+          "tasks": [
+            { "task": "[FEATURE] Criar um 'assistant-service.js' para conter a lógica dos nudges.", "status": "Pendente" },
+            { "task": "[UI] Construir o módulo de 'Revisão Semanal' para guiar o usuário.", "status": "Pendente" },
+            { "task": "[FEATURE] Implementar ações sugeridas para itens estagnados.", "status": "Pendente" }
+          ]
+        },
+        {
+          "epicName": "Melhoria Analítica",
+          "status": "Pendente",
+          "tasks": [
+            { "task": "[FEATURE] Aprimorar 'data-service.js' com uma função de 'Análise de Momentum'.", "status": "Pendente" },
+            { "task": "[UI] Adicionar a seção 'Itens Estagnados' na tela de Estatísticas.", "status": "Pendente" }
+          ]
+        }
+      ]
     }
   ]
 }
