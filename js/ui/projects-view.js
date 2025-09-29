@@ -37,8 +37,7 @@ export const projectsView = {
         header.style.marginBottom = 'var(--space-24)';
         header.innerHTML = `
             <div>
-                <h2 style="font-size: var(--font-size-3xl);">Meus Projetos</h2>
-                <p style="color: var(--color-text-secondary); margin-top: var(--space-4);">Organize suas metas e objetivos de longo prazo.</p>
+                <h2 style="font-size: var(--font-size-2xl);">Organize suas metas e objetivos de longo prazo</h2>
             </div>
             <button class="btn btn--primary" id="add-project-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px; margin-right: 8px;">

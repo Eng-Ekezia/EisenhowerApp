@@ -11,10 +11,16 @@ import { taskService } from './services/task-service.js';
 // 1. Importar o novo serviço de projetos
 import { projectService } from './services/project-service.js';
 
+
 function render() {
     const state = getState();
     const navButtons = document.querySelectorAll('.segmented-control__button');
+    const headerTitle = document.querySelector('.header__title'); // 1. Seleciona o elemento do título
 
+    // 2. Adiciona a lógica para atualizar o título dinamicamente
+    if (headerTitle) {
+        headerTitle.textContent = state.activeView === 'projects' ? 'Meus Projetos' : 'Matriz de Eisenhower';
+    }
     // Atualiza o estado ativo dos botões de navegação principal
     navButtons.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.view === state.activeView);
@@ -22,7 +28,7 @@ function render() {
     
     const matrixContainer = document.getElementById('matrix-view');
     const projectsContainer = document.getElementById('projects-view');
-    
+   
     matrixView.updateViewMode(state.matrixViewMode);
     
     if (state.activeView === 'matrix') {
