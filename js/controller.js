@@ -5,8 +5,6 @@ import { taskService } from './services/task-service.js';
 import { archiveService } from './services/archive-service.js';
 import { dataService } from './services/data-service.js';
 
-// Os manipuladores de eventos agora vivem aqui.
-// Eles não manipulam mais a variável 'tasks' diretamente, mas usam o 'getState' e 'setState'.
 export const eventHandlers = {
     onToggleComplete: (taskId) => {
         const { tasks } = getState();
@@ -30,21 +28,26 @@ export const eventHandlers = {
             setState({ tasks: updatedTasks });
         }
     },
+    // CORREÇÃO: A lógica agora obtém a lista atualizada do serviço após a ação.
     onRestore: (taskId) => {
         const restoredTask = taskService.restoreTask(taskId);
         if (restoredTask) {
-            const { tasks, archivedTasks } = getState();
+            const { tasks } = getState();
+            // CORREÇÃO: Pega a lista de arquivados ATUALIZADA diretamente do serviço.
+            const newArchivedTasks = archiveService.getArchivedTasks();
             setState({
                 tasks: [...tasks, restoredTask],
-                archivedTasks: archivedTasks.filter(t => t.id !== taskId)
+                archivedTasks: newArchivedTasks
             });
         }
     },
+    
     onDeletePermanently: (taskId) => {
         if (confirm('Esta ação não pode ser desfeita. Excluir permanentemente?')) {
             taskService.deletePermanently(taskId);
-            const { archivedTasks } = getState();
-            setState({ archivedTasks: archivedTasks.filter(t => t.id !== taskId) });
+            // CORREÇÃO: Pega a lista de arquivados ATUALIZADA diretamente do serviço.
+            const newArchivedTasks = archiveService.getArchivedTasks();
+            setState({ archivedTasks: newArchivedTasks });
         }
     },
     onUpdate: (taskId, updates) => {
@@ -84,10 +87,6 @@ export const eventHandlers = {
     }
 };
 
-/**
- * Função de inicialização do controlador.
- * Carrega os dados iniciais dos serviços e popula o estado central.
- */
 export function init() {
     const initialTasks = taskService.getTasks();
     const initialArchivedTasks = archiveService.getArchivedTasks();

@@ -1,109 +1,50 @@
 // js/app.js
 
-import { taskService } from './services/task-service.js';
-import { uiManager } from './ui/matrix-view.js';
+// --- 1. Importações de Módulos ---
+import { subscribe, getState, setState } from './state.js';
+import { init as initController, eventHandlers } from './controller.js';
+import { matrixView } from './ui/matrix-view.js';
+import { projectsView } from './ui/projects-view.js';
 import { notificationService } from './services/notification-service.js';
 import { dataService } from './services/data-service.js';
-// NOVO: Importamos o archiveService para obter os dados do arquivo morto.
 import { archiveService } from './services/archive-service.js';
+import { taskService } from './services/task-service.js';
 
-let tasks = [];
-let draggedTaskId = null;
+// --- 2. Renderização Principal (Router de Visões) ---
 
-const eventHandlers = {
-    onToggleComplete: (taskId) => {
-        const task = tasks.find(t => t.id === taskId);
-        if (task) {
-            tasks = taskService.updateTask(tasks, taskId, { completed: !task.completed });
-            render();
-        }
-    },
-    onDelete: (taskId) => {
-        if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
-            tasks = taskService.deleteTask(tasks, taskId);
-            render();
-        }
-    },
-    onArchive: (taskId) => {
-        if (confirm('Deseja arquivar esta tarefa concluída?')) {
-            tasks = taskService.archiveTask(tasks, taskId);
-            render();
-        }
-    },
-    // NOVO: Handler para restaurar uma tarefa do arquivo morto.
-    onRestore: (taskId) => {
-        const restoredTask = taskService.restoreTask(taskId);
-        if (restoredTask) {
-            tasks = [...tasks, restoredTask];
-            render();
-            // Reabre o modal com a lista atualizada.
-            openArchiveModal(); 
-        }
-    },
-    // NOVO: Handler para excluir permanentemente uma tarefa.
-    onDeletePermanently: (taskId) => {
-        if (confirm('Esta ação não pode ser desfeita. Excluir permanentemente?')) {
-            taskService.deletePermanently(taskId);
-            // Reabre o modal com a lista atualizada.
-            openArchiveModal();
-        }
-    },
-    onUpdate: (taskId, updates) => {
-        tasks = taskService.updateTask(tasks, taskId, updates);
-        // Não renderiza aqui para evitar perder o foco durante a edição do texto
-    },
-    onSaveNewTask: (quadrant, text, dueDate) => {
-        tasks = taskService.addTask(tasks, quadrant, text, dueDate);
-        render();
-    },
-    onDragStart: (taskId) => {
-        draggedTaskId = taskId;
-    },
-    onDrop: (newQuadrantId) => {
-        if (draggedTaskId) {
-            tasks = taskService.updateTask(tasks, draggedTaskId, { quadrant: newQuadrantId });
-            render();
-        }
-        draggedTaskId = null;
-    },
-    onAddSubtask: (taskId, subtaskText) => {
-        const { updatedTasks, newSubtask } = taskService.addSubtask(tasks, taskId, subtaskText);
-        tasks = updatedTasks;
-        if (newSubtask) {
-            uiManager.appendSubtask(taskId, newSubtask, eventHandlers);
-        }
-    },
-    onUpdateSubtask: (taskId, subtaskId, updates) => {
-        tasks = taskService.updateSubtask(tasks, taskId, subtaskId, updates);
-        render();
-    },
-    onDeleteSubtask: (taskId, subtaskId) => {
-        tasks = taskService.deleteSubtask(tasks, taskId, subtaskId);
-        render();
-    }
-};
-
+/**
+ * Função de renderização principal.
+ * É chamada sempre que o estado global da aplicação muda.
+ * Atua como um router, decidindo qual visão renderizar.
+ */
 function render() {
-    uiManager.renderTasks(tasks, eventHandlers);
-}
-
-// NOVO: Função para abrir e popular o modal de histórico.
-function openArchiveModal() {
-    const archivedTasks = archiveService.getArchivedTasks();
-    uiManager.renderArchivedTasks(archivedTasks, eventHandlers);
+    const state = getState();
     
-    const archiveModal = document.getElementById('archive-modal');
-    archiveModal.classList.remove('hidden');
+    // CORREÇÃO: Seletores ajustados para os contêineres de visão corretos.
+    const matrixContainer = document.getElementById('matrix-view');
+    const projectsContainer = document.getElementById('projects-view');
     
-    // Fecha o menu lateral se estiver aberto.
-    const sheet = document.getElementById('sheet-menu');
-    if (sheet.classList.contains('is-open')) {
-        sheet.querySelector('[data-action="close-sheet"]').click();
+    // Decide qual visão renderizar com base no estado.
+    if (state.activeView === 'matrix') {
+        matrixContainer.classList.remove('hidden');
+        projectsContainer.classList.add('hidden');
+        matrixView.render(state.tasks, eventHandlers);
+    } else if (state.activeView === 'projects') {
+        matrixContainer.classList.add('hidden');
+        projectsContainer.classList.remove('hidden');
+        projectsView.render(state.projects, eventHandlers);
     }
+    const archivedTasks = archiveService.getArchivedTasks();
+    matrixView.renderArchivedTasks(archivedTasks, eventHandlers);
 }
 
+// --- 3. Vinculação de Eventos Estáticos ---
+
+/**
+ * Vincula eventos a elementos do DOM que são estáticos e não pertencem a uma visão específica.
+ * (ex: menu lateral, modais, botões de importação/exportação).
+ */
 function bindStaticEvents() {
-    // --- SELEÇÃO DE ELEMENTOS ---
     const sheet = document.getElementById('sheet-menu');
     const openBtn = document.getElementById('menu-btn');
     const closeTriggers = document.querySelectorAll('[data-action="close-sheet"]');
@@ -114,34 +55,28 @@ function bindStaticEvents() {
     const statsBtn = document.getElementById('sheet-stats-btn');
     const statsModal = document.getElementById('stats-modal');
 
-    // NOVO: Seleção dos elementos do modal de histórico.
     const archiveBtn = document.getElementById('sheet-archive-btn');
     const archiveModal = document.getElementById('archive-modal');
-    const closeArchiveTriggers = document.querySelectorAll('[data-action="close-archive-modal"]');
 
     const exportBtn = document.getElementById('sheet-export-btn');
     const importBtn = document.getElementById('sheet-import-btn');
     const fileInput = document.getElementById('import-file-input');
 
-    // --- LÓGICA DO MENU LATERAL (SHEET) ---
-    const openSheet = () => {
-        sheet.classList.remove('is-closing');
-        sheet.classList.add('is-open');
-    };
+    // Lógica do Menu Lateral (Sheet)
+    const openSheet = () => sheet.classList.add('is-open');
     const closeSheet = () => {
         sheet.classList.add('is-closing');
         sheet.addEventListener('animationend', () => {
-            sheet.classList.remove('is-open');
-            sheet.classList.remove('is-closing');
+            sheet.classList.remove('is-open', 'is-closing');
         }, { once: true });
     };
-
     if (sheet && openBtn) {
         openBtn.addEventListener('click', openSheet);
         closeTriggers.forEach(trigger => trigger.addEventListener('click', closeSheet));
     }
 
-    // --- LÓGICA DOS BOTÕES E MODAIS ---
+    // CORREÇÃO: A lógica genérica 'setupModal' foi removida e substituída por listeners específicos.
+
     if (helpBtn && helpModal) {
         helpBtn.addEventListener('click', () => {
             helpModal.classList.remove('hidden');
@@ -153,26 +88,32 @@ function bindStaticEvents() {
 
     if (statsBtn && statsModal) {
         statsBtn.addEventListener('click', () => {
+            const { tasks } = getState();
             const stats = dataService.calculateStats(tasks);
-            uiManager.displayStats(stats);
+            matrixView.displayStats(stats);
             statsModal.classList.remove('hidden');
             closeSheet();
         });
-        statsModal.querySelector('.modal__close').addEventListener('click', () => statsModal.classList.add('hidden'));
-        statsModal.querySelector('.modal__overlay').addEventListener('click', () => statsModal.classList.add('hidden'));
+        statsModal.querySelectorAll('.modal__close, .modal__overlay').forEach(el =>
+            el.addEventListener('click', () => statsModal.classList.add('hidden'))
+        );
     }
     
-    // NOVO: Lógica para o modal de histórico.
     if (archiveBtn && archiveModal) {
-        archiveBtn.addEventListener('click', openArchiveModal);
-        closeArchiveTriggers.forEach(trigger => {
+        archiveBtn.addEventListener('click', () => {
+            const archivedTasks = archiveService.getArchivedTasks();
+            matrixView.renderArchivedTasks(archivedTasks, eventHandlers);
+            archiveModal.classList.remove('hidden');
+            closeSheet();
+        });
+        archiveModal.querySelectorAll('[data-action="close-archive-modal"]').forEach(trigger => {
             trigger.addEventListener('click', () => archiveModal.classList.add('hidden'));
         });
     }
 
+    // Lógica de Importação/Exportação
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
-            // A chamada agora não precisa de argumentos, pois o dataService busca os dados.
             dataService.exportTasks();
             closeSheet();
         });
@@ -193,13 +134,14 @@ function bindStaticEvents() {
                 if (confirm('Atenção: Isso substituirá todas as suas tarefas atuais e arquivadas. Deseja continuar?')) {
                     const importedData = dataService.importTasks(jsonContent);
                     if (importedData) {
-                        // Salva as tarefas ativas e arquivadas em seus respectivos locais.
                         taskService.saveTasks(importedData.activeTasks);
                         archiveService.saveArchivedTasks(importedData.archivedTasks);
                         
-                        // Atualiza o estado da aplicação e renderiza.
-                        tasks = importedData.activeTasks;
-                        render();
+                        // CORREÇÃO: A lógica aqui foi simplificada para usar setState, que já aciona a renderização.
+                        setState({ 
+                            tasks: importedData.activeTasks,
+                            archivedTasks: importedData.archivedTasks
+                        });
                         
                         alert('Tarefas importadas com sucesso!');
                     } else {
@@ -212,20 +154,29 @@ function bindStaticEvents() {
         });
     }
 
+    // Vincula eventos aos botões "Adicionar Tarefa" da Matriz
     document.querySelectorAll('.add-task-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const quadrant = btn.closest('.quadrant').dataset.quadrant;
-            uiManager.showTaskInput(quadrant, eventHandlers);
+            matrixView.showTaskInput(quadrant, eventHandlers);
         });
     });
+    
+    // CORREÇÃO: Garante que a vinculação do drag-and-drop seja sempre chamada.
+    matrixView.bindDragAndDropEvents(eventHandlers);
 }
 
+// --- 4. Inicialização da Aplicação ---
+
+/**
+ * Ponto de entrada principal da aplicação.
+ */
 function init() {
-    tasks = taskService.getTasks();
+    subscribe(render);
     bindStaticEvents();
-    uiManager.bindDragAndDropEvents(eventHandlers);
-    notificationService.start(() => tasks);
-    render();
+    initController();
+    notificationService.start(() => getState().tasks);
 }
 
+// Inicia a aplicação.
 init();
