@@ -56,18 +56,20 @@ export const eventHandlers = {
         const updatedTasks = taskService.addTask(tasks, quadrant, text, dueDate);
         setState({ tasks: updatedTasks });
     },
-    // ATUALIZADO: onDrop agora recebe um terceiro parâmetro, o targetId.
     onDrop: (taskId, newQuadrantId, targetId) => {
         const { tasks } = getState();
-        
-        // A lógica agora é passada para um novo serviço mais robusto.
         const updatedTasks = taskService.moveTask(tasks, {
             draggedId: taskId,
             targetId: targetId,
             newQuadrantId: newQuadrantId
         });
-
         setState({ tasks: updatedTasks });
+    },
+    // NOVO MANIPULADOR: Alterna o modo de visualização no estado.
+    onToggleMatrixView: () => {
+        const { matrixViewMode } = getState();
+        const newMode = matrixViewMode === 'grid' ? 'columns' : 'grid';
+        setState({ matrixViewMode: newMode });
     },
     onAddSubtask: (taskId, subtaskText) => {
         const { tasks } = getState();

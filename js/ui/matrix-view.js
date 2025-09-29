@@ -1,8 +1,9 @@
-// js/ui/ui-manager.js
+// js/ui/matrix-view.js
 
 import { createTaskCard, appendSubtask } from './task-card-component.js';
 
 const selectors = {
+    matrix: document.getElementById('matrix'), // Seletor para o container da matriz
     getTaskList: (quadrant) => document.querySelector(`.quadrant[data-quadrant="${quadrant}"] .task-list`),
     getQuadrant: (quadrantId) => document.querySelector(`[data-quadrant="${quadrantId}"]`),
     getAllQuadrants: () => document.querySelectorAll('[data-quadrant]'),
@@ -22,16 +23,12 @@ function removeCurrentTaskInput() {
     }
 }
 
-// NOVA FUNÇÃO: Calcula qual elemento está mais próximo do cursor durante o arraste.
 function getDragAfterElement(container, y) {
     const draggableElements = [...container.querySelectorAll('.task:not(.dragging)')];
 
     return draggableElements.reduce((closest, child) => {
         const box = child.getBoundingClientRect();
-        // O offset é a distância do cursor (y) até o meio do elemento filho.
         const offset = y - box.top - box.height / 2;
-        // Queremos o elemento logo após o cursor, então procuramos um offset negativo
-        // que seja o mais próximo de zero.
         if (offset < 0 && offset > closest.offset) {
             return { offset: offset, element: child };
         } else {
@@ -41,6 +38,13 @@ function getDragAfterElement(container, y) {
 }
 
 export const matrixView = {
+    // NOVA FUNÇÃO: Aplica o modo de visualização ao elemento da matriz.
+    updateViewMode: (mode) => {
+        if (selectors.matrix) {
+            selectors.matrix.dataset.viewMode = mode;
+        }
+    },
+
     render: (tasks, eventHandlers) => {
         const quadrantsContent = {};
         ['q1', 'q2', 'q3', 'q4'].forEach(qId => {
@@ -98,19 +102,19 @@ export const matrixView = {
     },
 
     bindDragAndDropEvents: (eventHandlers) => {
-        // O listener de DROP permanece nos quadrantes para capturar o evento final
         document.querySelectorAll('.quadrant').forEach(quadrant => {
-            quadrant.addEventListener('dragover', e => {
-                e.preventDefault(); // Permite que a soltura ocorra
+            quadrant.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                quadrant.classList.add('drag-over');
             });
-            
+            quadrant.addEventListener('dragleave', () => {
+                quadrant.classList.remove('drag-over');
+            });
             quadrant.addEventListener('drop', (e) => {
                 e.preventDefault();
                 quadrant.classList.remove('drag-over');
                 const taskId = e.dataTransfer.getData('text/plain');
                 const newQuadrantId = quadrant.dataset.quadrant;
-
-                // Encontra a tarefa alvo (próximo elemento)
                 const afterElement = getDragAfterElement(quadrant.querySelector('.task-list'), e.clientY);
                 const targetId = afterElement ? afterElement.dataset.taskId : null;
 
@@ -120,7 +124,6 @@ export const matrixView = {
             });
         });
 
-        // NOVO: Adiciona um listener de DRAGOVER às listas para o feedback visual da reordenação
         document.querySelectorAll('.task-list').forEach(taskList => {
             taskList.addEventListener('dragover', e => {
                 e.preventDefault();

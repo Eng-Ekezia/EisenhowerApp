@@ -12,6 +12,7 @@ const state = {
     archivedTasks: [],
     projects: [],
     draggedTaskId: null,
+    matrixViewMode: 'grid', // 'grid' ou 'columns'
 };
 
 // Lista de 'ouvintes' (funções) que serão notificadas quando o estado mudar.

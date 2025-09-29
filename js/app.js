@@ -1,6 +1,5 @@
 // js/app.js
 
-// --- 1. Importações de Módulos ---
 import { subscribe, getState, setState } from './state.js';
 import { init as initController, eventHandlers } from './controller.js';
 import { matrixView } from './ui/matrix-view.js';
@@ -10,21 +9,15 @@ import { dataService } from './services/data-service.js';
 import { archiveService } from './services/archive-service.js';
 import { taskService } from './services/task-service.js';
 
-// --- 2. Renderização Principal (Router de Visões) ---
-
-/**
- * Função de renderização principal.
- * É chamada sempre que o estado global da aplicação muda.
- * Atua como um router, decidindo qual visão renderizar.
- */
 function render() {
     const state = getState();
     
-    // CORREÇÃO: Seletores ajustados para os contêineres de visão corretos.
     const matrixContainer = document.getElementById('matrix-view');
     const projectsContainer = document.getElementById('projects-view');
     
-    // Decide qual visão renderizar com base no estado.
+    // ATUALIZADO: Passa o modo de visualização atual para a matrixView a cada renderização.
+    matrixView.updateViewMode(state.matrixViewMode);
+    
     if (state.activeView === 'matrix') {
         matrixContainer.classList.remove('hidden');
         projectsContainer.classList.add('hidden');
@@ -38,12 +31,6 @@ function render() {
     matrixView.renderArchivedTasks(archivedTasks, eventHandlers);
 }
 
-// --- 3. Vinculação de Eventos Estáticos ---
-
-/**
- * Vincula eventos a elementos do DOM que são estáticos e não pertencem a uma visão específica.
- * (ex: menu lateral, modais, botões de importação/exportação).
- */
 function bindStaticEvents() {
     const sheet = document.getElementById('sheet-menu');
     const openBtn = document.getElementById('menu-btn');
@@ -62,7 +49,8 @@ function bindStaticEvents() {
     const importBtn = document.getElementById('sheet-import-btn');
     const fileInput = document.getElementById('import-file-input');
 
-    // Lógica do Menu Lateral (Sheet)
+    const viewToggleButton = document.getElementById('sheet-view-toggle-btn');
+
     const openSheet = () => sheet.classList.add('is-open');
     const closeSheet = () => {
         sheet.classList.add('is-closing');
@@ -75,7 +63,13 @@ function bindStaticEvents() {
         closeTriggers.forEach(trigger => trigger.addEventListener('click', closeSheet));
     }
 
-    // CORREÇÃO: A lógica genérica 'setupModal' foi removida e substituída por listeners específicos.
+    // NOVO: Vincula o botão de alternância de visualização ao controller.
+    if (viewToggleButton) {
+        viewToggleButton.addEventListener('click', () => {
+            eventHandlers.onToggleMatrixView();
+            closeSheet(); // Fecha o menu após a ação
+        });
+    }
 
     if (helpBtn && helpModal) {
         helpBtn.addEventListener('click', () => {
@@ -111,7 +105,6 @@ function bindStaticEvents() {
         });
     }
 
-    // Lógica de Importação/Exportação
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
             dataService.exportTasks();
@@ -137,7 +130,6 @@ function bindStaticEvents() {
                         taskService.saveTasks(importedData.activeTasks);
                         archiveService.saveArchivedTasks(importedData.archivedTasks);
                         
-                        // CORREÇÃO: A lógica aqui foi simplificada para usar setState, que já aciona a renderização.
                         setState({ 
                             tasks: importedData.activeTasks,
                             archivedTasks: importedData.archivedTasks
@@ -154,7 +146,6 @@ function bindStaticEvents() {
         });
     }
 
-    // Vincula eventos aos botões "Adicionar Tarefa" da Matriz
     document.querySelectorAll('.add-task-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const quadrant = btn.closest('.quadrant').dataset.quadrant;
@@ -162,15 +153,9 @@ function bindStaticEvents() {
         });
     });
     
-    // CORREÇÃO: Garante que a vinculação do drag-and-drop seja sempre chamada.
     matrixView.bindDragAndDropEvents(eventHandlers);
 }
 
-// --- 4. Inicialização da Aplicação ---
-
-/**
- * Ponto de entrada principal da aplicação.
- */
 function init() {
     subscribe(render);
     bindStaticEvents();
@@ -178,5 +163,4 @@ function init() {
     notificationService.start(() => getState().tasks);
 }
 
-// Inicia a aplicação.
 init();

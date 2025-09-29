@@ -862,6 +862,12 @@ select.form-control {
     gap: var(--space-8);
     margin-bottom: var(--space-16);
     min-height: 60px;
+    align-items: stretch;
+}
+
+/* CORREÇÃO APLICADA AQUI */
+.task-list > .task {
+    width: 100%;
 }
 
 /* Tarefa individual */
@@ -1428,7 +1434,7 @@ select.form-control {
 
 /* Lógica de exibição da seção de subtarefas
 *.task.has-subtasks .add-subtask-placeholder-btn {
-*    display: none;
+* display: none;
 }*/
 .task:not(.has-subtasks) .subtask-list {
     display: none;
@@ -1876,4 +1882,3 @@ select.form-control {
 .subtask-item:hover .subtask-delete-btn { display: inline-block; }
 .subtask-delete-btn svg { width: 16px; height: 16px; color: var(--color-text-secondary); }
 .subtask-delete-btn:hover svg { color: var(--color-error); }
-/* O FECHA-CHAVES EXTRA QUE ESTAVA AQUI FOI REMOVIDO */
