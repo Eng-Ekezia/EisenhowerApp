@@ -13,6 +13,12 @@ import { projectService } from './services/project-service.js';
 
 function render() {
     const state = getState();
+    const navButtons = document.querySelectorAll('.segmented-control__button');
+
+    // Atualiza o estado ativo dos botões de navegação principal
+    navButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === state.activeView);
+    });
     
     const matrixContainer = document.getElementById('matrix-view');
     const projectsContainer = document.getElementById('projects-view');
@@ -51,6 +57,13 @@ function bindStaticEvents() {
     const fileInput = document.getElementById('import-file-input');
 
     const viewToggleButton = document.getElementById('sheet-view-toggle-btn');
+    // BIND DOS NOVOS BOTÕES DE NAVEGAÇÃO PRINCIPAL
+    const navButtons = document.querySelectorAll('.segmented-control__button');
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            eventHandlers.onSetView(btn.dataset.view);
+        });
+    });
 
     const openSheet = () => sheet.classList.add('is-open');
     const closeSheet = () => {

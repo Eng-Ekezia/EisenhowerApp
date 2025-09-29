@@ -4,6 +4,7 @@ import { setState, getState } from './state.js';
 import { taskService } from './services/task-service.js';
 import { archiveService } from './services/archive-service.js';
 import { dataService } from './services/data-service.js';
+import { projectService } from './services/project-service.js'; // Importa o novo serviço
 
 export const eventHandlers = {
     onToggleComplete: (taskId) => {
@@ -53,7 +54,8 @@ export const eventHandlers = {
     },
     onSaveNewTask: (quadrant, text, dueDate) => {
         const { tasks } = getState();
-        const updatedTasks = taskService.addTask(tasks, quadrant, text, dueDate);
+        // O projectId será adicionado futuramente a partir da UI de projetos
+        const updatedTasks = taskService.addTask(tasks, quadrant, text, dueDate, null);
         setState({ tasks: updatedTasks });
     },
     onDrop: (taskId, newQuadrantId, targetId) => {
@@ -65,11 +67,16 @@ export const eventHandlers = {
         });
         setState({ tasks: updatedTasks });
     },
-    // NOVO MANIPULADOR: Alterna o modo de visualização no estado.
     onToggleMatrixView: () => {
         const { matrixViewMode } = getState();
         const newMode = matrixViewMode === 'grid' ? 'columns' : 'grid';
         setState({ matrixViewMode: newMode });
+    },
+    // NOVO: Handler para a navegação principal no cabeçalho
+    onSetView: (viewName) => {
+        if (['matrix', 'projects'].includes(viewName)) {
+            setState({ activeView: viewName });
+        }
     },
     onAddSubtask: (taskId, subtaskText) => {
         const { tasks } = getState();
@@ -89,11 +96,15 @@ export const eventHandlers = {
 };
 
 export function init() {
+    // Carrega todos os dados iniciais
     const initialTasks = taskService.getTasks();
     const initialArchivedTasks = archiveService.getArchivedTasks();
+    const initialProjects = projectService.getProjects(); // Carrega os projetos
     
+    // Define o estado inicial completo da aplicação
     setState({
         tasks: initialTasks,
-        archivedTasks: initialArchivedTasks
+        archivedTasks: initialArchivedTasks,
+        projects: initialProjects
     });
 }
