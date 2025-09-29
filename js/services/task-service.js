@@ -128,7 +128,6 @@ export const taskService = {
         return updatedTasks;
     },
 
-    // CORREÇÃO APLICADA AQUI: Funções dentro do objeto exportado
     restoreTask: (taskId) => {
         const { restoredTask } = archiveService.restoreTask(taskId);
         if (restoredTask) {
@@ -142,6 +141,37 @@ export const taskService = {
 
     deletePermanently: (taskId) => {
         archiveService.deletePermanently(taskId);
+    },
+
+    // NOVA FUNÇÃO: Lógica central para mover e reordenar tarefas.
+    moveTask: (tasks, { draggedId, targetId, newQuadrantId }) => {
+        const taskToMove = tasks.find(t => t.id === draggedId);
+        if (!taskToMove) return tasks;
+
+        // 1. Remove a tarefa da sua posição original.
+        const remainingTasks = tasks.filter(t => t.id !== draggedId);
+
+        // 2. Atualiza o quadrante da tarefa movida.
+        taskToMove.quadrant = newQuadrantId;
+
+        // 3. Se não houver alvo (solta em área vazia), adiciona ao final das tarefas do mesmo quadrante.
+        if (targetId === null) {
+            remainingTasks.push(taskToMove);
+            saveTasks(remainingTasks);
+            return remainingTasks;
+        }
+
+        // 4. Se houver um alvo, encontra seu índice e insere a tarefa antes dele.
+        const targetIndex = remainingTasks.findIndex(t => t.id === targetId);
+        if (targetIndex !== -1) {
+            remainingTasks.splice(targetIndex, 0, taskToMove);
+        } else {
+            // Caso o alvo não seja encontrado, adiciona ao final para segurança.
+            remainingTasks.push(taskToMove);
+        }
+
+        saveTasks(remainingTasks);
+        return remainingTasks;
     },
 
     addSubtask: (tasks, taskId, subtaskText) => {

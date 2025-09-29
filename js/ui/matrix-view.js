@@ -9,7 +9,6 @@ const selectors = {
     taskTemplate: document.getElementById('task-template'),
     taskInputTemplate: document.getElementById('task-input-template'),
     statsContent: document.getElementById('stats-content'),
-    // NOVO: Seletores para o conteúdo do modal de histórico.
     archiveListContainer: document.getElementById('archive-list-container'),
     emptyArchiveMessage: document.getElementById('empty-archive-message')
 };
@@ -21,6 +20,24 @@ function removeCurrentTaskInput() {
         currentTaskInput.remove();
         currentTaskInput = null;
     }
+}
+
+// NOVA FUNÇÃO: Calcula qual elemento está mais próximo do cursor durante o arraste.
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.task:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        // O offset é a distância do cursor (y) até o meio do elemento filho.
+        const offset = y - box.top - box.height / 2;
+        // Queremos o elemento logo após o cursor, então procuramos um offset negativo
+        // que seja o mais próximo de zero.
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
 export const matrixView = {
@@ -81,19 +98,41 @@ export const matrixView = {
     },
 
     bindDragAndDropEvents: (eventHandlers) => {
+        // O listener de DROP permanece nos quadrantes para capturar o evento final
         document.querySelectorAll('.quadrant').forEach(quadrant => {
-            quadrant.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                quadrant.classList.add('drag-over');
+            quadrant.addEventListener('dragover', e => {
+                e.preventDefault(); // Permite que a soltura ocorra
             });
-            quadrant.addEventListener('dragleave', () => {
-                quadrant.classList.remove('drag-over');
-            });
+            
             quadrant.addEventListener('drop', (e) => {
                 e.preventDefault();
                 quadrant.classList.remove('drag-over');
+                const taskId = e.dataTransfer.getData('text/plain');
                 const newQuadrantId = quadrant.dataset.quadrant;
-                eventHandlers.onDrop(newQuadrantId);
+
+                // Encontra a tarefa alvo (próximo elemento)
+                const afterElement = getDragAfterElement(quadrant.querySelector('.task-list'), e.clientY);
+                const targetId = afterElement ? afterElement.dataset.taskId : null;
+
+                if (taskId) {
+                    eventHandlers.onDrop(taskId, newQuadrantId, targetId);
+                }
+            });
+        });
+
+        // NOVO: Adiciona um listener de DRAGOVER às listas para o feedback visual da reordenação
+        document.querySelectorAll('.task-list').forEach(taskList => {
+            taskList.addEventListener('dragover', e => {
+                e.preventDefault();
+                const dragging = document.querySelector('.dragging');
+                if (!dragging) return;
+                
+                const afterElement = getDragAfterElement(taskList, e.clientY);
+                if (afterElement == null) {
+                    taskList.appendChild(dragging);
+                } else {
+                    taskList.insertBefore(dragging, afterElement);
+                }
             });
         });
     },
@@ -112,7 +151,7 @@ export const matrixView = {
         `;
 
         container.appendChild(toast);
-        setTimeout(() => toast.classList.add('show'), 10); // Adiciona a classe após um pequeno delay para a transição funcionar
+        setTimeout(() => toast.classList.add('show'), 10);
 
         setTimeout(() => {
             toast.classList.remove('show');
@@ -120,7 +159,6 @@ export const matrixView = {
         }, 5000);
     },
     
-    // NOVO: Função para renderizar as tarefas arquivadas.
     renderArchivedTasks: (archivedTasks, eventHandlers) => {
         if (!selectors.archiveListContainer || !selectors.emptyArchiveMessage) return;
 
@@ -134,7 +172,6 @@ export const matrixView = {
         selectors.emptyArchiveMessage.classList.add('hidden');
 
         const fragment = document.createDocumentFragment();
-        // Ordena as tarefas arquivadas pela data de arquivamento, da mais recente para a mais antiga.
         archivedTasks.sort((a, b) => new Date(b.archivedAt) - new Date(a.archivedAt));
 
         archivedTasks.forEach(task => {

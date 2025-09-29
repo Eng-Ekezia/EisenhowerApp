@@ -130,8 +130,12 @@ export function createTaskCard(task, eventHandlers) {
     
     taskDiv.addEventListener('dragstart', (e) => {
         taskDiv.classList.add('dragging');
-        eventHandlers.onDragStart(task.id);
+        // NOVO: Armazena o ID da tarefa no objeto dataTransfer.
+        // Isso torna a operação de arrastar autocontida.
+        e.dataTransfer.setData('text/plain', task.id);
         e.dataTransfer.effectAllowed = 'move';
+        // REMOVIDO: Não precisamos mais chamar o onDragStart para definir um estado global.
+        // eventHandlers.onDragStart(task.id); 
     });
     taskDiv.addEventListener('dragend', () => taskDiv.classList.remove('dragging'));
 

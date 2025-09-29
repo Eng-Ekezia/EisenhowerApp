@@ -28,12 +28,10 @@ export const eventHandlers = {
             setState({ tasks: updatedTasks });
         }
     },
-    // CORREÇÃO: A lógica agora obtém a lista atualizada do serviço após a ação.
     onRestore: (taskId) => {
         const restoredTask = taskService.restoreTask(taskId);
         if (restoredTask) {
             const { tasks } = getState();
-            // CORREÇÃO: Pega a lista de arquivados ATUALIZADA diretamente do serviço.
             const newArchivedTasks = archiveService.getArchivedTasks();
             setState({
                 tasks: [...tasks, restoredTask],
@@ -41,11 +39,9 @@ export const eventHandlers = {
             });
         }
     },
-    
     onDeletePermanently: (taskId) => {
         if (confirm('Esta ação não pode ser desfeita. Excluir permanentemente?')) {
             taskService.deletePermanently(taskId);
-            // CORREÇÃO: Pega a lista de arquivados ATUALIZADA diretamente do serviço.
             const newArchivedTasks = archiveService.getArchivedTasks();
             setState({ archivedTasks: newArchivedTasks });
         }
@@ -60,15 +56,18 @@ export const eventHandlers = {
         const updatedTasks = taskService.addTask(tasks, quadrant, text, dueDate);
         setState({ tasks: updatedTasks });
     },
-    onDragStart: (taskId) => {
-        setState({ draggedTaskId: taskId });
-    },
-    onDrop: (newQuadrantId) => {
-        const { tasks, draggedTaskId } = getState();
-        if (draggedTaskId) {
-            const updatedTasks = taskService.updateTask(tasks, draggedTaskId, { quadrant: newQuadrantId });
-            setState({ tasks: updatedTasks, draggedTaskId: null });
-        }
+    // ATUALIZADO: onDrop agora recebe um terceiro parâmetro, o targetId.
+    onDrop: (taskId, newQuadrantId, targetId) => {
+        const { tasks } = getState();
+        
+        // A lógica agora é passada para um novo serviço mais robusto.
+        const updatedTasks = taskService.moveTask(tasks, {
+            draggedId: taskId,
+            targetId: targetId,
+            newQuadrantId: newQuadrantId
+        });
+
+        setState({ tasks: updatedTasks });
     },
     onAddSubtask: (taskId, subtaskText) => {
         const { tasks } = getState();
