@@ -43,7 +43,8 @@ function getSampleTasks() {
             completed: false,
             createdAt: new Date().toISOString(),
             dueDate: todayISO,
-            subtasks: []
+            subtasks: [],
+            projectId: null
         },
         {
             id: generateId(),
@@ -56,7 +57,8 @@ function getSampleTasks() {
                 { id: generateId(), text: "Pesquisar destinos", completed: true },
                 { id: generateId(), text: "Verificar preços de passagens", completed: false },
                 { id: generateId(), text: "Reservar hotel", completed: false }
-            ]
+            ],
+            projectId: null
         },
         {
             id: generateId(),
@@ -65,7 +67,8 @@ function getSampleTasks() {
             completed: false,
             createdAt: new Date().toISOString(),
             dueDate: null,
-            subtasks: []
+            subtasks: [],
+            projectId: null
         }
     ];
 }
@@ -88,7 +91,7 @@ export const taskService = {
         return tasks;
     },
 
-    addTask: (tasks, quadrant, text, dueDate) => {
+    addTask: (tasks, quadrant, text, dueDate, projectId) => {
         if (!text || !text.trim()) return tasks;
 
         const newTask = {
@@ -98,7 +101,8 @@ export const taskService = {
             completed: false,
             createdAt: new Date().toISOString(),
             dueDate: dueDate || null,
-            subtasks: []
+            subtasks: [],
+            projectId: projectId || null
         };
         const updatedTasks = [...tasks, newTask];
         saveTasks(updatedTasks);
@@ -143,30 +147,23 @@ export const taskService = {
         archiveService.deletePermanently(taskId);
     },
 
-    // NOVA FUNÇÃO: Lógica central para mover e reordenar tarefas.
     moveTask: (tasks, { draggedId, targetId, newQuadrantId }) => {
         const taskToMove = tasks.find(t => t.id === draggedId);
         if (!taskToMove) return tasks;
 
-        // 1. Remove a tarefa da sua posição original.
         const remainingTasks = tasks.filter(t => t.id !== draggedId);
-
-        // 2. Atualiza o quadrante da tarefa movida.
         taskToMove.quadrant = newQuadrantId;
 
-        // 3. Se não houver alvo (solta em área vazia), adiciona ao final das tarefas do mesmo quadrante.
         if (targetId === null) {
             remainingTasks.push(taskToMove);
             saveTasks(remainingTasks);
             return remainingTasks;
         }
 
-        // 4. Se houver um alvo, encontra seu índice e insere a tarefa antes dele.
         const targetIndex = remainingTasks.findIndex(t => t.id === targetId);
         if (targetIndex !== -1) {
             remainingTasks.splice(targetIndex, 0, taskToMove);
         } else {
-            // Caso o alvo não seja encontrado, adiciona ao final para segurança.
             remainingTasks.push(taskToMove);
         }
 
