@@ -13,6 +13,7 @@ const state = {
     projects: [],
     draggedTaskId: null,
     matrixViewMode: 'grid', // 'grid' ou 'columns'
+    viewingProjectId: null, // NOVO: Armazena o ID do projeto que está sendo visualizado
 };
 
 // Lista de 'ouvintes' (funções) que serão notificadas quando o estado mudar.
