@@ -60,7 +60,7 @@
           "tasks": [
             { "task": "[UI] Implementar um navegador principal (abas) no cabeçalho para alternar entre as views Matriz e Projetos.", "status": "Concluído" },
             { "task": "[UI] Construir a view principal de projetos ('projects-view.js') para listar todos os projetos.", "status": "Concluído" },
-            { "task": "[UI] Implementar a visualização interna de um projeto, mostrando suas tarefas e uma barra de progresso.", "status": "Pendente" }
+            { "task": "[UI] Implementar a visualização interna de um projeto, mostrando suas tarefas e uma barra de progresso.", "status": "Em Progresso" }
           ]
         },
         {
