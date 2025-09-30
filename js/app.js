@@ -8,20 +8,18 @@ import { notificationService } from './services/notification-service.js';
 import { dataService } from './services/data-service.js';
 import { archiveService } from './services/archive-service.js';
 import { taskService } from './services/task-service.js';
-// 1. Importar o novo serviço de projetos
 import { projectService } from './services/project-service.js';
 
 
 function render() {
     const state = getState();
     const navButtons = document.querySelectorAll('.segmented-control__button');
-    const headerTitle = document.querySelector('.header__title'); // 1. Seleciona o elemento do título
+    const headerTitle = document.querySelector('.header__title');
 
-    // 2. Adiciona a lógica para atualizar o título dinamicamente
     if (headerTitle) {
         headerTitle.textContent = state.activeView === 'projects' ? 'Meus Projetos' : 'Matriz de Eisenhower';
     }
-    // Atualiza o estado ativo dos botões de navegação principal
+
     navButtons.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.view === state.activeView);
     });
@@ -38,7 +36,8 @@ function render() {
     } else if (state.activeView === 'projects') {
         matrixContainer.classList.add('hidden');
         projectsContainer.classList.remove('hidden');
-        projectsView.render(state.projects, eventHandlers);
+        // AQUI ESTÁ A MUDANÇA: Passamos o estado completo para a projectsView.
+        projectsView.render(state, eventHandlers);
     }
     const archivedTasks = archiveService.getArchivedTasks();
     matrixView.renderArchivedTasks(archivedTasks, eventHandlers);
@@ -63,7 +62,7 @@ function bindStaticEvents() {
     const fileInput = document.getElementById('import-file-input');
 
     const viewToggleButton = document.getElementById('sheet-view-toggle-btn');
-    // BIND DOS NOVOS BOTÕES DE NAVEGAÇÃO PRINCIPAL
+    
     const navButtons = document.querySelectorAll('.segmented-control__button');
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -146,12 +145,10 @@ function bindStaticEvents() {
                 if (confirm('Atenção: Isso substituirá todos os seus projetos, tarefas atuais e arquivadas. Deseja continuar?')) {
                     const importedData = dataService.importTasks(jsonContent);
                     if (importedData) {
-                        // 2. Salvar todos os dados importados usando os respectivos serviços
                         projectService.saveProjects(importedData.projects);
                         taskService.saveTasks(importedData.activeTasks);
                         archiveService.saveArchivedTasks(importedData.archivedTasks);
                         
-                        // 3. Atualizar o estado da aplicação com todos os novos dados
                         setState({ 
                             projects: importedData.projects,
                             tasks: importedData.activeTasks,
