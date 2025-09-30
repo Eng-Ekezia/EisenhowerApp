@@ -12,6 +12,7 @@ function createProjectCard(project, eventHandlers) {
     const card = document.createElement('div');
     card.className = 'card project-card'; // Adicionada classe para eventos
     card.style.marginBottom = 'var(--space-16)';
+    card.style.cursor = 'pointer'; // Adiciona feedback visual
     card.dataset.projectId = project.id; // Adiciona o ID para referência
     
     card.innerHTML = `
@@ -111,6 +112,10 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
         </div>
     `;
     container.appendChild(detailHeader);
+    
+    // **NOVO**: Adiciona o event listener diretamente após a criação do botão
+    container.querySelector('#back-to-projects-btn').addEventListener('click', eventHandlers.onBackToProjectList);
+
 
     const taskListContainer = document.createElement('div');
     taskListContainer.innerHTML = `<h4 style="margin-bottom: var(--space-16);">Tarefas do Projeto</h4>`;
@@ -151,7 +156,8 @@ export const projectsView = {
             } else {
                 // Caso o projeto não seja encontrado, volte para a lista.
                 console.error(`Projeto com ID ${state.viewingProjectId} não encontrado.`);
-                renderProjectList(container, state.projects, eventHandlers);
+                // Força o retorno à lista de projetos
+                eventHandlers.onBackToProjectList();
             }
         } else {
             renderProjectList(container, state.projects, eventHandlers);

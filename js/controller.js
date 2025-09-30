@@ -72,10 +72,10 @@ export const eventHandlers = {
         const newMode = matrixViewMode === 'grid' ? 'columns' : 'grid';
         setState({ matrixViewMode: newMode });
     },
-    // NOVO: Handler para a navegação principal no cabeçalho
     onSetView: (viewName) => {
         if (['matrix', 'projects'].includes(viewName)) {
-            setState({ activeView: viewName });
+            // Ao trocar para a view de projetos, sempre reseta para a lista principal
+            setState({ activeView: viewName, viewingProjectId: null });
         }
     },
     onAddSubtask: (taskId, subtaskText) => {
@@ -92,6 +92,14 @@ export const eventHandlers = {
         const { tasks } = getState();
         const updatedTasks = taskService.deleteSubtask(tasks, taskId, subtaskId);
         setState({ tasks: updatedTasks });
+    },
+
+    // --- NOVOS HANDLERS PARA A VIEW DE PROJETOS ---
+    onViewProject: (projectId) => {
+        setState({ viewingProjectId: projectId });
+    },
+    onBackToProjectList: () => {
+        setState({ viewingProjectId: null });
     }
 };
 
@@ -105,6 +113,8 @@ export function init() {
     setState({
         tasks: initialTasks,
         archivedTasks: initialArchivedTasks,
-        projects: initialProjects
+        projects: initialProjects,
+        activeView: 'matrix', // Garante que a app sempre comece na matriz
+        viewingProjectId: null // Garante que a view de projetos comece na lista
     });
 }
