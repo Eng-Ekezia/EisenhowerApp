@@ -32,7 +32,8 @@ function render() {
     if (state.activeView === 'matrix') {
         matrixContainer.classList.remove('hidden');
         projectsContainer.classList.add('hidden');
-        matrixView.render(state.tasks, eventHandlers);
+        // MODIFICAÇÃO: Passar o estado inteiro para a view da matriz
+        matrixView.render(state, eventHandlers);
     } else if (state.activeView === 'projects') {
         matrixContainer.classList.add('hidden');
         projectsContainer.classList.remove('hidden');

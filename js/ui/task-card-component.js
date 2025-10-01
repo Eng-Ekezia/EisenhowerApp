@@ -51,7 +51,7 @@ function createSubtaskElement(taskId, subtask, eventHandlers) {
 
 // --- Funções Públicas (Exportadas) ---
 
-export function createTaskCard(task, eventHandlers) {
+export function createTaskCard(task, projects, eventHandlers) {
     const taskEl = document.getElementById('task-template').content.cloneNode(true);
     
     const taskDiv = taskEl.querySelector('.task');
@@ -66,6 +66,7 @@ export function createTaskCard(task, eventHandlers) {
     const addSubtaskPlaceholderBtn = taskEl.querySelector('.add-subtask-placeholder-btn');
     const addSubtaskForm = taskEl.querySelector('.add-subtask-form');
     const addSubtaskInput = taskEl.querySelector('.add-subtask-input');
+    const metaContainer = taskEl.querySelector('.task__meta'); // Pegamos o container de metadados
 
     if (task.dueDate && isToday(new Date(task.dueDate))) {
         taskDiv.classList.add('due-today');
@@ -73,6 +74,19 @@ export function createTaskCard(task, eventHandlers) {
 
     if (task.subtasks && task.subtasks.length > 0) {
         taskDiv.classList.add('has-subtasks');
+    }
+
+    // --- LÓGICA DO BADGE DO PROJETO ---
+    if (task.projectId) {
+        const project = projects.find(p => p.id === task.projectId);
+        if (project) {
+            const projectBadge = document.createElement('div');
+            projectBadge.className = 'task__project-badge';
+            projectBadge.textContent = project.name;
+            projectBadge.title = `Projeto: ${project.name}`;
+            // Inserimos o badge no início do container de metadados
+            metaContainer.prepend(projectBadge);
+        }
     }
 
     taskDiv.setAttribute('draggable', 'true');
@@ -130,12 +144,8 @@ export function createTaskCard(task, eventHandlers) {
     
     taskDiv.addEventListener('dragstart', (e) => {
         taskDiv.classList.add('dragging');
-        // NOVO: Armazena o ID da tarefa no objeto dataTransfer.
-        // Isso torna a operação de arrastar autocontida.
         e.dataTransfer.setData('text/plain', task.id);
         e.dataTransfer.effectAllowed = 'move';
-        // REMOVIDO: Não precisamos mais chamar o onDragStart para definir um estado global.
-        // eventHandlers.onDragStart(task.id); 
     });
     taskDiv.addEventListener('dragend', () => taskDiv.classList.remove('dragging'));
 

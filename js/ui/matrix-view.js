@@ -45,15 +45,18 @@ export const matrixView = {
         }
     },
 
-    render: (tasks, eventHandlers) => {
+    render: (state, eventHandlers) => {
+        const { tasks, projects } = state; // Desestruturamos tasks e projects do estado
+
         const quadrantsContent = {};
         ['q1', 'q2', 'q3', 'q4'].forEach(qId => {
             quadrantsContent[qId] = document.createDocumentFragment();
         });
 
         tasks.forEach(task => {
-            const taskEl = createTaskCard(task, eventHandlers);
-            if (quadrantsContent[task.quadrant]) {
+            // MODIFICAÇÃO: Passar a lista de projetos para a criação do card
+            const taskEl = createTaskCard(task, projects, eventHandlers);
+            if (task.quadrant && quadrantsContent[task.quadrant]) {
                 quadrantsContent[task.quadrant].appendChild(taskEl);
             }
         });
@@ -251,7 +254,7 @@ export const matrixView = {
                         <span><span style="color: #f59e0b;">■</span> Delegar</span>
                         <span style="font-weight: var(--font-weight-medium);">${stats.byQuadrant.q3}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-8); background: var(--color-secondary); border-radius: var(--radius-sm);">
+                    <div style="display: flex; justify-content: space-between; align-items.center; padding: var(--space-8); background: var(--color-secondary); border-radius: var(--radius-sm);">
                         <span><span style="color: #22c55e;">■</span> Eliminar</span>
                         <span style="font-weight: var(--font-weight-medium);">${stats.byQuadrant.q4}</span>
                     </div>
