@@ -53,9 +53,9 @@ export const eventHandlers = {
         setState({ tasks: updatedTasks });
     },
     onSaveNewTask: (quadrant, text, dueDate) => {
-        const { tasks } = getState();
-        // O projectId será adicionado futuramente a partir da UI de projetos
-        const updatedTasks = taskService.addTask(tasks, quadrant, text, dueDate, null);
+        const { tasks, viewingProjectId } = getState();
+        // Associa a nova tarefa ao projeto que está sendo visualizado, se houver.
+        const updatedTasks = taskService.addTask(tasks, quadrant, text, dueDate, viewingProjectId);
         setState({ tasks: updatedTasks });
     },
     onDrop: (taskId, newQuadrantId, targetId) => {
@@ -94,12 +94,21 @@ export const eventHandlers = {
         setState({ tasks: updatedTasks });
     },
 
-    // --- NOVOS HANDLERS PARA A VIEW DE PROJETOS ---
+    // --- Handlers para a View de Projetos ---
     onViewProject: (projectId) => {
         setState({ viewingProjectId: projectId });
     },
     onBackToProjectList: () => {
         setState({ viewingProjectId: null });
+    },
+    // NOVO HANDLER PARA SALVAR PROJETO
+    onSaveNewProject: (projectData) => {
+        if (!projectData.name || !projectData.name.trim()) {
+            alert('O nome do projeto é obrigatório.');
+            return;
+        }
+        const updatedProjects = projectService.addProject(projectData);
+        setState({ projects: updatedProjects });
     }
 };
 
