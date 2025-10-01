@@ -11,8 +11,6 @@
 function createProjectCard(project, eventHandlers) {
     const card = document.createElement('div');
     card.className = 'card project-card';
-    card.style.marginBottom = 'var(--space-16)';
-    // Removido o cursor pointer do card inteiro para permitir cliques separados
     card.dataset.projectId = project.id;
     
     card.innerHTML = `
@@ -29,7 +27,6 @@ function createProjectCard(project, eventHandlers) {
         </div>
     `;
 
-    // O card inteiro (exceto o botão) ainda leva para a visão de detalhes
     const title = card.querySelector('.project-card__title');
     const body = card.querySelector('.project-card__body');
     title.style.cursor = 'pointer';
@@ -38,13 +35,11 @@ function createProjectCard(project, eventHandlers) {
     title.addEventListener('click', () => eventHandlers.onViewProject(project.id));
     body.addEventListener('click', () => eventHandlers.onViewProject(project.id));
 
-    // O botão de editar chama o modal de edição
     const editButton = card.querySelector('.edit-project-btn');
     editButton.addEventListener('click', (e) => {
-        e.stopPropagation(); // Impede que o clique no botão acione o clique no card
+        e.stopPropagation(); 
         eventHandlers.onShowEditProjectModal(project.id);
     });
-
 
     return card;
 }
@@ -102,7 +97,6 @@ function renderProjectList(container, projects, eventHandlers) {
 
 /**
  * Cria o card para uma tarefa dentro da visão de projeto.
- * O card se adapta para mostrar controles de promoção ou um indicador de status.
  * @param {object} task - O objeto da tarefa.
  * @param {object} eventHandlers - Os handlers de evento.
  * @returns {HTMLElement} - O elemento do card da tarefa.
@@ -211,19 +205,22 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
     const detailHeader = document.createElement('header');
     detailHeader.style.marginBottom = 'var(--space-24)';
     detailHeader.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-16);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-16); flex-wrap: wrap; gap: var(--space-12);">
             <div style="display: flex; align-items: center; gap: var(--space-16);">
                 <button class="btn btn--secondary btn--sm" id="back-to-projects-btn">
                     &larr; Voltar
                 </button>
                 <h2 style="font-size: var(--font-size-3xl); margin: 0;">${project.name}</h2>
             </div>
-            <button class="btn btn--secondary" id="edit-project-detail-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px; margin-right: 8px;">
-                     <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                </svg>
-                Editar Projeto
-            </button>
+            <div class="project-detail__actions" style="display: flex; gap: var(--space-8);">
+                 <button class="btn btn--secondary" id="edit-project-detail-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px; margin-right: 8px;">
+                         <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    </svg>
+                    Editar
+                </button>
+                <button class="btn btn--outline" id="delete-project-btn">Excluir Projeto</button>
+            </div>
         </div>
         <p style="color: var(--color-text-secondary); margin: 0 0 var(--space-16);">${project.description || ''}</p>
         
@@ -240,9 +237,12 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
     container.appendChild(detailHeader);
     
     container.querySelector('#back-to-projects-btn').addEventListener('click', eventHandlers.onBackToProjectList);
-    // Adiciona o event listener para o novo botão de editar na tela de detalhes
     container.querySelector('#edit-project-detail-btn').addEventListener('click', () => {
         eventHandlers.onShowEditProjectModal(project.id);
+    });
+    // Adiciona o event listener para o novo botão de excluir
+    container.querySelector('#delete-project-btn').addEventListener('click', () => {
+        eventHandlers.onDeleteProject(project.id);
     });
 
     const taskSection = document.createElement('div');
