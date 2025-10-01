@@ -97,7 +97,8 @@ export const taskService = {
         const newTask = {
             id: generateId(),
             text: text.trim(),
-            quadrant,
+            // **AQUI ESTÁ A MUDANÇA**: O quadrante pode ser nulo se a tarefa for de um projeto
+            quadrant: quadrant || null,
             completed: false,
             createdAt: new Date().toISOString(),
             dueDate: dueDate || null,

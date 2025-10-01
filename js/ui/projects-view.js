@@ -10,10 +10,10 @@
  */
 function createProjectCard(project, eventHandlers) {
     const card = document.createElement('div');
-    card.className = 'card project-card'; // Adicionada classe para eventos
+    card.className = 'card project-card';
     card.style.marginBottom = 'var(--space-16)';
-    card.style.cursor = 'pointer'; // Adiciona feedback visual
-    card.dataset.projectId = project.id; // Adiciona o ID para referência
+    card.style.cursor = 'pointer';
+    card.dataset.projectId = project.id;
     
     card.innerHTML = `
         <div class="card__body">
@@ -24,7 +24,6 @@ function createProjectCard(project, eventHandlers) {
         </div>
     `;
 
-    // Adiciona o event listener para o clique no card
     card.addEventListener('click', () => eventHandlers.onViewProject(project.id));
 
     return card;
@@ -37,7 +36,7 @@ function createProjectCard(project, eventHandlers) {
  * @param {object} eventHandlers - Objeto com as funções de callback.
  */
 function renderProjectList(container, projects, eventHandlers) {
-    container.innerHTML = ''; // Limpa o container
+    container.innerHTML = '';
 
     const header = document.createElement('header');
     header.style.display = 'flex';
@@ -57,10 +56,10 @@ function renderProjectList(container, projects, eventHandlers) {
     `;
     container.appendChild(header);
 
-    // **NOVO**: Adiciona o event listener para o botão de novo projeto
-    // A lógica para `onShowAddProjectModal` será implementada no app.js
     const addProjectBtn = container.querySelector('#add-project-btn');
-    addProjectBtn.addEventListener('click', eventHandlers.onShowAddProjectModal);
+    if(eventHandlers.onShowAddProjectModal) {
+        addProjectBtn.addEventListener('click', eventHandlers.onShowAddProjectModal);
+    }
 
 
     const projectListContainer = document.createElement('div');
@@ -90,9 +89,8 @@ function renderProjectList(container, projects, eventHandlers) {
  * @param {object} eventHandlers - Objeto com as funções de callback.
  */
 function renderProjectDetail(container, project, tasks, eventHandlers) {
-    container.innerHTML = ''; // Limpa o container
+    container.innerHTML = '';
 
-    // Placeholder para a futura barra de progresso
     const completedTasks = tasks.filter(t => t.completed).length;
     const progress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
 
@@ -123,13 +121,30 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
 
 
     const taskListContainer = document.createElement('div');
-    taskListContainer.innerHTML = `<h4 style="margin-bottom: var(--space-16);">Tarefas do Projeto</h4>`;
+    taskListContainer.innerHTML = `<h4 style="margin-bottom: var(--space-16); border-top: 1px solid var(--color-border); padding-top: var(--space-24); margin-top: var(--space-24);">Tarefas do Projeto</h4>`;
     
-    // Placeholder para a lista de tarefas
+    // **AQUI ESTÁ A MUDANÇA**: Renderiza a lista de tarefas ou uma mensagem de estado vazio.
     if (tasks.length > 0) {
-        taskListContainer.innerHTML += `<p>Aqui serão listadas as ${tasks.length} tarefas deste projeto.</p>`;
+        const list = document.createElement('div');
+        list.style.display = 'flex';
+        list.style.flexDirection = 'column';
+        list.style.gap = 'var(--space-8)';
+
+        tasks.forEach(task => {
+            const taskItem = document.createElement('div');
+            taskItem.textContent = task.text;
+            taskItem.style.padding = 'var(--space-12)';
+            taskItem.style.backgroundColor = 'var(--color-surface)';
+            taskItem.style.borderRadius = 'var(--radius-base)';
+            taskItem.style.border = '1px solid var(--color-border)';
+            list.appendChild(taskItem);
+        });
+        taskListContainer.appendChild(list);
     } else {
-        taskListContainer.innerHTML += `<p style="color: var(--color-text-secondary);">Nenhuma tarefa foi adicionada a este projeto ainda.</p>`;
+        const emptyState = document.createElement('p');
+        emptyState.textContent = 'Nenhuma tarefa foi adicionada a este projeto ainda.';
+        emptyState.style.color = 'var(--color-text-secondary)';
+        taskListContainer.appendChild(emptyState);
     }
 
     container.appendChild(taskListContainer);
@@ -141,7 +156,6 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
 export const projectsView = {
     /**
      * Ponto de entrada principal para a renderização da UI de projetos.
-     * Decide qual visualização mostrar (lista ou detalhes) com base no estado da aplicação.
      * @param {object} state - O estado completo da aplicação.
      * @param {object} eventHandlers - Objeto com as funções de callback.
      */
@@ -151,7 +165,8 @@ export const projectsView = {
 
         if (state.viewingProjectId) {
             const project = state.projects.find(p => p.id === state.viewingProjectId);
-            const projectTasks = state.tasks.filter(t => t.projectId === state.viewingProjectId);
+            // **IMPORTANTE**: Filtra apenas as tarefas que pertencem ao projeto E que AINDA NÃO estão na matriz (quadrant === null)
+            const projectTasks = state.tasks.filter(t => t.projectId === state.viewingProjectId && t.quadrant === null);
             
             if (project) {
                 renderProjectDetail(container, project, projectTasks, eventHandlers);
