@@ -120,10 +120,9 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
     container.querySelector('#back-to-projects-btn').addEventListener('click', eventHandlers.onBackToProjectList);
 
 
-    const taskListContainer = document.createElement('div');
-    taskListContainer.innerHTML = `<h4 style="margin-bottom: var(--space-16); border-top: 1px solid var(--color-border); padding-top: var(--space-24); margin-top: var(--space-24);">Tarefas do Projeto</h4>`;
+    const taskSection = document.createElement('div');
+    taskSection.innerHTML = `<h4 style="margin-bottom: var(--space-16); border-top: 1px solid var(--color-border); padding-top: var(--space-24); margin-top: var(--space-24);">Tarefas Planejadas</h4>`;
     
-    // **AQUI ESTÁ A MUDANÇA**: Renderiza a lista de tarefas ou uma mensagem de estado vazio.
     if (tasks.length > 0) {
         const list = document.createElement('div');
         list.style.display = 'flex';
@@ -139,15 +138,28 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
             taskItem.style.border = '1px solid var(--color-border)';
             list.appendChild(taskItem);
         });
-        taskListContainer.appendChild(list);
+        taskSection.appendChild(list);
     } else {
         const emptyState = document.createElement('p');
-        emptyState.textContent = 'Nenhuma tarefa foi adicionada a este projeto ainda.';
+        emptyState.textContent = 'Nenhuma tarefa planejada para este projeto ainda. Adicione uma abaixo!';
         emptyState.style.color = 'var(--color-text-secondary)';
-        taskListContainer.appendChild(emptyState);
+        taskSection.appendChild(emptyState);
     }
 
-    container.appendChild(taskListContainer);
+    // **AQUI ESTÁ A MUDANÇA**: Adiciona o formulário para novas tarefas.
+    const addTaskForm = document.createElement('form');
+    addTaskForm.id = 'add-project-task-form';
+    addTaskForm.style.marginTop = 'var(--space-16)';
+    addTaskForm.innerHTML = `
+        <div style="display: flex; gap: var(--space-8);">
+            <input type="text" id="new-project-task-text" class="form-control" placeholder="Adicionar uma nova tarefa ao projeto..." required>
+            <button type="submit" class="btn btn--primary">Adicionar</button>
+        </div>
+    `;
+    taskSection.appendChild(addTaskForm);
+    // A lógica do form será adicionada no próximo passo (controller)
+
+    container.appendChild(taskSection);
 }
 
 
@@ -165,7 +177,6 @@ export const projectsView = {
 
         if (state.viewingProjectId) {
             const project = state.projects.find(p => p.id === state.viewingProjectId);
-            // **IMPORTANTE**: Filtra apenas as tarefas que pertencem ao projeto E que AINDA NÃO estão na matriz (quadrant === null)
             const projectTasks = state.tasks.filter(t => t.projectId === state.viewingProjectId && t.quadrant === null);
             
             if (project) {
