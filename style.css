@@ -2019,6 +2019,25 @@ select.form-control {
     gap: var(--space-8);
 }
 
+/* =================================================================== */
+/* -----------      INÍCIO DOS ESTILOS DO BADGE DE PROJETO    ----------- */
+/* =================================================================== */
+.task__project-badge {
+    display: inline-block;
+    background-color: var(--color-bg-5); /* Roxo claro */
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--space-2) var(--space-8);
+    border-radius: var(--radius-full);
+    margin-bottom: var(--space-8);
+    border: 1px solid rgba(147, 51, 234, 0.2); /* Borda roxa sutil */
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* Estilos antigos movidos do index.html */
 .hidden { display: none !important; } /* Adicionado !important para garantir a sobreposição */
 .task-input__extra-fields { margin-top: 8px; display: flex; flex-direction: column; gap: 4px;}
