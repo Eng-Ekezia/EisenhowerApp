@@ -81,7 +81,8 @@ function renderProjectList(container, projects, eventHandlers) {
 }
 
 /**
- * **NOVO**: Cria o card interativo para uma tarefa planejada.
+ * Cria o card para uma tarefa dentro da visão de projeto.
+ * O card se adapta para mostrar controles de promoção ou um indicador de status.
  * @param {object} task - O objeto da tarefa.
  * @param {object} eventHandlers - Os handlers de evento.
  * @returns {HTMLElement} - O elemento do card da tarefa.
@@ -91,44 +92,67 @@ function createPlannedTaskCard(task, eventHandlers) {
     card.className = 'planned-task-card';
     card.dataset.taskId = task.id;
 
+    // Mapa de quadrantes para nomes amigáveis e classes CSS
+    const quadrantMap = {
+        q1: { name: 'Fazer Primeiro', class: 'status--q1' },
+        q2: { name: 'Agendar', class: 'status--q2' },
+        q3: { name: 'Delegar', class: 'status--q3' },
+        q4: { name: 'Eliminar', class: 'status--q4' }
+    };
+
+    let statusIndicatorHTML = '';
+    let actionControlsHTML = '';
+
+    if (task.completed) {
+        // Se a tarefa está concluída
+        statusIndicatorHTML = `<div class="task-status-badge status--completed">Concluída</div>`;
+        actionControlsHTML = `<button class="btn btn--sm btn--outline delete-planned-task-btn" title="Excluir Tarefa">Excluir</button>`;
+    } else if (task.quadrant) {
+        // Se foi promovida para um quadrante mas não está concluída
+        const quadrantInfo = quadrantMap[task.quadrant];
+        statusIndicatorHTML = `<div class="task-status-badge ${quadrantInfo.class}">Na Matriz: ${quadrantInfo.name}</div>`;
+        actionControlsHTML = `<button class="btn btn--sm btn--outline delete-planned-task-btn" title="Excluir Tarefa">Excluir</button>`;
+    } else {
+        // Se ainda está no planejamento (não promovida)
+        statusIndicatorHTML = `
+            <div class="planned-task-card__flags">
+                <label><input type="checkbox" class="is-important-checkbox"> Importante</label>
+                <label><input type="checkbox" class="is-urgent-checkbox"> Urgente</label>
+            </div>`;
+        actionControlsHTML = `
+            <button class="btn btn--sm btn--outline delete-planned-task-btn" title="Excluir Tarefa">Excluir</button>
+            <button class="btn btn--sm btn--primary promote-task-btn" title="Mover para a Matriz de Execução">Promover</button>`;
+    }
+
     card.innerHTML = `
         <div class="planned-task-card__main">
             <span class="planned-task-card__text" contenteditable="true">${task.text}</span>
             <input type="date" class="planned-task-card__date" value="${task.dueDate || ''}">
         </div>
         <div class="planned-task-card__actions">
-            <div class="planned-task-card__flags">
-                <label><input type="checkbox" class="is-important-checkbox"> Importante</label>
-                <label><input type="checkbox" class="is-urgent-checkbox"> Urgente</label>
-            </div>
+            ${statusIndicatorHTML}
             <div class="planned-task-card__buttons">
-                <button class="btn btn--sm btn--outline delete-planned-task-btn" title="Excluir Tarefa">Excluir</button>
-                <button class="btn btn--sm btn--primary promote-task-btn" title="Mover para a Matriz de Execução">Promover</button>
+                ${actionControlsHTML}
             </div>
         </div>
     `;
 
-    // Handlers de Evento
+    // Handlers de Evento Comuns
     const textEl = card.querySelector('.planned-task-card__text');
     const dateEl = card.querySelector('.planned-task-card__date');
     const deleteBtn = card.querySelector('.delete-planned-task-btn');
-    const promoteBtn = card.querySelector('.promote-task-btn');
-    const urgentCheck = card.querySelector('.is-urgent-checkbox');
-    const importantCheck = card.querySelector('.is-important-checkbox');
 
-    // Salvar ao perder o foco
     textEl.addEventListener('blur', () => {
-        if (textEl.textContent !== task.text) {
-            eventHandlers.onUpdateProjectTask(task.id, { text: textEl.textContent });
+        if (textEl.textContent.trim() !== task.text) {
+            eventHandlers.onUpdateProjectTask(task.id, { text: textEl.textContent.trim() });
         }
     });
     dateEl.addEventListener('blur', () => {
-        if (dateEl.value !== task.dueDate) {
+        if (dateEl.value !== (task.dueDate || '')) {
             eventHandlers.onUpdateProjectTask(task.id, { dueDate: dateEl.value || null });
         }
     });
     
-    // Prevenir que 'Enter' crie nova linha
     textEl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -136,11 +160,23 @@ function createPlannedTaskCard(task, eventHandlers) {
         }
     });
 
-    // Ações dos botões
     deleteBtn.addEventListener('click', () => eventHandlers.onDeleteProjectTask(task.id));
-    promoteBtn.addEventListener('click', () => {
-        eventHandlers.onPromoteTaskToMatrix(task.id, urgentCheck.checked, importantCheck.checked);
-    });
+
+    // Handlers Específicos para tarefas não promovidas
+    if (!task.quadrant && !task.completed) {
+        const promoteBtn = card.querySelector('.promote-task-btn');
+        const urgentCheck = card.querySelector('.is-urgent-checkbox');
+        const importantCheck = card.querySelector('.is-important-checkbox');
+
+        promoteBtn.addEventListener('click', () => {
+            eventHandlers.onPromoteTaskToMatrix(task.id, urgentCheck.checked, importantCheck.checked);
+        });
+    }
+
+    // Adiciona classe se a tarefa estiver concluída para estilização (ex: opacidade)
+    if (task.completed) {
+        card.classList.add('is-completed');
+    }
 
     return card;
 }
@@ -235,7 +271,6 @@ export const projectsView = {
         if (state.viewingProjectId) {
             const project = state.projects.find(p => p.id === state.viewingProjectId);
             
-            // MODIFICAÇÃO: Alterar o filtro para incluir TODAS as tarefas do projeto.
             const projectTasks = state.tasks.filter(t => t.projectId === state.viewingProjectId);
             
             if (project) {
