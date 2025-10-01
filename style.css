@@ -2107,6 +2107,7 @@ select.form-control {
     transition: transform var(--duration-normal) var(--ease-standard),
                 box-shadow var(--duration-normal) var(--ease-standard),
                 border-color var(--duration-normal) var(--ease-standard);
+    margin-bottom: var(--space-16);
 }
 
 /* NOVA REGRA: Efeito de hover para o card de projeto */

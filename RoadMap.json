@@ -81,7 +81,7 @@
           "status": "Em Progresso",
           "tasks": [
             { "task": "[FEATURE] Implementar a edição de projetos (nome e descrição).", "status": "Concluído" },
-            { "task": "[FEATURE] Implementar a exclusão de projetos.", "status": "Pendente" },
+            { "task": "[FEATURE] Implementar a exclusão de projetos.", "status": "Concluído" },
             { "task": "[FEATURE] Implementar a conclusão e o arquivamento de projetos.", "status": "Pendente" }
           ]
         },
