@@ -107,11 +107,34 @@ export const eventHandlers = {
         const updatedProjects = projectService.addProject(projectData);
         setState({ projects: updatedProjects });
     },
-    // NOVO HANDLER PARA SALVAR TAREFA DE PROJETO
     onSaveNewProjectTask: (projectId, taskText) => {
         const { tasks } = getState();
-        // Passa `null` para o quadrante, indicando que é uma tarefa planejada
         const updatedTasks = taskService.addTask(tasks, null, taskText, null, projectId);
+        setState({ tasks: updatedTasks });
+    },
+    
+    // --- NOVOS HANDLERS PARA TAREFAS PLANEJADAS ---
+    onUpdateProjectTask: (taskId, updates) => {
+        const { tasks } = getState();
+        const updatedTasks = taskService.updateTask(tasks, taskId, updates);
+        setState({ tasks: updatedTasks });
+    },
+    onDeleteProjectTask: (taskId) => {
+        if (confirm('Tem certeza que deseja excluir esta tarefa planejada?')) {
+            const { tasks } = getState();
+            const updatedTasks = taskService.deleteTask(tasks, taskId);
+            setState({ tasks: updatedTasks });
+        }
+    },
+    onPromoteTaskToMatrix: (taskId, isUrgent, isImportant) => {
+        let quadrant;
+        if (isImportant && isUrgent) quadrant = 'q1';
+        else if (isImportant && !isUrgent) quadrant = 'q2';
+        else if (!isImportant && isUrgent) quadrant = 'q3';
+        else quadrant = 'q4';
+
+        const { tasks } = getState();
+        const updatedTasks = taskService.updateTask(tasks, taskId, { quadrant: quadrant });
         setState({ tasks: updatedTasks });
     }
 };
