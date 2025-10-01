@@ -4,7 +4,7 @@ import { setState, getState } from './state.js';
 import { taskService } from './services/task-service.js';
 import { archiveService } from './services/archive-service.js';
 import { dataService } from './services/data-service.js';
-import { projectService } from './services/project-service.js'; // Importa o novo serviço
+import { projectService } from './services/project-service.js';
 
 export const eventHandlers = {
     onToggleComplete: (taskId) => {
@@ -53,9 +53,8 @@ export const eventHandlers = {
         setState({ tasks: updatedTasks });
     },
     onSaveNewTask: (quadrant, text, dueDate) => {
-        const { tasks, viewingProjectId } = getState();
-        // Associa a nova tarefa ao projeto que está sendo visualizado, se houver.
-        const updatedTasks = taskService.addTask(tasks, quadrant, text, dueDate, viewingProjectId);
+        const { tasks } = getState();
+        const updatedTasks = taskService.addTask(tasks, quadrant, text, dueDate, null);
         setState({ tasks: updatedTasks });
     },
     onDrop: (taskId, newQuadrantId, targetId) => {
@@ -74,7 +73,6 @@ export const eventHandlers = {
     },
     onSetView: (viewName) => {
         if (['matrix', 'projects'].includes(viewName)) {
-            // Ao trocar para a view de projetos, sempre reseta para a lista principal
             setState({ activeView: viewName, viewingProjectId: null });
         }
     },
@@ -101,7 +99,6 @@ export const eventHandlers = {
     onBackToProjectList: () => {
         setState({ viewingProjectId: null });
     },
-    // NOVO HANDLER PARA SALVAR PROJETO
     onSaveNewProject: (projectData) => {
         if (!projectData.name || !projectData.name.trim()) {
             alert('O nome do projeto é obrigatório.');
@@ -109,6 +106,13 @@ export const eventHandlers = {
         }
         const updatedProjects = projectService.addProject(projectData);
         setState({ projects: updatedProjects });
+    },
+    // NOVO HANDLER PARA SALVAR TAREFA DE PROJETO
+    onSaveNewProjectTask: (projectId, taskText) => {
+        const { tasks } = getState();
+        // Passa `null` para o quadrante, indicando que é uma tarefa planejada
+        const updatedTasks = taskService.addTask(tasks, null, taskText, null, projectId);
+        setState({ tasks: updatedTasks });
     }
 };
 
@@ -116,14 +120,14 @@ export function init() {
     // Carrega todos os dados iniciais
     const initialTasks = taskService.getTasks();
     const initialArchivedTasks = archiveService.getArchivedTasks();
-    const initialProjects = projectService.getProjects(); // Carrega os projetos
+    const initialProjects = projectService.getProjects();
     
     // Define o estado inicial completo da aplicação
     setState({
         tasks: initialTasks,
         archivedTasks: initialArchivedTasks,
         projects: initialProjects,
-        activeView: 'matrix', // Garante que a app sempre comece na matriz
-        viewingProjectId: null // Garante que a view de projetos comece na lista
+        activeView: 'matrix',
+        viewingProjectId: null
     });
 }

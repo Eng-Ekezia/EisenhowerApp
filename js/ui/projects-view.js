@@ -146,7 +146,6 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
         taskSection.appendChild(emptyState);
     }
 
-    // **AQUI ESTÁ A MUDANÇA**: Adiciona o formulário para novas tarefas.
     const addTaskForm = document.createElement('form');
     addTaskForm.id = 'add-project-task-form';
     addTaskForm.style.marginTop = 'var(--space-16)';
@@ -157,7 +156,17 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
         </div>
     `;
     taskSection.appendChild(addTaskForm);
-    // A lógica do form será adicionada no próximo passo (controller)
+    
+    // **AQUI ESTÁ A MUDANÇA**: Adiciona o event listener para o formulário.
+    addTaskForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = addTaskForm.querySelector('#new-project-task-text');
+        const taskText = input.value.trim();
+        if (taskText) {
+            eventHandlers.onSaveNewProjectTask(project.id, taskText);
+            input.value = ''; // Limpa o campo após adicionar
+        }
+    });
 
     container.appendChild(taskSection);
 }
