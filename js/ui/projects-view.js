@@ -61,7 +61,6 @@ function renderProjectList(container, projects, eventHandlers) {
         addProjectBtn.addEventListener('click', eventHandlers.onShowAddProjectModal);
     }
 
-
     const projectListContainer = document.createElement('div');
     
     if (projects && projects.length > 0) {
@@ -80,6 +79,72 @@ function renderProjectList(container, projects, eventHandlers) {
 
     container.appendChild(projectListContainer);
 }
+
+/**
+ * **NOVO**: Cria o card interativo para uma tarefa planejada.
+ * @param {object} task - O objeto da tarefa.
+ * @param {object} eventHandlers - Os handlers de evento.
+ * @returns {HTMLElement} - O elemento do card da tarefa.
+ */
+function createPlannedTaskCard(task, eventHandlers) {
+    const card = document.createElement('div');
+    card.className = 'planned-task-card';
+    card.dataset.taskId = task.id;
+
+    card.innerHTML = `
+        <div class="planned-task-card__main">
+            <span class="planned-task-card__text" contenteditable="true">${task.text}</span>
+            <input type="date" class="planned-task-card__date" value="${task.dueDate || ''}">
+        </div>
+        <div class="planned-task-card__actions">
+            <div class="planned-task-card__flags">
+                <label><input type="checkbox" class="is-important-checkbox"> Importante</label>
+                <label><input type="checkbox" class="is-urgent-checkbox"> Urgente</label>
+            </div>
+            <div class="planned-task-card__buttons">
+                <button class="btn btn--sm btn--outline delete-planned-task-btn" title="Excluir Tarefa">Excluir</button>
+                <button class="btn btn--sm btn--primary promote-task-btn" title="Mover para a Matriz de Execução">Promover</button>
+            </div>
+        </div>
+    `;
+
+    // Handlers de Evento
+    const textEl = card.querySelector('.planned-task-card__text');
+    const dateEl = card.querySelector('.planned-task-card__date');
+    const deleteBtn = card.querySelector('.delete-planned-task-btn');
+    const promoteBtn = card.querySelector('.promote-task-btn');
+    const urgentCheck = card.querySelector('.is-urgent-checkbox');
+    const importantCheck = card.querySelector('.is-important-checkbox');
+
+    // Salvar ao perder o foco
+    textEl.addEventListener('blur', () => {
+        if (textEl.textContent !== task.text) {
+            eventHandlers.onUpdateProjectTask(task.id, { text: textEl.textContent });
+        }
+    });
+    dateEl.addEventListener('blur', () => {
+        if (dateEl.value !== task.dueDate) {
+            eventHandlers.onUpdateProjectTask(task.id, { dueDate: dateEl.value || null });
+        }
+    });
+    
+    // Prevenir que 'Enter' crie nova linha
+    textEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            textEl.blur();
+        }
+    });
+
+    // Ações dos botões
+    deleteBtn.addEventListener('click', () => eventHandlers.onDeleteProjectTask(task.id));
+    promoteBtn.addEventListener('click', () => {
+        eventHandlers.onPromoteTaskToMatrix(task.id, urgentCheck.checked, importantCheck.checked);
+    });
+
+    return card;
+}
+
 
 /**
  * Renderiza a visualização de detalhes para um único projeto.
@@ -119,24 +184,15 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
     
     container.querySelector('#back-to-projects-btn').addEventListener('click', eventHandlers.onBackToProjectList);
 
-
     const taskSection = document.createElement('div');
     taskSection.innerHTML = `<h4 style="margin-bottom: var(--space-16); border-top: 1px solid var(--color-border); padding-top: var(--space-24); margin-top: var(--space-24);">Tarefas Planejadas</h4>`;
     
     if (tasks.length > 0) {
         const list = document.createElement('div');
-        list.style.display = 'flex';
-        list.style.flexDirection = 'column';
-        list.style.gap = 'var(--space-8)';
-
+        list.className = 'planned-task-list';
         tasks.forEach(task => {
-            const taskItem = document.createElement('div');
-            taskItem.textContent = task.text;
-            taskItem.style.padding = 'var(--space-12)';
-            taskItem.style.backgroundColor = 'var(--color-surface)';
-            taskItem.style.borderRadius = 'var(--radius-base)';
-            taskItem.style.border = '1px solid var(--color-border)';
-            list.appendChild(taskItem);
+            const taskCard = createPlannedTaskCard(task, eventHandlers);
+            list.appendChild(taskCard);
         });
         taskSection.appendChild(list);
     } else {
@@ -148,7 +204,7 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
 
     const addTaskForm = document.createElement('form');
     addTaskForm.id = 'add-project-task-form';
-    addTaskForm.style.marginTop = 'var(--space-16)';
+    addTaskForm.style.marginTop = 'var(--space-24)';
     addTaskForm.innerHTML = `
         <div style="display: flex; gap: var(--space-8);">
             <input type="text" id="new-project-task-text" class="form-control" placeholder="Adicionar uma nova tarefa ao projeto..." required>
@@ -157,29 +213,21 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
     `;
     taskSection.appendChild(addTaskForm);
     
-    // **AQUI ESTÁ A MUDANÇA**: Adiciona o event listener para o formulário.
     addTaskForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const input = addTaskForm.querySelector('#new-project-task-text');
         const taskText = input.value.trim();
         if (taskText) {
             eventHandlers.onSaveNewProjectTask(project.id, taskText);
-            input.value = ''; // Limpa o campo após adicionar
+            input.value = '';
         }
     });
 
     container.appendChild(taskSection);
 }
 
-
 // --- Exportação Principal (Router) ---
-
 export const projectsView = {
-    /**
-     * Ponto de entrada principal para a renderização da UI de projetos.
-     * @param {object} state - O estado completo da aplicação.
-     * @param {object} eventHandlers - Objeto com as funções de callback.
-     */
     render: (state, eventHandlers) => {
         const container = document.getElementById('projects-view');
         if (!container) return;
