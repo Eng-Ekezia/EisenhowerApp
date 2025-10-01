@@ -185,7 +185,7 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
     container.querySelector('#back-to-projects-btn').addEventListener('click', eventHandlers.onBackToProjectList);
 
     const taskSection = document.createElement('div');
-    taskSection.innerHTML = `<h4 style="margin-bottom: var(--space-16); border-top: 1px solid var(--color-border); padding-top: var(--space-24); margin-top: var(--space-24);">Tarefas Planejadas</h4>`;
+    taskSection.innerHTML = `<h4 style="margin-bottom: var(--space-16); border-top: 1px solid var(--color-border); padding-top: var(--space-24); margin-top: var(--space-24);">Tarefas do Projeto</h4>`;
     
     if (tasks.length > 0) {
         const list = document.createElement('div');
@@ -197,7 +197,7 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
         taskSection.appendChild(list);
     } else {
         const emptyState = document.createElement('p');
-        emptyState.textContent = 'Nenhuma tarefa planejada para este projeto ainda. Adicione uma abaixo!';
+        emptyState.textContent = 'Nenhuma tarefa para este projeto ainda. Adicione uma abaixo!';
         emptyState.style.color = 'var(--color-text-secondary)';
         taskSection.appendChild(emptyState);
     }
@@ -234,7 +234,9 @@ export const projectsView = {
 
         if (state.viewingProjectId) {
             const project = state.projects.find(p => p.id === state.viewingProjectId);
-            const projectTasks = state.tasks.filter(t => t.projectId === state.viewingProjectId && t.quadrant === null);
+            
+            // MODIFICAÇÃO: Alterar o filtro para incluir TODAS as tarefas do projeto.
+            const projectTasks = state.tasks.filter(t => t.projectId === state.viewingProjectId);
             
             if (project) {
                 renderProjectDetail(container, project, projectTasks, eventHandlers);

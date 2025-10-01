@@ -71,8 +71,8 @@
             { "task": "[FEATURE] Implementar a criação de tarefas dentro da view de um projeto.", "status": "Concluído" },
             { "task": "[UI] Refatorar a lista de tarefas do projeto para cards interativos (edição, data, exclusão).", "status": "Concluído" },
             { "task": "[FEATURE] Implementar a função 'Promover para a Matriz' baseada nos critérios de Urgente/Importante.", "status": "Concluído" },
-            { "task": "[UI] Exibir uma tag (ou badge) visual nos cards da matriz indicando o projeto de origem.", "status": "Pendente" },
-            { "task": "[FEATURE] Garantir que a conclusão/arquivamento de uma tarefa na matriz atualize seu status na visão do projeto.", "status": "Pendente" },
+            { "task": "[UI] Exibir uma tag (ou badge) visual nos cards da matriz indicando o projeto de origem.", "status": "Concluído" },
+            { "task": "[FEATURE] Garantir que a conclusão/arquivamento de uma tarefa na matriz atualize seu status na visão do projeto.", "status": "Concluído" },
             { "task": "[FEATURE] Garantir que uma tarefa na matriz seja também visualizada com seu status (por fazer, quadrante, concluida ou arquivada) na visão do projeto.", "status": "Pendente" }
           ]
         },
