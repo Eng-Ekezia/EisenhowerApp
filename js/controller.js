@@ -107,6 +107,15 @@ export const eventHandlers = {
         const updatedProjects = projectService.addProject(projectData);
         setState({ projects: updatedProjects });
     },
+    // --- NOVO HANDLER PARA ATUALIZAR PROJETO ---
+    onUpdateProject: (projectId, projectData) => {
+        if (!projectData.name || !projectData.name.trim()) {
+            alert('O nome do projeto é obrigatório.');
+            return;
+        }
+        const updatedProjects = projectService.updateProject(projectId, projectData);
+        setState({ projects: updatedProjects });
+    },
     onSaveNewProjectTask: (projectId, taskText) => {
         const { tasks } = getState();
         const updatedTasks = taskService.addTask(tasks, null, taskText, null, projectId);
