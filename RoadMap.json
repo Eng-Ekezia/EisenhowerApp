@@ -82,7 +82,11 @@
           "tasks": [
             { "task": "[FEATURE] Implementar a edição de projetos (nome e descrição).", "status": "Concluído" },
             { "task": "[FEATURE] Implementar a exclusão de projetos.", "status": "Concluído" },
-            { "task": "[FEATURE] Implementar a conclusão e o arquivamento de projetos.", "status": "Pendente" }
+            { "task": "[FEATURE] Criar 'project-archive-service.js' para gerenciar projetos arquivados.", "status": "Pendente" },
+            { "task": "[REFACTOR] Adicionar 'status' e 'completedAt' ao modelo de dados do projeto.", "status": "Pendente" },
+            { "task": "[FEATURE] Implementar handlers no controller para concluir, arquivar, restaurar e excluir projetos.", "status": "Pendente" },
+            { "task": "[UI] Construir o modal e a lista de visualização para projetos arquivados.", "status": "Pendente" },
+            { "task": "[UI] Adicionar botões de 'Concluir' e 'Arquivar' na interface do projeto.", "status": "Pendente" }
           ]
         },
         {
