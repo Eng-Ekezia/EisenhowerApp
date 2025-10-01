@@ -224,6 +224,32 @@
         </div>
     </div>
 
+    <div class="modal hidden" id="project-modal">
+        <div class="modal__overlay" data-action="close-project-modal"></div>
+        <div class="modal__content">
+            <form id="project-form">
+                <div class="modal__header">
+                    <h3 id="project-modal-title">Novo Projeto</h3>
+                    <button type="button" class="modal__close" data-action="close-project-modal">&times;</button>
+                </div>
+                <div class="modal__body">
+                    <div class="form-group">
+                        <label for="project-name" class="form-label">Nome do Projeto</label>
+                        <input type="text" id="project-name" class="form-control" required maxlength="100" placeholder="Ex: Lançar novo website">
+                    </div>
+                    <div class="form-group">
+                        <label for="project-description" class="form-label">Descrição (Opcional)</label>
+                        <textarea id="project-description" class="form-control" rows="3" maxlength="300" placeholder="Ex: Detalhes sobre o objetivo principal, escopo e metas."></textarea>
+                    </div>
+                </div>
+                <div class="modal__footer" style="display: flex; justify-content: flex-end; gap: var(--space-8); padding: var(--space-16); border-top: 1px solid var(--color-border);">
+                    <button type="button" class="btn btn--secondary" data-action="close-project-modal">Cancelar</button>
+                    <button type="submit" class="btn btn--primary">Salvar Projeto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/app.js" type="module"></script>
 </body>
 </html>
