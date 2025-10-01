@@ -12,19 +12,39 @@ function createProjectCard(project, eventHandlers) {
     const card = document.createElement('div');
     card.className = 'card project-card';
     card.style.marginBottom = 'var(--space-16)';
-    card.style.cursor = 'pointer';
+    // Removido o cursor pointer do card inteiro para permitir cliques separados
     card.dataset.projectId = project.id;
     
     card.innerHTML = `
-        <div class="card__body">
-            <h4 style="margin-bottom: var(--space-8);">${project.name}</h4>
-            <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0;">
-                ${project.description || 'Nenhuma descrição fornecida.'}
-            </p>
+        <div class="project-card__header">
+            <h4 class="project-card__title">${project.name}</h4>
+            <button class="btn btn--secondary btn--sm edit-project-btn" title="Editar Projeto">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 16px; height: 16px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>
+            </button>
+        </div>
+        <div class="project-card__body">
+            <p class="project-card__description">${project.description || 'Nenhuma descrição fornecida.'}</p>
         </div>
     `;
 
-    card.addEventListener('click', () => eventHandlers.onViewProject(project.id));
+    // O card inteiro (exceto o botão) ainda leva para a visão de detalhes
+    const title = card.querySelector('.project-card__title');
+    const body = card.querySelector('.project-card__body');
+    title.style.cursor = 'pointer';
+    body.style.cursor = 'pointer';
+
+    title.addEventListener('click', () => eventHandlers.onViewProject(project.id));
+    body.addEventListener('click', () => eventHandlers.onViewProject(project.id));
+
+    // O botão de editar chama o modal de edição
+    const editButton = card.querySelector('.edit-project-btn');
+    editButton.addEventListener('click', (e) => {
+        e.stopPropagation(); // Impede que o clique no botão acione o clique no card
+        eventHandlers.onShowEditProjectModal(project.id);
+    });
+
 
     return card;
 }
@@ -92,7 +112,6 @@ function createPlannedTaskCard(task, eventHandlers) {
     card.className = 'planned-task-card';
     card.dataset.taskId = task.id;
 
-    // Mapa de quadrantes para nomes amigáveis e classes CSS
     const quadrantMap = {
         q1: { name: 'Fazer Primeiro', class: 'status--q1' },
         q2: { name: 'Agendar', class: 'status--q2' },
@@ -104,16 +123,13 @@ function createPlannedTaskCard(task, eventHandlers) {
     let actionControlsHTML = '';
 
     if (task.completed) {
-        // Se a tarefa está concluída
         statusIndicatorHTML = `<div class="task-status-badge status--completed">Concluída</div>`;
         actionControlsHTML = `<button class="btn btn--sm btn--outline delete-planned-task-btn" title="Excluir Tarefa">Excluir</button>`;
     } else if (task.quadrant) {
-        // Se foi promovida para um quadrante mas não está concluída
         const quadrantInfo = quadrantMap[task.quadrant];
         statusIndicatorHTML = `<div class="task-status-badge ${quadrantInfo.class}">Na Matriz: ${quadrantInfo.name}</div>`;
         actionControlsHTML = `<button class="btn btn--sm btn--outline delete-planned-task-btn" title="Excluir Tarefa">Excluir</button>`;
     } else {
-        // Se ainda está no planejamento (não promovida)
         statusIndicatorHTML = `
             <div class="planned-task-card__flags">
                 <label><input type="checkbox" class="is-important-checkbox"> Importante</label>
@@ -137,7 +153,6 @@ function createPlannedTaskCard(task, eventHandlers) {
         </div>
     `;
 
-    // Handlers de Evento Comuns
     const textEl = card.querySelector('.planned-task-card__text');
     const dateEl = card.querySelector('.planned-task-card__date');
     const deleteBtn = card.querySelector('.delete-planned-task-btn');
@@ -162,7 +177,6 @@ function createPlannedTaskCard(task, eventHandlers) {
 
     deleteBtn.addEventListener('click', () => eventHandlers.onDeleteProjectTask(task.id));
 
-    // Handlers Específicos para tarefas não promovidas
     if (!task.quadrant && !task.completed) {
         const promoteBtn = card.querySelector('.promote-task-btn');
         const urgentCheck = card.querySelector('.is-urgent-checkbox');
@@ -173,7 +187,6 @@ function createPlannedTaskCard(task, eventHandlers) {
         });
     }
 
-    // Adiciona classe se a tarefa estiver concluída para estilização (ex: opacidade)
     if (task.completed) {
         card.classList.add('is-completed');
     }
@@ -198,11 +211,19 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
     const detailHeader = document.createElement('header');
     detailHeader.style.marginBottom = 'var(--space-24)';
     detailHeader.innerHTML = `
-        <div style="display: flex; align-items: center; gap: var(--space-16); margin-bottom: var(--space-16);">
-            <button class="btn btn--secondary btn--sm" id="back-to-projects-btn">
-                &larr; Voltar
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-16);">
+            <div style="display: flex; align-items: center; gap: var(--space-16);">
+                <button class="btn btn--secondary btn--sm" id="back-to-projects-btn">
+                    &larr; Voltar
+                </button>
+                <h2 style="font-size: var(--font-size-3xl); margin: 0;">${project.name}</h2>
+            </div>
+            <button class="btn btn--secondary" id="edit-project-detail-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px; margin-right: 8px;">
+                     <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                </svg>
+                Editar Projeto
             </button>
-            <h2 style="font-size: var(--font-size-3xl); margin: 0;">${project.name}</h2>
         </div>
         <p style="color: var(--color-text-secondary); margin: 0 0 var(--space-16);">${project.description || ''}</p>
         
@@ -219,6 +240,10 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
     container.appendChild(detailHeader);
     
     container.querySelector('#back-to-projects-btn').addEventListener('click', eventHandlers.onBackToProjectList);
+    // Adiciona o event listener para o novo botão de editar na tela de detalhes
+    container.querySelector('#edit-project-detail-btn').addEventListener('click', () => {
+        eventHandlers.onShowEditProjectModal(project.id);
+    });
 
     const taskSection = document.createElement('div');
     taskSection.innerHTML = `<h4 style="margin-bottom: var(--space-16); border-top: 1px solid var(--color-border); padding-top: var(--space-24); margin-top: var(--space-24);">Tarefas do Projeto</h4>`;

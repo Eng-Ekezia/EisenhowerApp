@@ -107,7 +107,6 @@ export const eventHandlers = {
         const updatedProjects = projectService.addProject(projectData);
         setState({ projects: updatedProjects });
     },
-    // --- NOVO HANDLER PARA ATUALIZAR PROJETO ---
     onUpdateProject: (projectId, projectData) => {
         if (!projectData.name || !projectData.name.trim()) {
             alert('O nome do projeto é obrigatório.');
@@ -116,13 +115,31 @@ export const eventHandlers = {
         const updatedProjects = projectService.updateProject(projectId, projectData);
         setState({ projects: updatedProjects });
     },
+    onDeleteProject: (projectId) => {
+        const { projects, tasks } = getState();
+        const projectToDelete = projects.find(p => p.id === projectId);
+        
+        if (confirm(`Atenção: Você está prestes a excluir o projeto "${projectToDelete.name}" e TODAS as suas tarefas associadas. Esta ação não pode ser desfeita. Deseja continuar?`)) {
+            // Exclui o projeto
+            const updatedProjects = projectService.deleteProject(projectId);
+            // Exclui as tarefas associadas
+            const updatedTasks = taskService.deleteTasksByProjectId(tasks, projectId);
+            
+            // Atualiza o estado e volta para a lista de projetos
+            setState({ 
+                projects: updatedProjects,
+                tasks: updatedTasks,
+                viewingProjectId: null // Garante que saia da tela de detalhes
+            });
+        }
+    },
     onSaveNewProjectTask: (projectId, taskText) => {
         const { tasks } = getState();
         const updatedTasks = taskService.addTask(tasks, null, taskText, null, projectId);
         setState({ tasks: updatedTasks });
     },
     
-    // --- NOVOS HANDLERS PARA TAREFAS PLANEJADAS ---
+    // --- Handlers para Tarefas Planejadas ---
     onUpdateProjectTask: (taskId, updates) => {
         const { tasks } = getState();
         const updatedTasks = taskService.updateTask(tasks, taskId, updates);
@@ -149,12 +166,10 @@ export const eventHandlers = {
 };
 
 export function init() {
-    // Carrega todos os dados iniciais
     const initialTasks = taskService.getTasks();
     const initialArchivedTasks = archiveService.getArchivedTasks();
     const initialProjects = projectService.getProjects();
     
-    // Define o estado inicial completo da aplicação
     setState({
         tasks: initialTasks,
         archivedTasks: initialArchivedTasks,

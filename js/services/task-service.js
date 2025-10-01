@@ -97,7 +97,6 @@ export const taskService = {
         const newTask = {
             id: generateId(),
             text: text.trim(),
-            // **AQUI ESTÁ A MUDANÇA**: O quadrante pode ser nulo se a tarefa for de um projeto
             quadrant: quadrant || null,
             completed: false,
             createdAt: new Date().toISOString(),
@@ -129,6 +128,13 @@ export const taskService = {
 
     deleteTask: (tasks, id) => {
         const updatedTasks = tasks.filter(task => task.id !== id);
+        saveTasks(updatedTasks);
+        return updatedTasks;
+    },
+
+    // NOVA FUNÇÃO para excluir tarefas em lote por projectId
+    deleteTasksByProjectId: (tasks, projectId) => {
+        const updatedTasks = tasks.filter(task => task.projectId !== projectId);
         saveTasks(updatedTasks);
         return updatedTasks;
     },
