@@ -32,7 +32,6 @@ function render() {
     if (state.activeView === 'matrix') {
         matrixContainer.classList.remove('hidden');
         projectsContainer.classList.add('hidden');
-        // MODIFICAÇÃO: Passar o estado inteiro para a view da matriz
         matrixView.render(state, eventHandlers);
     } else if (state.activeView === 'projects') {
         matrixContainer.classList.add('hidden');
@@ -94,16 +93,14 @@ function bindStaticEvents() {
         const modal = document.getElementById(modalId);
         if (!modal) return;
         
-        // Se um `openHandler` for fornecido, ele será responsável por abrir o modal
         if(openHandler) openHandler(modal);
 
-        // Lógica para fechar o modal
         modal.querySelectorAll(`[data-action="close-${modalId}"]`).forEach(trigger => {
             trigger.addEventListener('click', () => modal.classList.add('hidden'));
         });
     }
 
-    // --- CONFIGURAÇÃO DOS MODAIS EXISTENTES E NOVOS ---
+    // --- CONFIGURAÇÃO DOS MODAIS EXISTENTES ---
     setupModal('help-modal', (modal) => {
         helpBtn.addEventListener('click', () => {
             modal.classList.remove('hidden');
@@ -130,29 +127,59 @@ function bindStaticEvents() {
         });
     });
     
-    // **NOVO**: Configuração do Modal de Projeto
+    // --- LÓGICA DO MODAL DE PROJETO (CRIAR E EDITAR) ---
     const projectModal = document.getElementById('project-modal');
     if (projectModal) {
         const projectForm = document.getElementById('project-form');
+        const modalTitle = document.getElementById('project-modal-title');
         const nameInput = document.getElementById('project-name');
         const descriptionInput = document.getElementById('project-description');
+        let editingProjectId = null; // Variável para rastrear o ID do projeto em edição
+
+        // Handler para ABRIR O MODAL NO MODO DE CRIAÇÃO
+        eventHandlers.onShowAddProjectModal = () => {
+            editingProjectId = null; // Garante que não estamos em modo de edição
+            projectForm.reset();
+            modalTitle.textContent = 'Novo Projeto';
+            projectModal.classList.remove('hidden');
+        };
+
+        // NOVO HANDLER: ABRIR O MODAL NO MODO DE EDIÇÃO
+        eventHandlers.onShowEditProjectModal = (projectId) => {
+            const { projects } = getState();
+            const project = projects.find(p => p.id === projectId);
+            if (project) {
+                editingProjectId = projectId; // Define o ID do projeto que estamos editando
+                modalTitle.textContent = 'Editar Projeto';
+                nameInput.value = project.name;
+                descriptionInput.value = project.description;
+                projectModal.classList.remove('hidden');
+            }
+        };
         
-        // Adiciona o handler para ABRIR o modal
-        eventHandlers.onShowAddProjectModal = () => projectModal.classList.remove('hidden');
-        
-        // Adiciona o handler para FECHAR o modal
+        // Handler para FECHAR o modal
         projectModal.querySelectorAll('[data-action="close-project-modal"]').forEach(trigger => {
             trigger.addEventListener('click', () => projectModal.classList.add('hidden'));
         });
 
-        // Adiciona o handler para o SUBMIT do formulário
+        // Handler para o SUBMIT do formulário (agora lida com ambos os casos)
         projectForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            eventHandlers.onSaveNewProject({
+            const projectData = {
                 name: nameInput.value,
                 description: descriptionInput.value
-            });
+            };
+
+            if (editingProjectId) {
+                // Se estivermos editando, chama o handler de atualização
+                eventHandlers.onUpdateProject(editingProjectId, projectData);
+            } else {
+                // Caso contrário, chama o handler para salvar um novo projeto
+                eventHandlers.onSaveNewProject(projectData);
+            }
+
             projectForm.reset();
+            editingProjectId = null;
             projectModal.classList.add('hidden');
         });
     }
