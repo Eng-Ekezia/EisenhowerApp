@@ -57,6 +57,12 @@ function renderProjectList(container, projects, eventHandlers) {
     `;
     container.appendChild(header);
 
+    // **NOVO**: Adiciona o event listener para o botão de novo projeto
+    // A lógica para `onShowAddProjectModal` será implementada no app.js
+    const addProjectBtn = container.querySelector('#add-project-btn');
+    addProjectBtn.addEventListener('click', eventHandlers.onShowAddProjectModal);
+
+
     const projectListContainer = document.createElement('div');
     
     if (projects && projects.length > 0) {
@@ -113,7 +119,6 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
     `;
     container.appendChild(detailHeader);
     
-    // **NOVO**: Adiciona o event listener diretamente após a criação do botão
     container.querySelector('#back-to-projects-btn').addEventListener('click', eventHandlers.onBackToProjectList);
 
 
@@ -144,9 +149,6 @@ export const projectsView = {
         const container = document.getElementById('projects-view');
         if (!container) return;
 
-        // Lógica de roteamento:
-        // Se um `viewingProjectId` estiver definido no estado, mostre os detalhes.
-        // Caso contrário, mostre a lista de projetos.
         if (state.viewingProjectId) {
             const project = state.projects.find(p => p.id === state.viewingProjectId);
             const projectTasks = state.tasks.filter(t => t.projectId === state.viewingProjectId);
@@ -154,9 +156,7 @@ export const projectsView = {
             if (project) {
                 renderProjectDetail(container, project, projectTasks, eventHandlers);
             } else {
-                // Caso o projeto não seja encontrado, volte para a lista.
                 console.error(`Projeto com ID ${state.viewingProjectId} não encontrado.`);
-                // Força o retorno à lista de projetos
                 eventHandlers.onBackToProjectList();
             }
         } else {

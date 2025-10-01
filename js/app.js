@@ -36,7 +36,6 @@ function render() {
     } else if (state.activeView === 'projects') {
         matrixContainer.classList.add('hidden');
         projectsContainer.classList.remove('hidden');
-        // AQUI ESTÁ A MUDANÇA: Passamos o estado completo para a projectsView.
         projectsView.render(state, eventHandlers);
     }
     const archivedTasks = archiveService.getArchivedTasks();
@@ -89,39 +88,74 @@ function bindStaticEvents() {
         });
     }
 
-    if (helpBtn && helpModal) {
-        helpBtn.addEventListener('click', () => {
-            helpModal.classList.remove('hidden');
-            closeSheet();
+    // --- LÓGICA GENÉRICA PARA MODAIS ---
+    function setupModal(modalId, openHandler) {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+        
+        // Se um `openHandler` for fornecido, ele será responsável por abrir o modal
+        if(openHandler) openHandler(modal);
+
+        // Lógica para fechar o modal
+        modal.querySelectorAll(`[data-action="close-${modalId}"]`).forEach(trigger => {
+            trigger.addEventListener('click', () => modal.classList.add('hidden'));
         });
-        helpModal.querySelector('.modal__close').addEventListener('click', () => helpModal.classList.add('hidden'));
-        helpModal.querySelector('.modal__overlay').addEventListener('click', () => helpModal.classList.add('hidden'));
     }
 
-    if (statsBtn && statsModal) {
+    // --- CONFIGURAÇÃO DOS MODAIS EXISTENTES E NOVOS ---
+    setupModal('help-modal', (modal) => {
+        helpBtn.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            closeSheet();
+        });
+    });
+
+    setupModal('stats-modal', (modal) => {
         statsBtn.addEventListener('click', () => {
             const { tasks } = getState();
             const stats = dataService.calculateStats(tasks);
             matrixView.displayStats(stats);
-            statsModal.classList.remove('hidden');
+            modal.classList.remove('hidden');
             closeSheet();
         });
-        statsModal.querySelectorAll('.modal__close, .modal__overlay').forEach(el =>
-            el.addEventListener('click', () => statsModal.classList.add('hidden'))
-        );
-    }
-    
-    if (archiveBtn && archiveModal) {
+    });
+
+    setupModal('archive-modal', (modal) => {
         archiveBtn.addEventListener('click', () => {
             const archivedTasks = archiveService.getArchivedTasks();
             matrixView.renderArchivedTasks(archivedTasks, eventHandlers);
-            archiveModal.classList.remove('hidden');
+            modal.classList.remove('hidden');
             closeSheet();
         });
-        archiveModal.querySelectorAll('[data-action="close-archive-modal"]').forEach(trigger => {
-            trigger.addEventListener('click', () => archiveModal.classList.add('hidden'));
+    });
+    
+    // **NOVO**: Configuração do Modal de Projeto
+    const projectModal = document.getElementById('project-modal');
+    if (projectModal) {
+        const projectForm = document.getElementById('project-form');
+        const nameInput = document.getElementById('project-name');
+        const descriptionInput = document.getElementById('project-description');
+        
+        // Adiciona o handler para ABRIR o modal
+        eventHandlers.onShowAddProjectModal = () => projectModal.classList.remove('hidden');
+        
+        // Adiciona o handler para FECHAR o modal
+        projectModal.querySelectorAll('[data-action="close-project-modal"]').forEach(trigger => {
+            trigger.addEventListener('click', () => projectModal.classList.add('hidden'));
+        });
+
+        // Adiciona o handler para o SUBMIT do formulário
+        projectForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            eventHandlers.onSaveNewProject({
+                name: nameInput.value,
+                description: descriptionInput.value
+            });
+            projectForm.reset();
+            projectModal.classList.add('hidden');
         });
     }
+
 
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
