@@ -1,0 +1,67 @@
+/* =================================================================== */
+/* ----------- INÍCIO DOS ESTILOS DE NAVEGAÇÃO PRINCIPAL ----------- */
+/* =================================================================== */
+
+.header .container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-16);
+}
+
+.header__title-wrapper {
+    justify-self: start;
+}
+
+.header__nav {
+    justify-self: center;
+}
+
+.header__actions {
+    justify-self: end;
+}
+
+.segmented-control {
+    display: inline-flex;
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-base);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+}
+
+.segmented-control__button {
+    background: transparent;
+    border: none;
+    color: var(--color-text-secondary);
+    padding: var(--space-6) var(--space-16);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-standard);
+}
+
+.segmented-control__button.active {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-sm);
+}
+
+/* --- Responsividade para a Navegação --- */
+@media (max-width: 640px) {
+    .header .container {
+        grid-template-columns: auto 1fr; /* Título e Ações ocupam o espaço necessário */
+        justify-content: space-between;
+    }
+
+    .header__nav {
+        grid-column: 1 / -1; /* Ocupa a largura total */
+        grid-row: 2;
+        padding-top: var(--space-8);
+        justify-self: center;
+    }
+
+    .header__title {
+        font-size: var(--font-size-xl);
+    }
+}

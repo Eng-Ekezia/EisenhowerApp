@@ -1,0 +1,27 @@
+/* Botão adicionar tarefa */
+.add-task-btn {
+    width: 100%;
+    min-height: 44px;
+    background: transparent;
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-base);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    transition: all var(--duration-normal) var(--ease-standard);
+    padding: var(--space-12);
+}
+
+.add-task-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: var(--color-secondary);
+}
+
+.add-task-btn:active {
+    transform: scale(0.98);
+}

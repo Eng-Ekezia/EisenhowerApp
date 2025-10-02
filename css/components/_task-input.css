@@ -1,0 +1,30 @@
+/* Input para nova tarefa */
+.task-input {
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-base);
+    padding: var(--space-12);
+    margin-bottom: var(--space-8);
+    box-shadow: var(--shadow-md);
+}
+
+.task-input__field {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: var(--font-size-base);
+    padding: var(--space-8);
+    background: transparent;
+    color: var(--color-text);
+    margin-bottom: var(--space-8);
+}
+
+.task-input__field::placeholder {
+    color: var(--color-text-secondary);
+}
+
+.task-input__actions {
+    display: flex;
+    gap: var(--space-8);
+    justify-content: flex-end;
+}

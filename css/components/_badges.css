@@ -1,0 +1,18 @@
+/* =================================================================== */
+/* -----------      INÍCIO DOS ESTILOS DO BADGE DE PROJETO    ----------- */
+/* =================================================================== */
+.task__project-badge {
+    display: inline-block;
+    background-color: var(--color-bg-5); /* Roxo claro */
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--space-2) var(--space-8);
+    border-radius: var(--radius-full);
+    margin-bottom: var(--space-8);
+    border: 1px solid rgba(147, 51, 234, 0.2); /* Borda roxa sutil */
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

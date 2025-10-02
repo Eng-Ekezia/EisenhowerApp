@@ -1,0 +1,122 @@
+/* Tarefa individual */
+.task {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    padding: var(--space-12);
+    display: flex;
+    /* NOVO: Permite que os itens quebrem para a próxima linha */
+    flex-wrap: wrap; 
+    align-items: flex-start; /* Alinha os itens ao topo */
+    justify-content: space-between;
+    transition: all var(--duration-normal) var(--ease-standard);
+    cursor: move;
+    position: relative;
+    touch-action: manipulation;
+}
+
+.task:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+}
+
+.task.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+}
+
+.task.completed {
+    opacity: 0.6;
+    background-color: var(--color-secondary);
+}
+
+.task.completed .task__text {
+    text-decoration: line-through;
+}
+
+.task__content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    flex: 1;
+    width: 100%;
+}
+
+.task__checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.task__text {
+    flex: 1;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    color: var(--color-text);
+    outline: none;
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+    min-height: 24px;
+}
+
+.task__text:focus {
+    background-color: var(--color-secondary);
+}
+
+.task__text:empty:before {
+    content: "Clique para editar...";
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+.task__archive {
+    /* Posicionamento e estilo similar ao de exclusão */
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--color-success); /* Verde para indicar uma ação positiva */
+    color: var(--color-white);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--color-surface);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    transform: scale(0.5);
+    opacity: 0;
+}
+
+/* Animação de aparição do botão de arquivar */
+.task.completed:hover .task__archive {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.task__archive:hover {
+    transform: scale(1.15);
+}
+
+.task__archive svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Estilo para a data de criação */
+.task__meta {
+    width: 100%;
+    flex-basis: 100%;
+    padding-left: 28px; /* Alinha com as subtarefas */
+    margin-top: 8px;
+}
+
+.task__creation-date {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    font-style: italic;
+}

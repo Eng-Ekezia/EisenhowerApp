@@ -1,0 +1,16 @@
+/* Touch gestures para mobile */
+@media (max-width: 767px) {
+    .task {
+        touch-action: pan-y;
+    }
+    
+    .task.swipe-left {
+        transform: translateX(-100px);
+        opacity: 0.5;
+    }
+    
+    .task.swipe-right {
+        transform: translateX(100px);
+        opacity: 0.5;
+    }
+}

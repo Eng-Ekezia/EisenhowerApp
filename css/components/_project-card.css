@@ -1,0 +1,70 @@
+/* =================================================================== */
+/* -----------   ESTILOS DOS PROJETOS   ----------- */
+/* =================================================================== */
+
+.project-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-16);
+    position: relative; 
+    overflow: hidden; 
+    /* ADIÇÃO: Transição suave para os efeitos de hover */
+    transition: transform var(--duration-normal) var(--ease-standard),
+                box-shadow var(--duration-normal) var(--ease-standard),
+                border-color var(--duration-normal) var(--ease-standard);
+    margin-bottom: var(--space-16);
+}
+
+/* NOVA REGRA: Efeito de hover para o card de projeto */
+.project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+}
+
+.project-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Alinhar o título e o botão no topo */
+    margin-bottom: var(--space-8); /* Espaçamento entre o cabeçalho e a descrição */
+}
+
+.project-card__title {
+    font-size: var(--font-size-lg); /* Ajustado para um tamanho de fonte apropriado */
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0; /* Remove margem padrão */
+    line-height: 1.2; /* Ajusta a altura da linha */
+    padding-right: var(--space-32); /* Espaço para o botão de editar */
+    flex-grow: 1; /* Permite que o título ocupe o espaço restante */
+}
+
+.project-card__description {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    margin: 0; /* Remove margem padrão */
+    line-height: 1.5;
+}
+
+.project-card .edit-project-btn {
+    position: absolute; /* Posicionamento absoluto dentro do card */
+    top: var(--space-16); /* Distância do topo do card */
+    right: var(--space-16); /* Distância da direita do card */
+    padding: var(--space-4); /* Reduz o padding para um botão menor */
+    border: none;
+    background: none;
+    color: var(--color-text-secondary); /* Cor do ícone */
+    border-radius: var(--radius-md);
+}
+
+.project-card .edit-project-btn:hover {
+    background-color: var(--color-bg-hover);
+    color: var(--color-primary);
+}
+
+.project-card .edit-project-btn svg {
+    width: 18px; /* Ajusta o tamanho do ícone */
+    height: 18px;
+    display: block; /* Garante que o SVG se comporte como bloco para centralização */
+}

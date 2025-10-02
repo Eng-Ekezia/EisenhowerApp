@@ -1,0 +1,14 @@
+/* Lista de tarefas */
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    margin-bottom: var(--space-16);
+    min-height: 60px;
+    align-items: stretch;
+}
+
+/* CORREÇÃO APLICADA AQUI */
+.task-list > .task {
+    width: 100%;
+}

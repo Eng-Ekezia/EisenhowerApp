@@ -1,0 +1,23 @@
+/* Tablet - 768px+ */
+@media (min-width: 768px) {
+    .header__title {
+        font-size: var(--font-size-3xl);
+    }
+    
+    .matrix {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-24);
+    }
+    
+    .quadrant {
+        min-height: 300px;
+    }
+    
+    .modal__content {
+        max-width: 600px;
+    }
+    
+    .task__delete {
+        opacity: 0.7;
+    }
+}

@@ -1,0 +1,69 @@
+/* Matriz - Layout mobile (empilhado verticalmente) */
+.matrix {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-20);
+    max-width: 100%;
+}
+
+/* 1. Estilo base do Quadrante */
+.quadrant {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 2px solid transparent; /* Borda invisível para manter o layout */
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    min-height: 200px;
+    /* Transição suave para o efeito de elevação */
+    transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+}
+
+/* 2. Efeito de "elevação" ao passar o mouse */
+.quadrant:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg); /* Sombra mais pronunciada */
+}
+
+/* 3. Estilo do Cabeçalho do Quadrante (sem alterações) */
+.quadrant__header {
+    padding: var(--space-16);
+    color: var(--color-white);
+    text-align: center;
+    position: relative;
+}
+
+/* 4. Estilo da área de conteúdo (o "ambiente") */
+.quadrant__content {
+    padding: var(--space-12);
+    border-radius: var(--radius-base); /* Bordas arredondadas para o fundo */
+    min-height: 150px;
+    /* Transição para suavizar a mudança de cor, se houver no futuro */
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* 5. Aplica a cor de fundo sutil para cada quadrante */
+.quadrant[data-quadrant="q1"] .quadrant__content { background-color: rgba(239, 68, 68, 0.05); }
+.quadrant[data-quadrant="q2"] .quadrant__content { background-color: rgba(59, 130, 246, 0.05); }
+.quadrant[data-quadrant="q3"] .quadrant__content { background-color: rgba(245, 158, 11, 0.05); }
+.quadrant[data-quadrant="q4"] .quadrant__content { background-color: rgba(34, 197, 94, 0.05); }
+
+.quadrant__title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    margin: 0 0 var(--space-4) 0;
+}
+
+.quadrant__subtitle {
+    font-size: var(--font-size-sm);
+    margin: 0 0 var(--space-8) 0;
+    opacity: 0.9;
+}
+
+.quadrant__action {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    background: rgba(255, 255, 255, 0.2);
+    padding: var(--space-4) var(--space-8);
+    border-radius: var(--radius-full);
+    display: inline-block;
+}

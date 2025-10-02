@@ -1,3 +1,4 @@
+/* START: Variables */
 :root {
   /* Primitive Color Tokens */
   --color-white: rgba(255, 255, 255, 1);
@@ -143,7 +144,9 @@
   --container-lg: 1024px;
   --container-xl: 1280px;
 }
+/* END: Variables */
 
+/* START: DarkMode */
 /* Dark mode colors */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -296,7 +299,9 @@
   --color-warning-rgb: var(--color-orange-500-rgb);
   --color-info-rgb: var(--color-slate-500-rgb);
 }
+/* END: DarkMode */
 
+/* START: Base */
 /* Base styles */
 html {
   font-size: var(--font-size-base);
@@ -318,7 +323,9 @@ body {
 *::after {
   box-sizing: inherit;
 }
+/* END: Base */
 
+/* START: Typography */
 /* Typography */
 h1,
 h2,
@@ -389,7 +396,9 @@ pre code {
   background: none;
   padding: 0;
 }
+/* END: Typography */
 
+/* START: Buttons */
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -468,7 +477,9 @@ pre code {
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* END: Buttons */
 
+/* START: Forms */
 /* Form elements */
 .form-control {
   display: block;
@@ -532,7 +543,9 @@ select.form-control {
 .form-group {
   margin-bottom: var(--space-16);
 }
+/* END: Forms */
 
+/* START: Card */
 /* Card component */
 .card {
   background-color: var(--color-surface);
@@ -556,7 +569,9 @@ select.form-control {
   padding: var(--space-16);
   border-bottom: 1px solid var(--color-card-border-inner);
 }
+/* END: Card */
 
+/* START: Status */
 /* Status indicators - simplified with CSS variables */
 .status {
   display: inline-flex;
@@ -606,7 +621,9 @@ select.form-control {
   border: 1px solid
     rgba(var(--color-info-rgb, 98, 108, 113), var(--status-border-opacity));
 }
+/* END: Status */
 
+/* START: Container */
 /* Container layout */
 .container {
   width: 100%;
@@ -636,7 +653,9 @@ select.form-control {
     max-width: var(--container-xl);
   }
 }
+/* END: Container */
 
+/* START: Utils */
 /* Utility classes */
 .flex {
   display: flex;
@@ -707,7 +726,9 @@ select.form-control {
 .hidden {
   display: none;
 }
+/* END: Utils */
 
+/* START: Accessibility */
 /* Accessibility */
 .sr-only {
   position: absolute;
@@ -725,21 +746,24 @@ select.form-control {
   outline: var(--focus-outline);
   outline-offset: 2px;
 }
+/* END: Accessibility */
 
+/* START: DarkModeSpecifics */
 /* Dark mode specifics */
 [data-color-scheme="dark"] .btn--outline {
   border: 1px solid var(--color-border-secondary);
 }
+/* END: DarkModeSpecifics */
 
+/* START: Fonts */
 @font-face {
   font-family: 'FKGroteskNeue';
   src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2')
     format('woff2');
 }
+/* END: Fonts */
 
-/* END PERPLEXITY DESIGN SYSTEM */
-/* Mobile-first approach - 320px+ */
-
+/* START: Layout */
 /* Layout principal */
 .main {
     padding: var(--space-16) 0;
@@ -783,7 +807,9 @@ select.form-control {
     justify-content: center;
     font-size: var(--font-size-lg);
 }
+/* END: Layout */
 
+/* START: Matrix */
 /* Matriz - Layout mobile (empilhado verticalmente) */
 .matrix {
     display: grid;
@@ -853,8 +879,9 @@ select.form-control {
     border-radius: var(--radius-full);
     display: inline-block;
 }
+/* END: Matrix */
 
-
+/* START: TaskList */
 /* Lista de tarefas */
 .task-list {
     display: flex;
@@ -869,7 +896,9 @@ select.form-control {
 .task-list > .task {
     width: 100%;
 }
+/* END: TaskList */
 
+/* START: TaskCard */
 /* Tarefa individual */
 .task {
     background-color: var(--color-surface);
@@ -992,7 +1021,9 @@ select.form-control {
     color: var(--color-text-secondary);
     font-style: italic;
 }
+/* END: TaskCard */
 
+/* START: AddTaskButton */
 /* Botão adicionar tarefa */
 .add-task-btn {
     width: 100%;
@@ -1020,7 +1051,9 @@ select.form-control {
 .add-task-btn:active {
     transform: scale(0.98);
 }
+/* END: AddTaskButton */
 
+/* START: TaskInput */
 /* Input para nova tarefa */
 .task-input {
     background-color: var(--color-surface);
@@ -1051,7 +1084,9 @@ select.form-control {
     gap: var(--space-8);
     justify-content: flex-end;
 }
+/* END: TaskInput */
 
+/* START: Modal */
 /* Modais */
 .modal {
     position: fixed;
@@ -1140,7 +1175,9 @@ select.form-control {
     color: var(--color-text-secondary);
     margin-bottom: 0;
 }
+/* END: Modal */
 
+/* START: DragDrop */
 /* Estados de drag and drop */
 .quadrant.drag-over {
     background-color: var(--color-secondary);
@@ -1159,7 +1196,9 @@ select.form-control {
 .task-list.empty:before {
     content: "Nenhuma tarefa ainda...";
 }
+/* END: DragDrop */
 
+/* START: MediaTablet */
 /* Tablet - 768px+ */
 @media (min-width: 768px) {
     .header__title {
@@ -1183,7 +1222,9 @@ select.form-control {
         opacity: 0.7;
     }
 }
+/* END: MediaTablet */
 
+/* START: MediaDesktop */
 /* Desktop - 1024px+ */
 @media (min-width: 1024px) {
     .main {
@@ -1216,7 +1257,9 @@ select.form-control {
         max-width: 700px;
     }
 }
+/* END: MediaDesktop */
 
+/* START: Animations */
 /* Estados especiais */
 .fade-in {
     animation: fadeIn var(--duration-normal) var(--ease-standard);
@@ -1241,7 +1284,9 @@ select.form-control {
         transform: translateY(0); 
     }
 }
+/* END: Animations */
 
+/* START: MediaReducedMotion */
 /* Acessibilidade */
 @media (prefers-reduced-motion: reduce) {
     * {
@@ -1250,7 +1295,9 @@ select.form-control {
         transition-duration: 0.01ms !important;
     }
 }
+/* END: MediaReducedMotion */
 
+/* START: MediaTouch */
 /* Touch gestures para mobile */
 @media (max-width: 767px) {
     .task {
@@ -1267,7 +1314,9 @@ select.form-control {
         opacity: 0.5;
     }
 }
+/* END: MediaTouch */
 
+/* START: MediaSmallScreen */
 /* Melhorias para telas pequenas */
 @media (max-width: 480px) {
     .header {
@@ -1299,7 +1348,9 @@ select.form-control {
         padding: var(--space-16);
     }
 }
+/* END: MediaSmallScreen */
 
+/* START: LoadingState */
 /* Estados loading */
 .loading {
     opacity: 0.6;
@@ -1324,7 +1375,9 @@ select.form-control {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+/* END: LoadingState */
 
+/* START: GlobalLayoutAdjustments */
 /* AJUSTES GLOBAIS DE LAYOUT */
 .container {
     max-width: 1600px; 
@@ -1378,7 +1431,9 @@ select.form-control {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+/* END: GlobalLayoutAdjustments */
 
+/* START: NewTaskCard */
 /* --- INÍCIO DOS ESTILOS DO NOVO CARD DE TAREFA --- */
 .task {
     display: flex;
@@ -1439,7 +1494,9 @@ select.form-control {
 .task:not(.has-subtasks) .subtask-list {
     display: none;
 }
+/* END: NewTaskCard */
 
+/* START: SubtaskForm */
 /* --- NOVOS ESTILOS PARA O FORMULÁRIO DE SUBTAREFA --- */
 
 /* Contêiner do formulário. */
@@ -1476,9 +1533,9 @@ select.form-control {
     height: 32px;
     padding: 0; /* Remove padding para centralizar o ícone */
 }
+/* END: SubtaskForm */
 
-/* --- FIM DOS NOVOS ESTILOS --- */
-
+/* START: AddSubtaskPlaceholder */
 .add-subtask-placeholder-btn {
     background: none;
     border: none;
@@ -1500,7 +1557,9 @@ select.form-control {
     width: 20px;
     height: 20px;
 }
+/* END: AddSubtaskPlaceholder */
 
+/* START: TaskFocusState */
 /* --- INÍCIO DO ESTILO DE CARD DE TAREFA COM FOCO (CONCEITO 1) --- */
 
 /* 1. Esconde as ações secundárias por padrão */
@@ -1585,9 +1644,9 @@ select.form-control {
     width: 14px;
     height: 14px;
 }
-/* --- FIM DO ESTILO --- */
+/* END: TaskFocusState */
 
-
+/* START: ViewModeSwitch */
 /* --- INÍCIO DOS ESTILOS DE TROCA DE VISUALIZAÇÃO --- */
 
 /* Por padrão, a matriz está no modo GRID (quadrantes) */
@@ -1619,8 +1678,9 @@ select.form-control {
         gap: var(--space-16);
     }
 }
-/* --- FIM DOS ESTILOS --- */
+/* END: ViewModeSwitch */
 
+/* START: ViewToggleIcon */
 /* --- INÍCIO DOS ESTILOS DE COR DOS ÍCONES DE VISUALIZAÇÃO --- */
 
 /* Define o estilo do contorno para ambos os ícones */
@@ -1647,7 +1707,9 @@ select.form-control {
 #view-toggle-btn .q4 { fill: #22c55e; } /* Verde */
 
 /* --- FIM DOS ESTILOS --- */
+/* END: ViewToggleIcon */
 
+/* START: Toast */
 /* =================================================================== */
 /* ----------- INÍCIO DOS ESTILOS DE NOTIFICAÇÃO TOAST --------------- */
 /* =================================================================== */
@@ -1691,8 +1753,9 @@ select.form-control {
     color: var(--color-text-secondary);
 }
 /* --- FIM DOS ESTILOS --- */
+/* END: Toast */
 
-
+/* START: SheetMenu */
 /* =================================================== */
 /* --- INÍCIO DOS ESTILOS DO MENU LATERAL (SHEET) --- */
 /* =================================================== */
@@ -1803,7 +1866,9 @@ select.form-control {
     justify-content: flex-end;
 }
 /* --- FIM DOS ESTILOS --- */
+/* END: SheetMenu */
 
+/* START: ArchiveModal */
 /* ============================================= */
 /* =         MODAL DE TAREFAS ARQUIVADAS         = */
 /* ============================================= */
@@ -1865,7 +1930,9 @@ select.form-control {
         flex-grow: 1;
     }
 }
+/* END: ArchiveModal */
 
+/* START: MainNavigation */
 /* =================================================================== */
 /* ----------- INÍCIO DOS ESTILOS DE NAVEGAÇÃO PRINCIPAL ----------- */
 /* =================================================================== */
@@ -1933,9 +2000,9 @@ select.form-control {
         font-size: var(--font-size-xl);
     }
 }
+/* END: MainNavigation */
 
-/* Adicione este bloco ao final do seu arquivo style.css */
-
+/* START: PlannedTaskCard */
 /* =================================================================== */
 /* ----------- INÍCIO DOS ESTILOS DA TAREFA PLANEJADA ---------------- */
 /* =================================================================== */
@@ -2018,7 +2085,9 @@ select.form-control {
     display: flex;
     gap: var(--space-8);
 }
+/* END: PlannedTaskCard */
 
+/* START: ProjectBadge */
 /* =================================================================== */
 /* -----------      INÍCIO DOS ESTILOS DO BADGE DE PROJETO    ----------- */
 /* =================================================================== */
@@ -2037,7 +2106,9 @@ select.form-control {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+/* END: ProjectBadge */
 
+/* START: TaskStatusBadge */
 /* =================================================================== */
 /* -----------   ESTILOS DO STATUS DA TAREFA NO PROJETO   ----------- */
 /* =================================================================== */
@@ -2091,7 +2162,9 @@ select.form-control {
 .planned-task-card.is-completed .planned-task-card__text {
     text-decoration: line-through;
 }
+/* END: TaskStatusBadge */
 
+/* START: ProjectCard */
 /* =================================================================== */
 /* -----------   ESTILOS DOS PROJETOS   ----------- */
 /* =================================================================== */
@@ -2162,7 +2235,9 @@ select.form-control {
     height: 18px;
     display: block; /* Garante que o SVG se comporte como bloco para centralização */
 }
+/* END: ProjectCard */
 
+/* START: Legacy */
 /* Estilos antigos movidos do index.html */
 .hidden { display: none !important; } /* Adicionado !important para garantir a sobreposição */
 .task-input__extra-fields { margin-top: 8px; display: flex; flex-direction: column; gap: 4px;}
@@ -2179,3 +2254,4 @@ select.form-control {
 .subtask-item:hover .subtask-delete-btn { display: inline-block; }
 .subtask-delete-btn svg { width: 16px; height: 16px; color: var(--color-text-secondary); }
 .subtask-delete-btn:hover svg { color: var(--color-error); }
+/* END: Legacy */

@@ -1,0 +1,45 @@
+/* Arquivo principal - Importa todos os módulos CSS na ordem correta */
+
+/* --- Base --- */
+@import url("base/_variables.css");
+@import url("base/_base.css");
+@import url("base/_typography.css");
+
+/* --- Themes --- */
+@import url("themes/_dark-mode.css");
+
+/* --- Layout --- */
+@import url("layout/_container.css");
+@import url("layout/_layout.css");
+@import url("layout/_matrix.css");
+
+/* --- Components --- */
+@import url("components/_buttons.css");
+@import url("components/_cards.css");
+@import url("components/_forms.css");
+@import url("components/_modal.css");
+@import url("components/_sheet.css");
+@import url("components/_toast.css");
+@import url("components/_task-list.css");
+@import url("components/_task-card.css");
+@import url("components/_add-task-button.css");
+@import url("components/_task-input.css");
+@import url("components/_subtask-form.css");
+@import url("components/_planned-task-card.css");
+@import url("components/_project-card.css");
+@import url("components/_archive-modal.css");
+@import url("components/_navigation.css");
+@import url("components/_badges.css");
+
+/* --- Utils --- */
+@import url("utils/_animations.css");
+@import url("utils/_helpers.css");
+@import url("utils/_accessibility.css");
+@import url("utils/_loading.css");
+
+/* --- Responsive --- */
+@import url("responsive/_tablet.css");
+@import url("responsive/_desktop.css");
+@import url("responsive/_small-screen.css");
+@import url("responsive/_touch.css");
+@import url("responsive/_reduced-motion.css");
