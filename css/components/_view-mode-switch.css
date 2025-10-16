@@ -1,0 +1,31 @@
+/* css/components/_view-mode-switch.css */
+
+/* Por padrão, a matriz no modo GRID exibe 2 colunas em telas grandes */
+.matrix[data-view-mode="grid"] {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-24);
+}
+
+/* Quando o modo for COLUMNS, exibe 4 colunas em telas grandes */
+.matrix[data-view-mode="columns"] {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-16);
+}
+
+/* Em telas de tablet, o modo COLUNAS exibe 2 colunas para não apertar o conteúdo */
+@media (max-width: 1200px) and (min-width: 1024px) {
+    .matrix[data-view-mode="columns"] {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Em telas de celular, AMBOS os modos ficam com 1 coluna vertical para melhor legibilidade */
+@media (max-width: 1023px) {
+    .matrix[data-view-mode="grid"],
+    .matrix[data-view-mode="columns"] {
+        grid-template-columns: 1fr;
+        gap: var(--space-16);
+    }
+}

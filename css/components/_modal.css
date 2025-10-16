@@ -63,6 +63,7 @@
     justify-content: center;
     border-radius: var(--radius-full);
     transition: all var(--duration-fast) var(--ease-standard);
+    line-height: 1;
 }
 
 .modal__close:hover {
