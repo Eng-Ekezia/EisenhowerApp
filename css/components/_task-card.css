@@ -5,10 +5,10 @@
     border-radius: var(--radius-base);
     padding: var(--space-12);
     display: flex;
-    /* NOVO: Permite que os itens quebrem para a próxima linha */
     flex-wrap: wrap; 
-    align-items: flex-start; /* Alinha os itens ao topo */
+    align-items: flex-start;
     justify-content: space-between;
+    gap: var(--space-8); /* Adiciona um espaço entre os itens principais */
     transition: all var(--duration-normal) var(--ease-standard);
     cursor: move;
     position: relative;
@@ -34,12 +34,19 @@
     text-decoration: line-through;
 }
 
+/* NOVO: Contêiner principal para checkbox, texto e metadados */
+.task__main {
+    flex-grow: 1; /* Permite que ele cresça e ocupe o espaço */
+    flex-basis: 70%; /* Começa com uma largura base de 70% */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
 .task__content {
     display: flex;
     align-items: center;
     gap: var(--space-8);
-    flex: 1;
-    width: 100%;
 }
 
 .task__checkbox {
@@ -47,10 +54,11 @@
     height: 20px;
     cursor: pointer;
     accent-color: var(--color-primary);
+    flex-shrink: 0; /* Impede que o checkbox encolha */
 }
 
 .task__text {
-    flex: 1;
+    flex-grow: 1;
     font-size: var(--font-size-base);
     line-height: var(--line-height-normal);
     color: var(--color-text);
@@ -65,58 +73,103 @@
     background-color: var(--color-secondary);
 }
 
-.task__text:empty:before {
-    content: "Clique para editar...";
-    color: var(--color-text-secondary);
-    font-style: italic;
-}
-
-.task__archive {
-    /* Posicionamento e estilo similar ao de exclusão */
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: var(--color-success); /* Verde para indicar uma ação positiva */
-    color: var(--color-white);
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid var(--color-surface);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+/* NOVO: Contêiner para a data de vencimento e outras ações laterais */
+.task__aside {
+    flex-shrink: 0; /* Impede que este contêiner encolha */
     display: flex;
     align-items: center;
-    justify-content: center;
+}
+
+.task__due-date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    transform: scale(0.5);
-    opacity: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+}
+.task__due-date:hover {
+    background-color: var(--color-secondary);
+}
+.task__due-date svg {
+    width: 20px;
+    height: 20px;
 }
 
-/* Animação de aparição do botão de arquivar */
-.task.completed:hover .task__archive {
-    transform: scale(1);
-    opacity: 1;
-}
-
-.task__archive:hover {
-    transform: scale(1.15);
-}
-
-.task__archive svg {
-    width: 14px;
-    height: 14px;
-}
-
-/* Estilo para a data de criação */
+/* Estilo para a data de criação e badge */
 .task__meta {
     width: 100%;
-    flex-basis: 100%;
-    padding-left: 28px; /* Alinha com as subtarefas */
-    margin-top: 8px;
+    padding-left: 28px; /* Alinha com o texto, considerando o checkbox */
+    margin-top: var(--space-4);
+    display: flex;
+    flex-direction: column; /* Empilha o badge e a data */
+    align-items: flex-start;
+    gap: var(--space-4);
 }
 
 .task__creation-date {
     font-size: var(--font-size-xs);
     color: var(--color-text-secondary);
     font-style: italic;
+}
+
+/* Botões de Ação (Excluir e Arquivar) */
+.task__delete, .task__archive {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    color: var(--color-white);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    /* ESTADO INICIAL: Escondido e reduzido */
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease-in-out;
+}
+
+/* GATILHO: Mostra o botão visível (seja delete ou archive) quando o mouse está sobre o card */
+.task:hover .task__delete:not(.hidden),
+.task:hover .task__archive:not(.hidden) {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Cor específica para o botão de excluir */
+.task__delete {
+    background-color: var(--color-error);
+}
+
+/* Cor específica para o botão de arquivar */
+.task__archive {
+    background-color: var(--color-success);
+}
+
+/* Efeito de hover para ambos os botões */
+.task__delete:hover, .task__archive:hover {
+    transform: scale(1.15);
+}
+
+/* Tamanho do ícone para ambos os botões */
+.task__delete svg, .task__archive svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Seção de Subtarefas */
+.subtask-section {
+    width: 100%;
+    flex-basis: 100%; /* Garante que ocupe a largura total */
+    margin-top: var(--space-8);
+    padding-top: var(--space-8);
+    padding-left: 28px; /* Alinha com o texto da tarefa principal */
+    border-top: 1px solid var(--color-border);
 }

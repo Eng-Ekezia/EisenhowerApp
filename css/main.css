@@ -25,6 +25,7 @@
 @import url("components/_add-task-button.css");
 @import url("components/_task-input.css");
 @import url("components/_subtask-form.css");
+@import url("components/_subtask-item.css");
 @import url("components/_planned-task-card.css");
 @import url("components/_project-card.css");
 @import url("components/_archive-modal.css");
