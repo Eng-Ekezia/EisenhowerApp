@@ -16,3 +16,56 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+/* =================================================================== */
+/* -----------   ESTILOS DO STATUS DA TAREFA NO PROJETO   ----------- */
+/* =================================================================== */
+
+/* Base para todos os badges de status na visão do projeto */
+.task-status-badge {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--space-4) var(--space-10);
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.4;
+    border: 1px solid transparent;
+}
+
+/* Cor para o status 'Concluída' */
+.task-status-badge.status--completed {
+    background-color: var(--color-bg-3); /* Verde claro */
+    color: var(--color-success);
+    border-color: rgba(var(--color-success-rgb), 0.2);
+}
+
+/* Cores para os status dos quadrantes, alinhadas com a Matriz */
+.task-status-badge.status--q1 {
+    background-color: var(--color-bg-4); /* Vermelho claro */
+    color: var(--color-error);
+    border-color: rgba(var(--color-error-rgb), 0.2);
+}
+.task-status-badge.status--q2 {
+    background-color: var(--color-bg-1); /* Azul claro */
+    color: var(--color-primary);
+    border-color: rgba(var(--color-teal-500-rgb), 0.2); /* Ajustado para usar a cor primária correta */
+}
+.task-status-badge.status--q3 {
+    background-color: var(--color-bg-2); /* Laranja claro */
+    color: var(--color-warning);
+    border-color: rgba(var(--color-warning-rgb), 0.2);
+}
+.task-status-badge.status--q4 {
+    background-color: var(--color-bg-8); /* Ciano/Verde claro */
+    color: #0891b2; /* Um tom de ciano escuro para contraste */
+    border-color: rgba(6, 182, 212, 0.2);
+}
+
+/* Estilo para o card inteiro quando uma tarefa está concluída */
+.planned-task-card.is-completed {
+    opacity: 0.6;
+}
+
+.planned-task-card.is-completed .planned-task-card__text {
+    text-decoration: line-through;
+}
