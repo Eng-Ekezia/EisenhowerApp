@@ -213,39 +213,60 @@ function createPlannedTaskCard(task, eventHandlers) {
  */
 function renderProjectDetail(container, project, tasks, eventHandlers) {
     container.innerHTML = '';
+    // ATUALIZADO: Limpa as classes do container
+    container.className = 'container';
 
     const completedTasks = tasks.filter(t => t.completed).length;
     const progress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
     
-    // ATUALIZADO: Lógica para o botão "Concluir"
+    // Lógica para o botão "Concluir"
     const isCompleted = project.status === 'completed';
-    const completeBtnText = isCompleted ? 'Reativar Projeto' : 'Concluir Projeto';
+    const completeBtnText = isCompleted ? 'Reativar' : 'Concluir';
     const completeBtnClass = isCompleted ? 'btn--secondary' : 'btn--primary';
+    // Ícone dinâmico para Concluir/Reativar
+    const completeBtnIcon = isCompleted ? 
+        `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>` :
+        `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`;
 
     const detailHeader = document.createElement('header');
     detailHeader.style.marginBottom = 'var(--space-24)';
+    
+    // =================================================================
+    // ATUALIZAÇÃO PRINCIPAL: Estrutura dos botões padronizada
+    // =================================================================
     detailHeader.innerHTML = `
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-16); flex-wrap: wrap; gap: var(--space-12);">
             <div style="display: flex; align-items: center; gap: var(--space-16);">
-                <button class="btn btn--secondary btn--sm" id="back-to-projects-btn">
-                    &larr; Voltar
+                <button class="btn btn--secondary" id="back-to-projects-btn" title="Voltar para a lista de projetos">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" /></svg>
+                    <span>Voltar</span>
                 </button>
                 <h2 style="font-size: var(--font-size-3xl); margin: 0;">${project.name}</h2>
             </div>
-            <div class="project-detail__actions" style="display: flex; gap: var(--space-8);">
+            
+            <div class="project-detail__actions">
                  <button class="btn btn--secondary" id="edit-project-detail-btn" title="Editar nome e descrição">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px; margin-right: 8px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                          <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                     </svg>
-                    Editar
+                    <span>Editar</span>
                 </button>
-                <button class="btn ${completeBtnClass}" id="complete-project-btn">${completeBtnText}</button>
+                <button class="btn ${completeBtnClass}" id="complete-project-btn" title="${completeBtnText} projeto">
+                    ${completeBtnIcon}
+                    <span>${completeBtnText}</span>
+                </button>
                 <button class="btn btn--secondary" id="archive-project-btn" title="Arquivar projeto">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4" />
                     </svg>
+                    <span>Arquivar</span>
                 </button>
-                <button class="btn btn--outline" id="delete-project-btn" title="Excluir projeto permanentemente">Excluir</button>
+                <button class="btn btn--outline" id="delete-project-btn" title="Excluir projeto permanentemente">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                    </svg>
+                    <span>Excluir</span>
+                </button>
             </div>
         </div>
         <p style="color: var(--color-text-secondary); margin: 0 0 var(--space-16);">${project.description || ''}</p>
@@ -260,14 +281,15 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
             </div>
         </div>
     `;
-    // ATUALIZADO: Adiciona classe de concluído ao container
+    
+    // Adiciona classe de concluído ao container PAI
     if (isCompleted) {
         container.classList.add('project-is-completed');
     }
     
     container.appendChild(detailHeader);
     
-    // ATUALIZADO: Adiciona event listeners para os novos botões
+    // Adiciona event listeners (sem alteração na lógica, apenas no HTML acima)
     container.querySelector('#back-to-projects-btn').addEventListener('click', eventHandlers.onBackToProjectList);
     container.querySelector('#edit-project-detail-btn').addEventListener('click', () => {
         eventHandlers.onShowEditProjectModal(project.id);

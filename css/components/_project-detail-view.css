@@ -49,7 +49,7 @@
 }
 
 .project-detail__actions .btn svg {
-    width: 18px; 
+    width: 18px; /* Tamanho padrão do ícone */
     height: 18px;
     flex-shrink: 0;
 }
@@ -58,24 +58,22 @@
     display: inline;
 }
 
+/* ================== REGRAS DE TAMANHO REMOVIDAS DAQUI ================== */
 /* Ajuste específico para o botão 'Voltar' (Desktop) */
+/* Agora ele herdará o tamanho de '.project-detail__actions .btn' */
+
+/* Garante o background e hover corretos */
 #back-to-projects-btn {
-    padding: var(--space-6) var(--space-12); /* Um pouco menor */
-    gap: var(--space-4);
-    /* Garante que o botão Voltar tenha o visual "secondary" */
-    background-color: var(--color-secondary);
-    color: var(--color-text);
-    border: none;
+     background-color: var(--color-secondary);
+     color: var(--color-text);
+     border: none;
 }
-
 #back-to-projects-btn:hover {
-     background: var(--color-secondary-hover);
+      background: var(--color-secondary-hover);
 }
 
-#back-to-projects-btn svg {
-     width: 16px; 
-     height: 16px;
-}
+/* ====================================================================== */
+
 
 /* Layout Responsivo (Telas Pequenas): Apenas Ícone */
 @media (max-width: 640px) {
@@ -87,5 +85,11 @@
      .project-detail__actions .btn {
         padding: var(--space-8); /* Padding quadrado */
         gap: 0;
+    }
+    
+    /* Garante que o botão voltar também fique quadrado */
+    #back-to-projects-btn {
+         padding: var(--space-8);
+         gap: 0;
     }
 }
