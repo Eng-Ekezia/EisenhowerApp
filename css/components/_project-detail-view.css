@@ -1,0 +1,91 @@
+/* css/components/_project-detail-view.css */
+
+/* =================================================================== */
+/* -----------      ESTILOS DE PROJETO CONCLUÍDO      ----------- */
+/* =================================================================== */
+
+/* 1. Estilo para o CARD na lista de projetos */
+.project-card.is-completed {
+    opacity: 0.65;
+    background-color: var(--color-secondary);
+    border-color: transparent;
+}
+
+.project-card.is-completed:hover {
+    opacity: 1;
+    transform: none; /* Remove o efeito de levantar */
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+}
+
+.project-card.is-completed .project-card__title,
+.project-card.is-completed .project-card__description {
+    text-decoration: line-through;
+    color: var(--color-text-secondary);
+}
+
+/* 2. Estilo para a VISÃO DE DETALHE de um projeto concluído */
+/* Afeta o cabeçalho (título, descrição, progresso) */
+#projects-view.project-is-completed > header {
+    opacity: 0.7;
+}
+
+/* =================================================================== */
+/* -----------    ESTILOS DOS BOTÕES (VISÃO DE DETALHE)   ----------- */
+/* =================================================================== */
+
+.project-detail__actions {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: var(--space-8);
+    align-items: center;
+}
+
+/* Layout Padrão (Desktop): Ícone + Texto */
+.project-detail__actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-8); /* Espaçamento padrão entre ícone e texto */
+}
+
+.project-detail__actions .btn svg {
+    width: 18px; 
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.project-detail__actions .btn span {
+    display: inline;
+}
+
+/* Ajuste específico para o botão 'Voltar' (Desktop) */
+#back-to-projects-btn {
+    padding: var(--space-6) var(--space-12); /* Um pouco menor */
+    gap: var(--space-4);
+    /* Garante que o botão Voltar tenha o visual "secondary" */
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+    border: none;
+}
+
+#back-to-projects-btn:hover {
+     background: var(--color-secondary-hover);
+}
+
+#back-to-projects-btn svg {
+     width: 16px; 
+     height: 16px;
+}
+
+/* Layout Responsivo (Telas Pequenas): Apenas Ícone */
+@media (max-width: 640px) {
+    .project-detail__actions .btn span {
+         display: none; /* Esconde o texto */
+    }
+
+    /* Faz os botões ocuparem menos espaço (modo ícone) */
+     .project-detail__actions .btn {
+        padding: var(--space-8); /* Padding quadrado */
+        gap: 0;
+    }
+}
