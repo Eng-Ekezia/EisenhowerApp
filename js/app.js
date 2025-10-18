@@ -9,6 +9,8 @@ import { dataService } from './services/data-service.js';
 import { archiveService } from './services/archive-service.js';
 import { taskService } from './services/task-service.js';
 import { projectService } from './services/project-service.js';
+// NOVO: Importa o novo serviço
+import { projectArchiveService } from './services/project-archive-service.js';
 
 
 function render() {
@@ -210,11 +212,14 @@ function bindStaticEvents() {
                         projectService.saveProjects(importedData.projects);
                         taskService.saveTasks(importedData.activeTasks);
                         archiveService.saveArchivedTasks(importedData.archivedTasks);
+                        // NOVO: Salva os projetos arquivados importados
+                        projectArchiveService.saveArchivedProjects(importedData.archivedProjects);
                         
                         setState({ 
                             projects: importedData.projects,
                             tasks: importedData.activeTasks,
-                            archivedTasks: importedData.archivedTasks
+                            archivedTasks: importedData.archivedTasks,
+                            archivedProjects: importedData.archivedProjects // NOVO: Atualiza o estado
                         });
                         
                         alert('Dados importados com sucesso!');
@@ -242,6 +247,31 @@ function init() {
     subscribe(render);
     bindStaticEvents();
     initController();
+    notificationService.start(() => getState().tasks);
+}
+
+// ATUALIZADA: A função init agora também carrega os projetos arquivados
+function init() {
+    subscribe(render);
+    bindStaticEvents();
+    initController();
+
+    // Carrega todos os dados iniciais do localStorage
+    const initialTasks = taskService.getTasks();
+    const initialArchivedTasks = archiveService.getArchivedTasks();
+    const initialProjects = projectService.getProjects();
+    // NOVO: Carrega os projetos arquivados
+    const initialArchivedProjects = projectArchiveService.getArchivedProjects();
+    
+    setState({
+        tasks: initialTasks,
+        archivedTasks: initialArchivedTasks,
+        projects: initialProjects,
+        archivedProjects: initialArchivedProjects, // NOVO: Define o estado inicial
+        activeView: 'matrix',
+        viewingProjectId: null
+    });
+    
     notificationService.start(() => getState().tasks);
 }
 

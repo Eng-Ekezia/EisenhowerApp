@@ -4,6 +4,8 @@
 import { taskService } from './task-service.js';
 import { archiveService } from './archive-service.js';
 import { projectService } from './project-service.js';
+// NOVO: Importa o novo serviço de arquivamento de projetos
+import { projectArchiveService } from './project-archive-service.js';
 
 /**
  * Serviço para lidar com operações de importação, exportação e análise de dados.
@@ -17,13 +19,16 @@ export const dataService = {
         const activeTasks = taskService.getTasks();
         const archivedTasks = archiveService.getArchivedTasks();
         const projects = projectService.getProjects();
+        // NOVO: Obtém projetos arquivados
+        const archivedProjects = projectArchiveService.getArchivedProjects();
 
         const dataToExport = {
-            version: "1.2", // Versão do schema de dados atualizada para incluir projetos
+            version: "1.3", // ATUALIZADO: Versão do schema para incluir projetos arquivados
             exportedAt: new Date().toISOString(),
             projects: projects,
             activeTasks: activeTasks,
-            archivedTasks: archivedTasks
+            archivedTasks: archivedTasks,
+            archivedProjects: archivedProjects // NOVO: Adiciona ao backup
         };
 
         const jsonString = JSON.stringify(dataToExport, null, 2);
@@ -41,7 +46,7 @@ export const dataService = {
     /**
      * Importa dados de uma string JSON, separando projetos, tarefas ativas e arquivadas.
      * @param {string} jsonContent - O conteúdo do arquivo JSON.
-     * @returns {{projects: Array<object>, activeTasks: Array<object>, archivedTasks: Array<object>}|null}
+     * @returns {{projects: Array<object>, activeTasks: Array<object>, archivedTasks: Array<object>, archivedProjects: Array<object>}|null}
      */
     importTasks: (jsonContent) => {
         try {
@@ -52,7 +57,8 @@ export const dataService = {
                 return {
                     projects: data.projects || [],
                     activeTasks: data.activeTasks || [],
-                    archivedTasks: data.archivedTasks || []
+                    archivedTasks: data.archivedTasks || [],
+                    archivedProjects: data.archivedProjects || [] // NOVO: Extrai projetos arquivados
                 };
             }
             
@@ -61,7 +67,8 @@ export const dataService = {
                  return {
                     projects: [],
                     activeTasks: data.tasks,
-                    archivedTasks: []
+                    archivedTasks: [],
+                    archivedProjects: [] // NOVO
                 };
             }
             
