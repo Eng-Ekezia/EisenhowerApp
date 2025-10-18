@@ -40,8 +40,11 @@ function render() {
         projectsContainer.classList.remove('hidden');
         projectsView.render(state, eventHandlers);
     }
+    
+    // ATUALIZADO: Renderiza ambos os históricos de arquivamento a cada mudança de estado
     const archivedTasks = archiveService.getArchivedTasks();
     matrixView.renderArchivedTasks(archivedTasks, eventHandlers);
+    projectsView.renderArchivedProjects(state.archivedProjects, eventHandlers);
 }
 
 function bindStaticEvents() {
@@ -57,6 +60,9 @@ function bindStaticEvents() {
 
     const archiveBtn = document.getElementById('sheet-archive-btn');
     const archiveModal = document.getElementById('archive-modal');
+    
+    // NOVO: Seleciona o novo botão
+    const projectArchiveBtn = document.getElementById('sheet-project-archive-btn');
 
     const exportBtn = document.getElementById('sheet-export-btn');
     const importBtn = document.getElementById('sheet-import-btn');
@@ -122,11 +128,21 @@ function bindStaticEvents() {
 
     setupModal('archive-modal', (modal) => {
         archiveBtn.addEventListener('click', () => {
-            const archivedTasks = archiveService.getArchivedTasks();
-            matrixView.renderArchivedTasks(archivedTasks, eventHandlers);
+            // A renderização já é tratada pelo loop render()
             modal.classList.remove('hidden');
             closeSheet();
         });
+    });
+    
+    // NOVO: Configura o modal de projetos arquivados
+    setupModal('project-archive-modal', (modal) => {
+        if (projectArchiveBtn) {
+            projectArchiveBtn.addEventListener('click', () => {
+                // A renderização já é tratada pelo loop render()
+                modal.classList.remove('hidden');
+                closeSheet();
+            });
+        }
     });
     
     // --- LÓGICA DO MODAL DE PROJETO (CRIAR E EDITAR) ---
@@ -243,9 +259,6 @@ function bindStaticEvents() {
     matrixView.bindDragAndDropEvents(eventHandlers);
 }
 
-// *** CORREÇÃO APLICADA AQUI ***
-// A função 'init()' duplicada foi removida.
-// Esta é agora a única versão da função.
 function init() {
     subscribe(render);
     bindStaticEvents();

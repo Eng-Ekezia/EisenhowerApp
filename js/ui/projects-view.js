@@ -13,6 +13,11 @@ function createProjectCard(project, eventHandlers) {
     card.className = 'card project-card';
     card.dataset.projectId = project.id;
     
+    // NOVO: Adiciona classe se o projeto estiver concluído
+    if (project.status === 'completed') {
+        card.classList.add('is-completed');
+    }
+    
     card.innerHTML = `
         <div class="project-card__header">
             <h4 class="project-card__title">${project.name}</h4>
@@ -78,8 +83,18 @@ function renderProjectList(container, projects, eventHandlers) {
 
     const projectListContainer = document.createElement('div');
     
-    if (projects && projects.length > 0) {
-        projects.forEach(project => {
+    // NOVO: Filtra projetos que não estão arquivados
+    const activeProjects = projects.filter(p => p.status !== 'archived');
+    
+    if (activeProjects && activeProjects.length > 0) {
+        // Ordena para que projetos concluídos apareçam no final
+        activeProjects.sort((a, b) => {
+            if (a.status === 'completed' && b.status !== 'completed') return 1;
+            if (a.status !== 'completed' && b.status === 'completed') return -1;
+            return 0; // Mantém a ordem original para projetos de mesmo status
+        });
+        
+        activeProjects.forEach(project => {
             const projectCard = createProjectCard(project, eventHandlers);
             projectListContainer.appendChild(projectCard);
         });
@@ -201,6 +216,11 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
 
     const completedTasks = tasks.filter(t => t.completed).length;
     const progress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
+    
+    // ATUALIZADO: Lógica para o botão "Concluir"
+    const isCompleted = project.status === 'completed';
+    const completeBtnText = isCompleted ? 'Reativar Projeto' : 'Concluir Projeto';
+    const completeBtnClass = isCompleted ? 'btn--secondary' : 'btn--primary';
 
     const detailHeader = document.createElement('header');
     detailHeader.style.marginBottom = 'var(--space-24)';
@@ -213,13 +233,19 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
                 <h2 style="font-size: var(--font-size-3xl); margin: 0;">${project.name}</h2>
             </div>
             <div class="project-detail__actions" style="display: flex; gap: var(--space-8);">
-                 <button class="btn btn--secondary" id="edit-project-detail-btn">
+                 <button class="btn btn--secondary" id="edit-project-detail-btn" title="Editar nome e descrição">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px; margin-right: 8px;">
                          <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                     </svg>
                     Editar
                 </button>
-                <button class="btn btn--outline" id="delete-project-btn">Excluir Projeto</button>
+                <button class="btn ${completeBtnClass}" id="complete-project-btn">${completeBtnText}</button>
+                <button class="btn btn--secondary" id="archive-project-btn" title="Arquivar projeto">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4" />
+                    </svg>
+                </button>
+                <button class="btn btn--outline" id="delete-project-btn" title="Excluir projeto permanentemente">Excluir</button>
             </div>
         </div>
         <p style="color: var(--color-text-secondary); margin: 0 0 var(--space-16);">${project.description || ''}</p>
@@ -234,15 +260,26 @@ function renderProjectDetail(container, project, tasks, eventHandlers) {
             </div>
         </div>
     `;
+    // ATUALIZADO: Adiciona classe de concluído ao container
+    if (isCompleted) {
+        container.classList.add('project-is-completed');
+    }
+    
     container.appendChild(detailHeader);
     
+    // ATUALIZADO: Adiciona event listeners para os novos botões
     container.querySelector('#back-to-projects-btn').addEventListener('click', eventHandlers.onBackToProjectList);
     container.querySelector('#edit-project-detail-btn').addEventListener('click', () => {
         eventHandlers.onShowEditProjectModal(project.id);
     });
-    // Adiciona o event listener para o novo botão de excluir
     container.querySelector('#delete-project-btn').addEventListener('click', () => {
         eventHandlers.onDeleteProject(project.id);
+    });
+    container.querySelector('#complete-project-btn').addEventListener('click', () => {
+        eventHandlers.onCompleteProject(project.id);
+    });
+    container.querySelector('#archive-project-btn').addEventListener('click', () => {
+        eventHandlers.onArchiveProject(project.id);
     });
 
     const taskSection = document.createElement('div');
@@ -307,5 +344,50 @@ export const projectsView = {
         } else {
             renderProjectList(container, state.projects, eventHandlers);
         }
+    },
+    
+    // NOVO: Função para renderizar projetos arquivados (será chamada pelo app.js)
+    renderArchivedProjects: (archivedProjects, eventHandlers) => {
+        const container = document.getElementById('project-archive-list-container');
+        const emptyMsg = document.getElementById('empty-project-archive-message');
+        
+        if (!container || !emptyMsg) return;
+
+        container.innerHTML = '';
+
+        if (archivedProjects.length === 0) {
+            emptyMsg.classList.remove('hidden');
+            return;
+        }
+        
+        emptyMsg.classList.add('hidden');
+
+        const fragment = document.createDocumentFragment();
+        archivedProjects.sort((a, b) => new Date(b.archivedAt) - new Date(a.archivedAt));
+
+        archivedProjects.forEach(project => {
+            const projectEl = document.createElement('div');
+            projectEl.className = 'archived-project-item';
+            
+            const archivedAt = new Date(project.archivedAt).toLocaleDateString('pt-BR');
+
+            projectEl.innerHTML = `
+                <div class="archived-project-item__main">
+                    <span class="archived-project-item__text">${project.name}</span>
+                    <span class="archived-project-item__meta">Arquivado em: ${archivedAt}</span>
+                </div>
+                <div class="archived-project-item__actions">
+                    <button class="btn btn--sm btn--secondary restore-btn" title="Restaurar Projeto">Restaurar</button>
+                    <button class="btn btn--sm btn--outline delete-btn" title="Excluir Permanentemente">Excluir</button>
+                </div>
+            `;
+
+            projectEl.querySelector('.restore-btn').addEventListener('click', () => eventHandlers.onRestoreProject(project.id));
+            projectEl.querySelector('.delete-btn').addEventListener('click', () => eventHandlers.onDeletePermanentlyProject(project.id));
+            
+            fragment.appendChild(projectEl);
+        });
+
+        container.appendChild(fragment);
     }
 };

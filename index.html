@@ -196,6 +196,7 @@
                 <button class="sheet__button" id="sheet-help-btn">Ajuda e Guia Rápido</button>
                 <button class="sheet__button" id="sheet-stats-btn">Estatísticas</button>
                 <button class="sheet__button" id="sheet-archive-btn">Histórico de Tarefas</button>
+                <button class="sheet__button" id="sheet-project-archive-btn">Projetos Arquivados</button>
                 <button class="sheet__button" id="sheet-export-btn">Exportar Tarefas</button>
                 <button class="sheet__button" id="sheet-import-btn">Importar Tarefas</button>
             </div>
@@ -219,6 +220,23 @@
                     </div>
                 <p id="empty-archive-message" class="hidden" style="text-align: center; color: var(--color-text-secondary);">
                     Você ainda não tem tarefas arquivadas.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="project-archive-modal">
+        <div class="modal__overlay" data-action="close-project-archive-modal"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h3>Projetos Arquivados</h3>
+                <button class="modal__close" data-action="close-project-archive-modal">&times;</button>
+            </div>
+            <div class="modal__body">
+                <div id="project-archive-list-container">
+                    </div>
+                <p id="empty-project-archive-message" class="hidden" style="text-align: center; color: var(--color-text-secondary);">
+                    Você ainda não tem projetos arquivados.
                 </p>
             </div>
         </div>

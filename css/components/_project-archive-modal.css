@@ -1,0 +1,63 @@
+/* css/components/_project-archive-modal.css */
+
+/* ============================================= */
+/* =         MODAL DE PROJETOS ARQUIVADOS        = */
+/* ============================================= */
+
+#project-archive-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+}
+
+.archived-project-item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-12);
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-base);
+    border-left: 3px solid var(--color-text-secondary);
+}
+
+.archived-project-item__main {
+    flex-grow: 1;
+}
+
+.archived-project-item__text {
+    display: block;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+}
+
+.archived-project-item__meta {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-top: var(--space-4);
+}
+
+.archived-project-item__actions {
+    display: flex;
+    gap: var(--space-8);
+    margin-left: var(--space-16);
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 480px) {
+    .archived-project-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .archived-project-item__actions {
+        margin-left: 0;
+        margin-top: var(--space-12);
+        width: 100%;
+    }
+
+    .archived-project-item__actions .btn {
+        flex-grow: 1;
+    }
+}
