@@ -243,14 +243,9 @@ function bindStaticEvents() {
     matrixView.bindDragAndDropEvents(eventHandlers);
 }
 
-function init() {
-    subscribe(render);
-    bindStaticEvents();
-    initController();
-    notificationService.start(() => getState().tasks);
-}
-
-// ATUALIZADA: A função init agora também carrega os projetos arquivados
+// *** CORREÇÃO APLICADA AQUI ***
+// A função 'init()' duplicada foi removida.
+// Esta é agora a única versão da função.
 function init() {
     subscribe(render);
     bindStaticEvents();
