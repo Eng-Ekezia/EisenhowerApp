@@ -58,21 +58,23 @@
     display: inline;
 }
 
-/* ================== REGRAS DE TAMANHO REMOVIDAS DAQUI ================== */
-/* Ajuste específico para o botão 'Voltar' (Desktop) */
-/* Agora ele herdará o tamanho de '.project-detail__actions .btn' */
-
 /* Garante o background e hover corretos */
 #back-to-projects-btn {
      background-color: var(--color-secondary);
      color: var(--color-text);
      border: none;
+     gap: var(--space-8);
 }
 #back-to-projects-btn:hover {
       background: var(--color-secondary-hover);
 }
 
-/* ====================================================================== */
+/* Define o tamanho do ícone ESPECÍFICO do botão Voltar */
+#back-to-projects-btn svg {
+     width: 18px; /* Usando o mesmo tamanho padrão dos outros */
+     height: 18px;
+     
+}
 
 
 /* Layout Responsivo (Telas Pequenas): Apenas Ícone */
