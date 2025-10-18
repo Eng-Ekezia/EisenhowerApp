@@ -5,6 +5,8 @@ import { taskService } from './services/task-service.js';
 import { archiveService } from './services/archive-service.js';
 import { dataService } from './services/data-service.js';
 import { projectService } from './services/project-service.js';
+// NOVO: Importa o serviço de arquivamento de projetos
+import { projectArchiveService } from './services/project-archive-service.js';
 
 export const eventHandlers = {
     onToggleComplete: (taskId) => {
@@ -162,19 +164,90 @@ export const eventHandlers = {
         const { tasks } = getState();
         const updatedTasks = taskService.updateTask(tasks, taskId, { quadrant: quadrant });
         setState({ tasks: updatedTasks });
+    },
+
+    // --- NOVOS HANDLERS: CICLO DE VIDA DO PROJETO ---
+    onCompleteProject: (projectId) => {
+        const { projects } = getState();
+        const project = projects.find(p => p.id === projectId);
+        if (!project) return;
+        
+        // Alterna o status
+        const newStatus = project.status === 'completed' ? 'active' : 'completed';
+        const updatedProjects = projectService.updateProject(projectId, { status: newStatus });
+        setState({ projects: updatedProjects });
+    },
+
+    onArchiveProject: (projectId) => {
+        const { projects } = getState();
+        const projectToArchive = projects.find(p => p.id === projectId);
+        if (!projectToArchive) return;
+
+        if (confirm(`Deseja arquivar o projeto "${projectToArchive.name}"? As tarefas não serão excluídas, mas o projeto sairá da lista principal.`)) {
+            // 1. Remove o projeto da lista ativa (atualizando seu status)
+            const updatedProjects = projectService.updateProject(projectId, { status: 'archived' });
+            
+            // 2. Adiciona ao arquivo
+            projectArchiveService.archiveProject(projectToArchive);
+            
+            // 3. Atualiza o estado
+            const newActiveProjects = updatedProjects.filter(p => p.id !== projectId);
+            const newArchivedProjects = projectArchiveService.getArchivedProjects();
+
+            setState({ 
+                projects: newActiveProjects,
+                archivedProjects: newArchivedProjects,
+                viewingProjectId: null // Volta para a lista de projetos
+            });
+        }
+    },
+
+    onRestoreProject: (projectId) => {
+        const { restoredProject } = projectArchiveService.restoreProject(projectId);
+        
+        if (restoredProject) {
+            // 1. Atualiza o status do projeto restaurado para 'active'
+            const updatedProject = { ...restoredProject, status: 'active', completedAt: null };
+            
+            // 2. Salva a atualização no projectService
+            const updatedProjectsList = projectService.updateProject(projectId, updatedProject);
+            
+            // 3. Adiciona o projeto de volta à lista ativa no estado
+            const { projects } = getState();
+            const newArchivedProjects = projectArchiveService.getArchivedProjects();
+            
+            setState({
+                projects: [...projects, updatedProject],
+                archivedProjects: newArchivedProjects
+            });
+        }
+    },
+
+    onDeletePermanentlyProject: (projectId) => {
+        const { archivedProjects, tasks } = getState();
+        const projectToDelete = archivedProjects.find(p => p.id === projectId);
+        
+        if (confirm(`Atenção: Excluir permanentemente o projeto "${projectToDelete.name}" também excluirá TODAS as suas tarefas associadas. Esta ação não pode ser desfeita. Deseja continuar?`)) {
+            // 1. Exclui o projeto do arquivo
+            projectArchiveService.deletePermanently(projectId);
+            
+            // 2. Exclui as tarefas associadas
+            const updatedTasks = taskService.deleteTasksByProjectId(tasks, projectId);
+            
+            // 3. Atualiza o estado
+            const newArchivedProjects = projectArchiveService.getArchivedProjects();
+            setState({ 
+                tasks: updatedTasks,
+                archivedProjects: newArchivedProjects
+            });
+        }
     }
 };
 
 export function init() {
-    const initialTasks = taskService.getTasks();
-    const initialArchivedTasks = archiveService.getArchivedTasks();
-    const initialProjects = projectService.getProjects();
+    // Esta função agora é chamada pelo app.js, que cuida de carregar os dados.
+    // Esta função pode ser usada para outras inicializações específicas do controller,
+    // mas o carregamento dos dados foi centralizado no app.js.
     
-    setState({
-        tasks: initialTasks,
-        archivedTasks: initialArchivedTasks,
-        projects: initialProjects,
-        activeView: 'matrix',
-        viewingProjectId: null
-    });
+    // (Código de carregamento de dados removido daqui e centralizado no app.js init)
 }

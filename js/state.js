@@ -11,6 +11,7 @@ const state = {
     tasks: [],
     archivedTasks: [],
     projects: [],
+    archivedProjects: [], // NOVO: Adiciona a lista de projetos arquivados
     draggedTaskId: null,
     matrixViewMode: 'grid', // 'grid' ou 'columns'
     viewingProjectId: null, // NOVO: Armazena o ID do projeto que está sendo visualizado
